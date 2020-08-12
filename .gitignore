@@ -6,3 +6,6 @@ results/
 test/
 data/
 notes/
+
+!SPHARM/scripts/
+!SPHARM/data/
