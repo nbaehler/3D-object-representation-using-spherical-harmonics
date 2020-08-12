@@ -369,7 +369,7 @@ class Chaos():
 
                 verticeCount = len(x)
 
-                print('# vertices: ' + str(verticeCount) + ', # faces: ' + str(faceCount) + ' (should have: ' + str(2*(verticeCount-2)) + ')')
+                # print('# vertices: ' + str(verticeCount) + ', # faces: ' + str(faceCount) + ' (should have: ' + str(2*(verticeCount-2)) + ')')
 
                 crtDir = saveDir + '/' + baseName
                 if not os.path.exists(crtDir):

@@ -14,9 +14,9 @@ import wandb
 # from utils import stns
 
 import re
-from pymesh import load_mesh, save_mesh, form_mesh
-from pytorch3d.ops import sample_points_from_meshes
-from pytorch3d.structures import Meshes
+# from pymesh import load_mesh, save_mesh, form_mesh TODO find a way of using this module
+# from pytorch3d.ops import sample_points_from_meshes
+# from pytorch3d.structures import Meshes
 from utils.evaluate_utils import prepare_run, run_rasterize
 import shutil
 
@@ -239,6 +239,20 @@ class Evaluator(object):
 
                 results = data_obj.evaluate(data.y, y_hat, cfg)
 
+                # --- Centroid TODO
+
+                gt = torch.mean(data.y.mesh['vertices'][0][0], dim=0)
+                pred = torch.mean(torch.Tensor(pred_meshes['vertices']), dim=0)
+                diff = gt-pred
+
+                centroid = open(current_path+data.name+'_centroid.txt', 'w')
+
+                centroid.write('Ground truth: '+str(gt)+'\n')
+                centroid.write('Prediction: '+str(pred)+'\n')
+                centroid.write('Difference: '+str(diff)+'\n')
+
+                centroid.close()
+                
                 # --- Plots TODO
 
                 import matplotlib.pyplot as plt

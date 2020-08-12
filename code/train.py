@@ -15,12 +15,12 @@ class Trainer(object):
 
  
     def training_step(self, data, epoch):
-        # Get the minibatch 
+        # Get the minibatch
          
         self.optimizer.zero_grad()
-        loss, log = self.net.loss(data, epoch) 
+        loss, log = self.net.loss(data, epoch)
         loss.backward()
-        self.optimizer.step()  
+        self.optimizer.step()
         # embed()
 
         return log
@@ -35,7 +35,7 @@ class Trainer(object):
         self.eval_every = eval_every
         self.save_path = save_path 
 
-        self.evaluator = evaluator 
+        self.evaluator = evaluator
 
 
     def train(self, start_iteration=1):
@@ -51,7 +51,7 @@ class Trainer(object):
             for data in self.trainloader:
 
                 # training step
-                loss = self.training_step(data, start_iteration)
+                loss = self.training_step(data, iteration)
 
             if iteration % print_every == 0:
                 log_vals = {}

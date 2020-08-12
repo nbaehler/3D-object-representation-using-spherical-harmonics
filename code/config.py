@@ -13,7 +13,7 @@ def load_config(exp_id):
     cfg.experiment_idx = exp_id
 
     cfg.trial_id = None # Use None for generating a new id
-    cfg.trial_id = 91
+    cfg.trial_id = 9
 
     # Setup
     # cfg.mode = 'load'
@@ -21,16 +21,17 @@ def load_config(exp_id):
     # cfg.mode = 'import_params'
 
     # Training
-    cfg.mode = 'train'
+    # cfg.mode = 'train'
     # cfg.mode = 'pretrained'
 
     # Evaluate results
-    # cfg.mode = 'evaluate'
+    cfg.mode = 'evaluate'
 
     ''' Save at '''
-    cfg.save_path = '/home/nbaehler/workspace/ml/experiments/'
+    cfg.root_path = '/home/nicolas/workspace/ba6/3D-object-representation-using-spherical-harmonics/'
+    cfg.save_path = cfg.root_path + 'experiments/'
     cfg.save_dir_prefix = 'Experiment_'
-    cfg.data_root = '/cvlabdata2/cvlab/datasets_nicolas/chaos/ml/'
+    cfg.data_root = cfg.root_path + 'data/data/'
     cfg.data_path = None
     cfg.loaded_data_path = cfg.data_root + 'loaded_data.pickle'
 

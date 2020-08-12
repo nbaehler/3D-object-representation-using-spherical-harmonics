@@ -67,25 +67,25 @@ def main():
     
     data_obj = Chaos()
 
-    if cfg.mode is 'load':
+    if cfg.mode == 'load':
         data_obj.load_data(cfg)
         print('Successfully loaded the data, prepare the samples for SPHARM')
         print('==> Trial ID: '+str(trial_id))
-    elif cfg.mode is 'prepare':
+    elif cfg.mode == 'prepare':
         data_obj.prepare_data(cfg)
         print('Successfully prepared the data, compute the SPHARM parameters')
         print('==> Trial ID: '+str(trial_id))
-    elif cfg.mode is 'import_params':
+    elif cfg.mode == 'import_params':
         data_obj.import_params(cfg)
         print('Successfully imported the SPHARM parameters')
         print('==> Trial ID: '+str(trial_id))
-    elif cfg.mode is 'train' or cfg.mode is 'pretrained' or cfg.mode is 'evaluate':
+    elif cfg.mode == 'train' or cfg.mode == 'pretrained' or cfg.mode == 'evaluate':
         print("Create network")
         classifier = network(cfg)
         classifier.cuda()
 
-        if cfg.mode is not 'evaluate':
-            wandb.init(name='Experiment_{}/trial_{}'.format(cfg.experiment_idx, trial_id), project="spharm", dir='/home/nbaehler/workspace/ml/')
+        if cfg.mode != 'evaluate':
+            wandb.init(name='Experiment_{}/trial_{}'.format(cfg.experiment_idx, trial_id), project="spharm", dir='/home/nicolas/workspace/ba6/3D-object-representation-using-spherical-harmonics/experiments/')
 
         print("Initialize optimizer")
         optimizer = optim.Adam(filter(lambda p: p.requires_grad, classifier.parameters()), lr=cfg.learning_rate)
@@ -100,7 +100,7 @@ def main():
         print("Initialize evaluator")
         evaluator = Evaluator(classifier, optimizer, data, trial_path, cfg, data_obj)
 
-        if cfg.mode is 'evaluate':
+        if cfg.mode == 'evaluate':
             evaluator.do_complete_evaluations(data_obj, cfg)
             print('Successfully evaluated the results')
             print('==> Trial ID: '+str(trial_id))
@@ -108,7 +108,7 @@ def main():
             print("Initialize trainer")
             trainer = Trainer(classifier, loader, optimizer, cfg.numb_of_itrs, cfg.eval_every, trial_path, evaluator)
         
-            if cfg.mode is 'pretrained':
+            if cfg.mode == 'pretrained':
                 print("Loading pretrained network")
                 save_path = trial_path + '/best_performance/model.pth'
                 checkpoint = torch.load(save_path)
