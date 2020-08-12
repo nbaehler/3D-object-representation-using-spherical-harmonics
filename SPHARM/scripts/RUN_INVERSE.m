@@ -14,7 +14,7 @@ for iter = 3 : length(iterations)
         
     for s = 1 : length(samples)
         inputFile = char(samples(s));
-                
+                        
         fvec = {{}};
         i = 1;
         fid = fopen(strcat(crtDir,'\',inputFile));
