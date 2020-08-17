@@ -8,8 +8,8 @@ import torch.nn.functional as F
 import numpy as np 
 from IPython import embed
 
-from pytorch3d.ops import sample_points_from_meshes
-from pytorch3d.structures import Meshes
+# from pytorch3d.ops import sample_points_from_meshes TODO
+# from pytorch3d.structures import Meshes
 
 import cmath
 from math import sin, cos, sqrt, pi, exp

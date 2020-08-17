@@ -13,7 +13,7 @@ def load_config(exp_id):
     cfg.experiment_idx = exp_id
 
     cfg.trial_id = None # Use None for generating a new id
-    cfg.trial_id = 9
+    cfg.trial_id = 1
 
     # Setup
     # cfg.mode = 'load'
@@ -21,19 +21,20 @@ def load_config(exp_id):
     # cfg.mode = 'import_params'
 
     # Training
-    # cfg.mode = 'train'
+    cfg.mode = 'train'
     # cfg.mode = 'pretrained'
 
     # Evaluate results
-    cfg.mode = 'evaluate'
+    # cfg.mode = 'evaluate'
 
     ''' Save at '''
-    cfg.root_path = '/home/nicolas/workspace/ba6/3D-object-representation-using-spherical-harmonics/'
+    cfg.root_path = '/home/nicolas/workspace/ba6/spharm-project/'
     cfg.save_path = cfg.root_path + 'experiments/'
     cfg.save_dir_prefix = 'Experiment_'
-    cfg.data_root = cfg.root_path + 'data/data/'
-    cfg.data_path = None
-    cfg.loaded_data_path = cfg.data_root + 'loaded_data.pickle'
+    cfg.data_root = cfg.root_path + 'data/Train_Sets/CT'
+    cfg.data_path = cfg.root_path + 'runs/'
+    cfg.loaded_data_path = cfg.root_path + 'data/loaded_data.pickle'
+   
 
     # sample names
     # [1,10,14,16,18,19,2,21,22,23,24,25,26,27,28,29,30,5,6,8] <- 20 in total

@@ -6,7 +6,7 @@ import numpy as np
 
 ''' too many functions, combine them'''
 def cuda_get_rasterize():
-    dll = ctypes.CDLL('/cvlabdata2/home/wickrama/projects/U-Net/Experiments/meshnet/mnet/kernel.so', mode=ctypes.RTLD_GLOBAL)
+    dll = ctypes.CDLL('/home/nicolas/workspace/ba6/spharm-project/code/kernel.so', mode=ctypes.RTLD_GLOBAL)
     func = dll.cuda_rasterize
     func.argtypes = [POINTER(c_int), POINTER(c_float), POINTER(c_int), POINTER(c_float), c_size_t, c_size_t, c_size_t, c_size_t, c_size_t]
 

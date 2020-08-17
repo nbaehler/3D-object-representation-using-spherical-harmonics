@@ -19,7 +19,7 @@ from IPython import embed
 import pydicom
 from statistics import mean
 
-from pytorch3d.loss.chamfer import chamfer_distance
+# from pytorch3d.loss.chamfer import chamfer_distance TODO
 
 class PrepareSample:
     def __init__(self, x, y, name, step_size=None):
@@ -116,7 +116,7 @@ class Chaos():
         return data
 
     def load_data(self, cfg):
-        data_root = '/cvlabsrc1/cvlab/datasets_udaranga/datasets/3d/chaos/Train_Sets/CT'
+        data_root = cfg.data_root
         samples = [dir for dir in os.listdir(data_root)]
  
         prepare_samples = []
@@ -162,10 +162,10 @@ class Chaos():
                 base_grid[:, :, :, :, 1] = h_points
                 base_grid[:, :, :, :, 2] = d_points
                 
-                grid = base_grid.cuda()
+                grid = base_grid#.cuda() TODO
                  
                 
-                x = torch.from_numpy(x).cuda()
+                x = torch.from_numpy(x)#.cuda() TODO
                 x = F.grid_sample(x[None, None], grid, mode='bilinear', padding_mode='border')[0, 0]
                 x = x.data.cpu().numpy() 
                 #----
@@ -195,7 +195,7 @@ class Chaos():
                 y = np.array(y) 
                 y = np.int64(y) 
 
-                y = torch.from_numpy(y).cuda()
+                y = torch.from_numpy(y)#.cuda() TODO
                 y = F.grid_sample(y[None, None].float(), grid, mode='nearest', padding_mode='border')[0, 0]
                 y = y.data.cpu().numpy()
 

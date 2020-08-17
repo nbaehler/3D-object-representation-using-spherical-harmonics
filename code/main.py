@@ -1,7 +1,7 @@
 ''' Dataset '''
 # Command -> nvidia-smi
 import os
-GPU_index = "2" # 0, 1, 2, 3
+GPU_index = "0" # 0, 1, 2, 3
 os.environ["CUDA_VISIBLE_DEVICES"] = GPU_index
 
 import logging
@@ -39,7 +39,7 @@ def init(cfg):
     trial_id = cfg.trial_id
     trial_str = 'trial_' + str(trial_id)
     trial_save_path = save_path + trial_str
-    cfg.data_path = cfg.data_root + trial_str + '/'
+    cfg.data_path += trial_str + '/'
 
     if not os.path.isdir(trial_save_path):
         mkdir(trial_save_path) 
@@ -85,7 +85,7 @@ def main():
         classifier.cuda()
 
         if cfg.mode != 'evaluate':
-            wandb.init(name='Experiment_{}/trial_{}'.format(cfg.experiment_idx, trial_id), project="spharm", dir='/home/nicolas/workspace/ba6/3D-object-representation-using-spherical-harmonics/experiments/')
+            wandb.init(name='Experiment_{}/trial_{}'.format(cfg.experiment_idx, trial_id), project="spharm", dir='/home/nicolas/workspace/ba6/spharm-project/experiments/')
 
         print("Initialize optimizer")
         optimizer = optim.Adam(filter(lambda p: p.requires_grad, classifier.parameters()), lr=cfg.learning_rate)
