@@ -4,7 +4,7 @@ workspace = 'C:\Users\baehl\Downloads\matlab_input_files';
 files = dir(workspace);
 dirFlags = [files.isdir];
 folders = {files(dirFlags).name};
-degree = 1;
+degree = 13;
 
 % Skip the folders '.' and '..'
 for f = 3 : length(folders)        
@@ -19,7 +19,7 @@ for f = 3 : length(folders)
     [~, translation] = AUTOMLCombineAndResize(crtDir, 0, '[]', 0, inputFile);
     
     ext = '.mat';
-    baseName = strcat(char(folders(f)),'_OL_2O');
+    baseName = strcat(char(folders(f)),'_OL');
     inputFile = strcat(baseName,ext);
 
     baseName = strcat('template_',baseName,'_');
@@ -37,10 +37,10 @@ for f = 3 : length(folders)
     AUTOMLMakeModels(crtDir, 0, degree, 1, inputFile, smoothFile, translation);
 
     inputFile = strcat(baseName,num2str(degree),'_0_reg',ext);
-
+    
     % x, meshsize
     % y='Amira'; 'STL', outputFormat
-    AUTOMLMakeSurfacesFromSPHARMModels(crtDir, -5, 'STL', inputFile); %TODO 0 does not compile
+    AUTOMLMakeSurfacesFromSPHARMModels(crtDir, -5, 'STL', inputFile);
 end
 
 disp('RUN finished.');

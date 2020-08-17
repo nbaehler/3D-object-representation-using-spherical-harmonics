@@ -1,0 +1,18 @@
+Changes:
+-   In do_pca -> replace princomp by pca at 21
+-   RUN.m
+-   AUTOMLCombineAndResize: 119, rescaleSize = 1;
+-   AUTOMLCombineAndResize: 98 -> 100, newName = [newName '_OL']; outside the ifs
+-   Avoid GUI interaction -> make AUTO... copies of the files and remove the
+    UI parts
+-   AUTOMLMakeTemplate: 76, - load smo file in order to speed up the process
+                            - use 16 places after the comma not 9 at the end
+
+-   remove centroid part  
+
+Notes:
+-   'Least square for 10002 equations and 2601 unknowns' -> seems to be the upper
+    limit for unknowns, the ones who need more fail.
+    -> 50 is the biggest value that was ok on my Laptop (has exactly 2601 lsunknowns).
+-   For now I have to work on windows -> spa.exe (and msvcrtd.dll)
+

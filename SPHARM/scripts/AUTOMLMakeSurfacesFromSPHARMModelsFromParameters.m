@@ -24,11 +24,9 @@ disp('INSIDE AUTOMLMakeSurfacesFromSPHARMModelsFromParameters.');
 % specified by input meshsize.
 if (meshsize == 0)
     meshsize = []; suffix = '_orig'; meshsize{1} = sph_verts; meshsize{2} = faces; 
-end
-if (meshsize > 0)
+elseif (meshsize > 0)
     suffix = ['_grid' int2str(meshsize)];
-end
-if (meshsize < 0)
+elseif (meshsize < 0)
     suffix = ['_ico' int2str((-1*meshsize))];
 end
 

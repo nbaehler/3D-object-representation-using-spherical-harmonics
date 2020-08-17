@@ -7,4 +7,5 @@ test/
 data/
 notes/
 runs/
-
+!SPHARM/scripts/
+!SPHARM/data/
