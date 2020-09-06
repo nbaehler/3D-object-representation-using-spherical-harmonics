@@ -1,4 +1,3 @@
-
 disp('INSIDE RUN CHECK.');
 workspace = 'C:\Users\baehl\Downloads\matlab_input_files';
 files = dir(workspace);
