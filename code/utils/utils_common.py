@@ -105,7 +105,7 @@ def crop(image, patch_shape, center, mode='constant'):
     slices, pad_width, needs_padding = crop_indices(image.shape, patch_shape, center)
     patch = image[slices]
 
-    if needs_padding and mode is not 'nopadding':
+    if needs_padding and mode != 'nopadding':
         if isinstance(image, np.ndarray):
             if len(pad_width) < patch.ndim:
                 pad_width.append((0, 0))
