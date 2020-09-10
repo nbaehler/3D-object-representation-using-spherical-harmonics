@@ -1,4 +1,3 @@
-
 disp('INSIDE RUN INVERSE.');
 workspace = 'C:\Users\baehl\Downloads\matlab_input_files';
 files = dir(workspace);

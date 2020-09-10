@@ -1,4 +1,3 @@
-
 disp('INSIDE RUN.');
 workspace = 'C:\Users\baehl\Downloads\matlab_input_files';
 files = dir(workspace);
@@ -7,7 +6,7 @@ folders = {files(dirFlags).name};
 degree = 13;
 
 % Skip the folders '.' and '..'
-for f = 3 : length(folders)        
+for f = 3 : length(folders)
     baseName = char(folders(f));
     ext = '.m';
     inputFile = strcat(baseName,ext);
