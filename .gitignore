@@ -1,4 +1,6 @@
 __pycache__/
+*.pyc
+**/._*.py
 
 experiments/
 scripts/
@@ -7,3 +9,7 @@ test/
 data/
 notes/
 runs/
+SPHARM/SPHARM v1.4 Documentation.pdf
+SPHARM/data/
+
+.vscode/settings.json
