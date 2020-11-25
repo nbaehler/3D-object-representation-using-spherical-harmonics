@@ -8,8 +8,8 @@ import torch.nn.functional as F
 import numpy as np
 from IPython import embed
 
-# from pytorch3d.ops import sample_points_from_meshes TODO
-# from pytorch3d.structures import Meshes
+from pytorch3d.ops import sample_points_from_meshes
+from pytorch3d.structures.meshes import Meshes
 
 import cmath
 from math import sin, cos, sqrt, pi, exp
@@ -51,14 +51,14 @@ class DatasetAndSupport(object):
 
 def get_item(item, mode, config):
 
-    # for the first set of experiments item.y.... TODO switch
+    # for the first set of experiments item.y.... # TODO switch
     x = item.y_outer.float().cuda()[None]
     y = item.y.cuda()
     spharm_coeffs = item.spharm_coeffs
 
-    # augmentation done only during training TODO
+    # augmentation done only during training #TODO
     if mode == DataModes.TRAINING_EXTENDED:  # if training do augmentation
-        # if torch.rand(1)[0] > 0.5: TODO changes the coefficients ?!!??!
+        # if torch.rand(1)[0] > 0.5: #TODO changes the coefficients ?!!??!
         #     x = x.permute([0, 1, 3, 2])
         #     y = y.permute([0, 2, 1])
 
@@ -74,7 +74,7 @@ def get_item(item, mode, config):
         #     x = torch.flip(x, dims=[3])
         #     y = torch.flip(y, dims=[2])
 
-        # orientation = torch.tensor([0, -1, 0]).float() TODO only 3 quaternions
+        # orientation = torch.tensor([0, -1, 0]).float() #TODO only 3 quaternions
         # new_orientation = (torch.rand(3) - 0.5) * 2 * np.pi
         # new_orientation[2] = new_orientation[2] * 0 # no rotation outside x-y plane
         # new_orientation = F.normalize(new_orientation, dim=0)

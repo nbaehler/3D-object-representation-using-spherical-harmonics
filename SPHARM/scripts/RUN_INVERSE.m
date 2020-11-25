@@ -1,5 +1,5 @@
 disp('INSIDE RUN INVERSE.');
-workspace = 'C:\Users\baehl\Downloads\matlab_input_files';
+workspace = '/home/nicolas/workspace/ba6/spharm-project/runs/trial_1/evaluations';
 files = dir(workspace);
 dirFlags = [files.isdir];
 iterations = {files(dirFlags).name};
@@ -16,7 +16,7 @@ for iter = 3 : length(iterations)
                         
         fvec = {{}};
         i = 1;
-        fid = fopen(strcat(crtDir,'\',inputFile));
+        fid = fopen(strcat(crtDir,'/',inputFile));
         line = fgetl(fid);
         while ischar(line)
             coeffs = strsplit(line);

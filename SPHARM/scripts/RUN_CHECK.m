@@ -1,5 +1,5 @@
 disp('INSIDE RUN CHECK.');
-workspace = 'C:\Users\baehl\Downloads\matlab_input_files';
+workspace = '/home/nicolas/workspace/ba6/spharm-project/runs/trial_1/matlab_meshes/training';
 files = dir(workspace);
 dirFlags = [files.isdir];
 folders = {files(dirFlags).name};
@@ -44,9 +44,9 @@ for f = 3 : length(folders)
                 deg = erase(file, baseName);
                 deg = erase(deg, '_0_des.mat');
                 degree = str2num(deg);
-                delete(strcat(crtDir, '\', file));
+                delete(strcat(crtDir, '/', file));
             elseif isempty(regexp(file, '\w+.m$', 'once'))
-                delete(strcat(crtDir, '\', file));
+                delete(strcat(crtDir, '/', file));
             end
         end      
     end

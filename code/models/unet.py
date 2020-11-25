@@ -1,6 +1,5 @@
 from itertools import chain
 import torch.nn as nn
-import torch
 import torch.nn.functional as F
 from IPython import embed
 from utils.utils_common import crop_and_merge
@@ -74,7 +73,7 @@ class UNet(nn.Module):
 
     def forward(self, data):
 
-        x = data['x'].cuda()
+        x = data['x'].cuda()  # TODO
 
         # first layer
         x = self.down_layers[0](x)
@@ -92,16 +91,14 @@ class UNet(nn.Module):
             x = crop_and_merge(down_output, x)
             x = unet_layer(x)
 
-        pred = self.final_layer(x)
-
-        return pred
+        return self.final_layer(x)
 
     def loss(self, data, epoch):
 
         pred = self.forward(data)
 
         CE_Loss = nn.CrossEntropyLoss()
-        loss = CE_Loss(pred, data['y_voxels'].cuda())
+        loss = CE_Loss(pred, data['y_voxels'].cuda())  # TODO
 
         log = {"loss": loss.detach()}
 

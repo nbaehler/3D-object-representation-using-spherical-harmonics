@@ -18,7 +18,7 @@ if exist('outfile')
     !del outfile
 end
 
-!spa infile outfile 4
+!wine spa infile outfile 4
 
 % read from outfile
 disp(sprintf('read verts from outfile ...'));

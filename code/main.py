@@ -43,7 +43,7 @@ def init(cfg):
     if not os.path.isdir(trial_save_path):
         mkdir(trial_save_path)
         copytree(os.getcwd(), trial_save_path + '/source_code', ignore=ignore_patterns('*.git', '*.txt', '*.tif',
-            '*.pkl', '*.off', '*.so', '*.json', '*.jsonl', '*.log', '*.patch', '*.yaml', 'wandb', 'run-*'))
+                                                                                       '*.pkl', '*.off', '*.so', '*.json', '*.jsonl', '*.log', '*.patch', '*.yaml', 'wandb', 'run-*'))
 
     seed = trial_id
     np.random.seed(seed)
@@ -80,7 +80,7 @@ def main():
         data_obj.import_params(cfg)
         print('Successfully imported the SPHARM parameters')
         print('==> Trial ID: '+str(trial_id))
-    elif cfg.mode == 'train' or cfg.mode == 'pretrained' or cfg.mode == 'evaluate':
+    elif cfg.mode in ['train', 'pretrained', 'evaluate']:
         print("Create network")
         classifier = network(cfg)
         classifier.cuda()
@@ -108,7 +108,6 @@ def main():
         if cfg.mode == 'evaluate':
             evaluator.do_complete_evaluations(data_obj, cfg)
             print('Successfully evaluated the results')
-            print('==> Trial ID: '+str(trial_id))
         else:
             print("Initialize trainer")
             trainer = Trainer(classifier, loader, optimizer,
@@ -127,8 +126,7 @@ def main():
             trainer.train(start_iteration=epoch)
             evaluator.save_incomplete_evaluations()
             print('Successfully trained, evaluate the results')
-            print('==> Trial ID: '+str(trial_id))
-
+        print('==> Trial ID: '+str(trial_id))
     else:
         print('Invalid mode!')
 

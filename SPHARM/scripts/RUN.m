@@ -1,5 +1,5 @@
 disp('INSIDE RUN.');
-workspace = 'C:\Users\baehl\Downloads\matlab_input_files';
+workspace = '/home/nicolas/workspace/ba6/spharm-project/runs/trial_1/matlab_meshes/training';
 files = dir(workspace);
 dirFlags = [files.isdir];
 folders = {files(dirFlags).name};
