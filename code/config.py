@@ -10,11 +10,11 @@ def load_config(exp_id):
     cfg.experiment_idx = exp_id
 
     cfg.trial_id = None  # Use None for generating a new id
-    cfg.trial_id = 1
+    cfg.trial_id = 2
 
     # Setup
-    # cfg.mode = 'load'
-    # cfg.mode = 'prepare'
+    # cfg.mode = 'load' #TODO Don't use this anymore, needs more than 32 GiB of RAM
+    cfg.mode = 'prepare' #TODO Don't use this anymore, needs around 32 GiB of RAM
     # cfg.mode = 'import_params'
 
     # Training
@@ -22,7 +22,7 @@ def load_config(exp_id):
     # cfg.mode = 'pretrained'
 
     # Evaluate results
-    cfg.mode = 'evaluate'
+    # cfg.mode = 'evaluate'
 
     ''' Save at '''
     cfg.root_path = '/home/nicolas/workspace/ba6/spharm-project/'
@@ -50,7 +50,7 @@ def load_config(exp_id):
     # degree 4, 18
     # cfg.known_to_work = {2:[1, 25], 3:[8, 30], 4:[6, 16, 18, 21, 24, 28], 5:[2, 10, 14, 22, 23], 6:[19, 27, 29]}
 
-    cfg.samples_for_chamfer = 10000
+    cfg.samples_for_chamfer = 1000
 
     # cfg.name = 'unet'
     cfg.name = 'spharmnet'

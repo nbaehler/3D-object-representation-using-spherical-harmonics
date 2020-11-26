@@ -15,7 +15,7 @@ fclose(fid);
 
 % remove remeshout
 if exist('outfile')
-    !del outfile
+    !rm outfile
 end
 
 !wine spa infile outfile 4

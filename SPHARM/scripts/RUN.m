@@ -1,9 +1,9 @@
 disp('INSIDE RUN.');
-workspace = '/home/nicolas/workspace/ba6/spharm-project/runs/trial_1/matlab_meshes/training';
+workspace = '/home/nicolas/workspace/ba6/spharm-project/runs/trial_2/matlab_meshes/testing';
 files = dir(workspace);
 dirFlags = [files.isdir];
 folders = {files(dirFlags).name};
-degree = 13;
+degree = 8;
 
 % Skip the folders '.' and '..'
 for f = 3 : length(folders)
@@ -26,7 +26,7 @@ for f = 3 : length(folders)
 
     % x, smooth (bool)
     % y, degree
-    AUTOMLMakeTemplate(crtDir, 0, degree, inputFile, smoothFile);
+    AUTOMLMakeTemplate(crtDir, 1, degree, inputFile, smoothFile);
 
     inputFile = strcat(baseName,num2str(degree),'_0_des',ext);
 

@@ -42,8 +42,8 @@ def init(cfg):
 
     if not os.path.isdir(trial_save_path):
         mkdir(trial_save_path)
-        copytree(os.getcwd(), trial_save_path + '/source_code', ignore=ignore_patterns('*.git', '*.txt', '*.tif',
-                                                                                       '*.pkl', '*.off', '*.so', '*.json', '*.jsonl', '*.log', '*.patch', '*.yaml', 'wandb', 'run-*'))
+        copytree(os.getcwd()+'/code/', trial_save_path + '/source_code', ignore=ignore_patterns('*.git', '*.txt', '*.tif',
+                                                                                                '*.pkl', '*.off', '*.so', '*.json', '*.jsonl', '*.log', '*.patch', '*.yaml', 'wandb', 'run-*'))
 
     seed = trial_id
     np.random.seed(seed)
