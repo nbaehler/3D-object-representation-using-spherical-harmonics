@@ -1,5 +1,5 @@
 disp('INSIDE RUN.');
-workspace = '/home/nicolas/workspace/ba6/spharm-project/runs/trial_2/matlab_meshes/testing';
+workspace = '/home/nicolas/workspace/ba6/spharm-project/runs/trial_3/matlab_meshes/testing';
 files = dir(workspace);
 dirFlags = [files.isdir];
 folders = {files(dirFlags).name};

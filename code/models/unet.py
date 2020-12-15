@@ -73,7 +73,7 @@ class UNet(nn.Module):
 
     def forward(self, data):
 
-        x = data['x'].cuda()  # TODO
+        x = data['x'].cuda()
 
         # first layer
         x = self.down_layers[0](x)
@@ -98,7 +98,7 @@ class UNet(nn.Module):
         pred = self.forward(data)
 
         CE_Loss = nn.CrossEntropyLoss()
-        loss = CE_Loss(pred, data['y_voxels'].cuda())  # TODO
+        loss = CE_Loss(pred, data['y_voxels'].cuda())
 
         log = {"loss": loss.detach()}
 

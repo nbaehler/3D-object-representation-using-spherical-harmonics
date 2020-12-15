@@ -158,7 +158,7 @@ class Chaos():
                 D = int(D * d_resolution)
                 H = int(H * h_resolution)
                 W = int(W * w_resolution)
-                # we resample such that 1 pixel is 1 mm in x,y and z directiions
+                # we resample such that 1 pixel is 1 mm in x,y and z directions
                 base_grid = torch.zeros((1, D, H, W, 3))
                 w_points = (torch.linspace(-1, 1, W) if W >
                             1 else torch.Tensor([-1]))
@@ -315,10 +315,10 @@ class Chaos():
         if not os.path.exists(recDir):
             os.makedirs(recDir)
 
-        dir = cfg.data_path + 'label_meshes'
-        folders = os.listdir(dir)
+        rootDir = cfg.data_path + 'label_meshes'
+        folders = os.listdir(rootDir)
         for folder in folders:
-            subDir = dir + '/' + folder
+            subDir = rootDir + '/' + folder
             files = list(
                 filter(lambda x: x.endswith('.obj'), os.listdir(subDir)))
             saveDir = cfg.data_path + 'matlab_meshes/' + folder
@@ -489,6 +489,5 @@ class Chaos():
 
         if best_so_far is None:
             return True
-        else:
-            best_so_far = best_so_far[DataModes.TESTING][key]
-            return True if np.mean(new_value) > np.mean(best_so_far) else False
+        best_so_far = best_so_far[DataModes.TESTING][key]
+        return np.mean(new_value) > np.mean(best_so_far)

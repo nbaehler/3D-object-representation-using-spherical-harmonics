@@ -66,7 +66,7 @@ class SPHarmNet(nn.Module):
 
     def forward(self, data):
 
-        x = data['x'].cuda()  # TODO
+        x = data['x'].cuda()
 
         latent = self.conv_encoder(x)
 
@@ -80,7 +80,7 @@ class SPHarmNet(nn.Module):
         pred = self.forward(data)
 
         MSE_Loss = nn.MSELoss()
-        loss = MSE_Loss(pred, data['y_spharm_coeffs'].cuda())  # TODO
+        loss = MSE_Loss(pred, data['y_spharm_coeffs'].cuda())
 
         log = {"loss": loss.detach()}
 

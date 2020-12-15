@@ -9,12 +9,12 @@ def load_config(exp_id):
     ''' Experiment '''
     cfg.experiment_idx = exp_id
 
-    cfg.trial_id = None  # Use None for generating a new id
-    cfg.trial_id = 2
+    # cfg.trial_id = None  # Use None for generating a new id
+    cfg.trial_id = 1
 
     # Setup
-    # cfg.mode = 'load' #TODO Don't use this anymore, needs more than 32 GiB of RAM
-    cfg.mode = 'prepare' #TODO Don't use this anymore, needs around 32 GiB of RAM
+    # cfg.mode = 'load' #TODO DON'T USE THIS! Needs more than 32 GiB of RAM
+    cfg.mode = 'prepare'  # TODO Needs around 32 GiB of RAM
     # cfg.mode = 'import_params'
 
     # Training

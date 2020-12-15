@@ -67,19 +67,20 @@ def main():
     print('Experiment ID: {}, Trial ID: {}'.format(cfg.experiment_idx, trial_id))
 
     data_obj = Chaos()
+    message = '==> Trial ID: '+str(trial_id)
 
     if cfg.mode == 'load':
         data_obj.load_data(cfg)
         print('Successfully loaded the data, prepare the samples for SPHARM')
-        print('==> Trial ID: '+str(trial_id))
+        print(message)
     elif cfg.mode == 'prepare':
         data_obj.prepare_data(cfg)
         print('Successfully prepared the data, compute the SPHARM parameters')
-        print('==> Trial ID: '+str(trial_id))
+        print(message)
     elif cfg.mode == 'import_params':
         data_obj.import_params(cfg)
         print('Successfully imported the SPHARM parameters')
-        print('==> Trial ID: '+str(trial_id))
+        print(message)
     elif cfg.mode in ['train', 'pretrained', 'evaluate']:
         print("Create network")
         classifier = network(cfg)

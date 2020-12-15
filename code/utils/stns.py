@@ -25,11 +25,7 @@ def stn_all_rotations_with_all_theta(angles, inverse=False):
     theta_z[0, 0:2] = angles_z * torch.FloatTensor([[1, -1]])
     theta_z[1, 0:2] = angles_z.index_select(1, torch.LongTensor([1, 0]))
 
-    if inverse:
-        theta = theta_z @ theta_x @ theta_y
-    else:
-        theta = theta_y @ theta_x @ theta_z
-
+    theta = theta_z @ theta_x @ theta_y if inverse else theta_y @ theta_x @ theta_z
     return theta, theta_x, theta_y, theta_z
 
 
@@ -141,7 +137,7 @@ def transform(theta, x, y=None, w=None, w2=None):
     theta = theta[0:3, :].view(-1, 3, 4)
     grid = affine_3d_grid_generator.affine_grid(theta, x[None].shape)
     if x.device.type == 'cuda':
-        grid = grid.cuda()  # TODO
+        grid = grid.cuda()
     x = F.grid_sample(x[None], grid, mode='bilinear',
                       padding_mode='zeros', align_corners=False)[0]
     if y is not None:

@@ -1,22 +1,22 @@
 disp('INSIDE RUN CHECK.');
-workspace = '/home/nicolas/workspace/ba6/spharm-project/runs/trial_2/matlab_meshes/testing';
+workspace = '/home/nicolas/workspace/ba6/spharm-project/runs/trial_3/matlab_meshes/testing';
 files = dir(workspace);
 dirFlags = [files.isdir];
 folders = {files(dirFlags).name};
 degree = 10000;
 
 % Skip the folders '.' and '..'
-for f = 3 : length(folders)        
+for f = 3 : length(folders)
     baseName = char(folders(f));
     ext = '.m';
     inputFile = strcat(baseName,ext);
     crtDir = fullfile(workspace,baseName);
-    
+
     % x=0, No Size Rescaling; x=1, Centroid Size; x=2, Distance Size
     % y, Landmark distances for resizing Pairs: [1 2; 2 3] for example
     % z, Output Sizes to File (bool)
     AUTOMLCombineAndResize(crtDir, 0, '[]', 0, inputFile);
-    
+
     ext = '.mat';
     baseName = strcat(baseName,'_OL');
     inputFile = strcat(baseName,ext);
@@ -26,7 +26,7 @@ for f = 3 : length(folders)
 
     % x, smooth (bool)
     % y, degree
-    try 
+    try
         AUTOMLMakeTemplate(crtDir, 1, degree, inputFile, smoothFile);
     catch
         rmdir(crtDir,'s');
@@ -48,7 +48,7 @@ for f = 3 : length(folders)
             elseif isempty(regexp(file, '\w+.m$', 'once'))
                 delete(strcat(crtDir, '/', file));
             end
-        end      
+        end
     end
 end
 

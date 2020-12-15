@@ -8,7 +8,6 @@ from utils.utils_common import crop, DataModes, crop_indices, blend
 # from utils.utils_mesh import sample_outer_surface, get_extremity_landmarks, voxel2mesh, clean_border_pixels, sample_outer_surface_in_voxel, normalize_vertices
 
 # from utils import stns
-from torch.utils.data import Dataset
 import torch
 from sklearn.decomposition import PCA
 import pickle
@@ -69,7 +68,7 @@ class Chaos():
 
             y = (y > 0).long()
 
-            center = tuple([d // 2 for d in x.shape])
+            center = tuple(d // 2 for d in x.shape)
             x = crop(x, cfg.patch_shape, center)
             y = crop(y, cfg.patch_shape, center)
 
@@ -283,6 +282,5 @@ class Chaos():
 
         if best_so_far is None:
             return True
-        else:
-            best_so_far = best_so_far[DataModes.TESTING][key]
-            return True if np.mean(new_value) > np.mean(best_so_far) else False
+        best_so_far = best_so_far[DataModes.TESTING][key]
+        return np.mean(new_value) > np.mean(best_so_far)
