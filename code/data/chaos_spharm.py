@@ -21,6 +21,7 @@ from statistics import mean
 
 from pytorch3d.loss.chamfer import chamfer_distance
 
+
 class PrepareSample:
     def __init__(self, x, y, name, step_size=None):
         self.x = x
@@ -28,12 +29,14 @@ class PrepareSample:
         self.name = name
         self.step_size = step_size
 
+
 class Sample:
     def __init__(self, x, y, name, spharm_coeffs):
         self.x = x
         self.y = y
         self.name = name
         self.spharm_coeffs = spharm_coeffs
+
 
 class SamplePlus:
     def __init__(self, x, y, name, spharm_coeffs, y_outer, shape=None):
@@ -50,22 +53,19 @@ class SamplePlus:
 class ChaosDataset():
 
     def __init__(self, data, cfg, mode):
-        self.data = data 
+        self.data = data
         # self.data = [data[0]] # <<<<<<<<<<<<<<<
 
         self.cfg = cfg
         self.mode = mode
- 
 
     def __len__(self):
         return len(self.data)
 
-
     def __getitem__(self, idx):
-        item = self.data[idx] 
-        return get_item(item, self.mode, self.cfg) 
+        item = self.data[idx]
+        return get_item(item, self.mode, self.cfg)
 
-  
 
 class Chaos():
 
@@ -73,35 +73,36 @@ class Chaos():
 
         new_samples = []
         # surface_point_count = 100
-        for sample in samples: 
-             
+        for sample in samples:
+
             x = sample.x
-            y = sample.y 
-  
-            y = (y>0).long()
- 
-            center = tuple([d // 2 for d in x.shape]) 
-            x = crop(x, cfg.patch_shape, center) 
-            y = crop(y, cfg.patch_shape, center)   
-  
+            y = sample.y
+
+            y = (y > 0).long()
+
+            center = tuple([d // 2 for d in x.shape])
+            x = crop(x, cfg.patch_shape, center)
+            y = crop(y, cfg.patch_shape, center)
+
             # shape = torch.tensor(y.shape)[None].float()
             y_outer = sample_outer_surface_in_voxel(y)
- 
+
             # x_super_res = torch.tensor(1)
             # y_super_res = torch.tensor(1)
-            new_samples += [SamplePlus(x.cpu(), y.cpu(), sample.name, sample.spharm_coeffs, y_outer)]
+            new_samples += [SamplePlus(x.cpu(), y.cpu(),
+                                       sample.name, sample.spharm_coeffs, y_outer)]
 
         return new_samples
 
     def pick_surface_points(self, y_outer, point_count):
-        idxs = torch.nonzero(y_outer) 
+        idxs = torch.nonzero(y_outer)
         perm = torch.randperm(len(idxs))
 
-        y_outer = y_outer * 0  
+        y_outer = y_outer * 0
         idxs = idxs[perm[:point_count]]
-        y_outer[idxs[:,0], idxs[:,1], idxs[:,2]] = 1
+        y_outer[idxs[:, 0], idxs[:, 1], idxs[:, 2]] = 1
         return y_outer
-    
+
     def quick_load_data(self, cfg, trial_id):
         # assert cfg.patch_shape == (64, 256, 256), 'Not supported'
         down_sample_shape = cfg.patch_shape
@@ -109,33 +110,38 @@ class Chaos():
         for i, datamode in enumerate([DataModes.TRAINING, DataModes.TESTING]):
             with open(cfg.data_path + 'extended_data_{}_{}.pickle'.format(datamode, "_".join(map(str, down_sample_shape))), 'rb') as handle:
                 samples = pickle.load(handle)
-                new_samples = self.sample_to_sample_plus(samples, cfg, datamode)
+                new_samples = self.sample_to_sample_plus(
+                    samples, cfg, datamode)
                 data[datamode] = ChaosDataset(new_samples, cfg, datamode)
-        data[DataModes.TRAINING_EXTENDED] = ChaosDataset(data[DataModes.TRAINING].data, cfg, DataModes.TRAINING_EXTENDED)
-        data[DataModes.VALIDATION] = data[DataModes.TESTING] ## <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< switch to testing
+        data[DataModes.TRAINING_EXTENDED] = ChaosDataset(
+            data[DataModes.TRAINING].data, cfg, DataModes.TRAINING_EXTENDED)
+        # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< switch to testing
+        data[DataModes.VALIDATION] = data[DataModes.TESTING]
         return data
 
     def load_data(self, cfg):
         data_root = '/cvlabsrc1/cvlab/datasets_udaranga/datasets/3d/chaos/Train_Sets/CT'
         samples = [dir for dir in os.listdir(data_root)]
- 
+
         prepare_samples = []
 
         for sample in samples:
             if 'pickle' not in sample:
                 print(sample)
 
-                x = [] 
-                images_path = [dir for dir in os.listdir('{}/{}/DICOM_anon'.format(data_root, sample)) if 'dcm' in dir]
+                x = []
+                images_path = [dir for dir in os.listdir(
+                    '{}/{}/DICOM_anon'.format(data_root, sample)) if 'dcm' in dir]
                 for image_path in images_path:
-                    file = pydicom.dcmread('{}/{}/DICOM_anon/{}'.format(data_root, sample, image_path))
-                    x += [file.pixel_array] 
+                    file = pydicom.dcmread(
+                        '{}/{}/DICOM_anon/{}'.format(data_root, sample, image_path))
+                    x += [file.pixel_array]
 
                 d_resolution = file.SliceThickness
-                h_resolution, w_resolution = file.PixelSpacing 
+                h_resolution, w_resolution = file.PixelSpacing
                 x = np.float32(np.array(x))
 
-                # clip: x 
+                # clip: x
                 # CHAOS CHALLENGE: MedianCHAOS
                 # Vladimir Groza from Median Technologies: CHAOS 1st place solution overview.
                 # embed()
@@ -143,34 +149,36 @@ class Chaos():
                 # x[x>(1000+240)] = 1000+240
                 # x = (x - x.min())/(x.max()-x.min())
 
-
-                # io.imsave('/cvlabdata2/cvlab/datasets_udaranga/check1006.tif', np.uint8(x * 255)) 
+                # io.imsave('/cvlabdata2/cvlab/datasets_udaranga/check1006.tif', np.uint8(x * 255))
                 # x = io.imread('{}/{}/DICOM_anon/volume.tif'.format(data_root, sample))
                 # x = np.float32(x)/2500
                 # x[x>1] = 1
                 #
                 D, H, W = x.shape
-                D = int(D * d_resolution) #  
-                H = int(H * h_resolution) # 
-                W = int(W * w_resolution)  #  
+                D = int(D * d_resolution)
+                H = int(H * h_resolution)
+                W = int(W * w_resolution)
                 # we resample such that 1 pixel is 1 mm in x,y and z directiions
                 base_grid = torch.zeros((1, D, H, W, 3))
-                w_points = (torch.linspace(-1, 1, W) if W > 1 else torch.Tensor([-1]))
-                h_points = (torch.linspace(-1, 1, H) if H > 1 else torch.Tensor([-1])).unsqueeze(-1)
-                d_points = (torch.linspace(-1, 1, D) if D > 1 else torch.Tensor([-1])).unsqueeze(-1).unsqueeze(-1)
+                w_points = (torch.linspace(-1, 1, W) if W >
+                            1 else torch.Tensor([-1]))
+                h_points = (torch.linspace(-1, 1, H) if H >
+                            1 else torch.Tensor([-1])).unsqueeze(-1)
+                d_points = (torch.linspace(-1, 1, D) if D >
+                            1 else torch.Tensor([-1])).unsqueeze(-1).unsqueeze(-1)
                 base_grid[:, :, :, :, 0] = w_points
                 base_grid[:, :, :, :, 1] = h_points
                 base_grid[:, :, :, :, 2] = d_points
-                
+
                 grid = base_grid.cuda()
-                 
-                
+
                 x = torch.from_numpy(x).cuda()
-                x = F.grid_sample(x[None, None], grid, mode='bilinear', padding_mode='border')[0, 0]
-                x = x.data.cpu().numpy() 
-                #----
-                 
-                x = np.float32(x) 
+                x = F.grid_sample(
+                    x[None, None], grid, mode='bilinear', padding_mode='border')[0, 0]
+                x = x.data.cpu().numpy()
+                # ----
+
+                x = np.float32(x)
                 mean_x = np.mean(x)
                 std_x = np.std(x)
 
@@ -178,41 +186,43 @@ class Chaos():
                 center_z, center_y, center_x = D // 2, H // 2, W // 2
                 D, H, W = cfg.pad_shape
                 x = crop(x, (D, H, W), (center_z, center_y, center_x))
- 
+
                 # io.imsave('{}/{}/DICOM_anon/volume_resampled_2.tif'.format(data_root, sample), np.uint16(x))
-                 
+
                 x = (x - mean_x)/std_x
                 x = torch.from_numpy(x)
-                 
-                #----
- 
-                y = [] 
-                images_path = [dir for dir in os.listdir('{}/{}/Ground'.format(data_root, sample)) if 'png' in dir]
+
+                # ----
+
+                y = []
+                images_path = [dir for dir in os.listdir(
+                    '{}/{}/Ground'.format(data_root, sample)) if 'png' in dir]
                 for image_path in images_path:
-                    file = io.imread('{}/{}/Ground/{}'.format(data_root, sample, image_path))
-                    y += [file]  
-                 
-                y = np.array(y) 
-                y = np.int64(y) 
+                    file = io.imread(
+                        '{}/{}/Ground/{}'.format(data_root, sample, image_path))
+                    y += [file]
+
+                y = np.array(y)
+                y = np.int64(y)
 
                 y = torch.from_numpy(y).cuda()
-                y = F.grid_sample(y[None, None].float(), grid, mode='nearest', padding_mode='border')[0, 0]
+                y = F.grid_sample(y[None, None].float(), grid,
+                                  mode='nearest', padding_mode='border')[0, 0]
                 y = y.data.cpu().numpy()
-
 
                 y = np.int64(y)
                 y = crop(y, (D, H, W), (center_z, center_y, center_x))
-                  
-                 
+
                 y = torch.from_numpy(y/255)
-                
+
                 prepare_samples.append(PrepareSample(x, y, sample))
 
         if not os.path.exists(cfg.data_root):
             os.makedirs(cfg.data_root)
 
         with open(cfg.loaded_data_path, 'wb') as handle:
-            pickle.dump(prepare_samples, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump(prepare_samples, handle,
+                        protocol=pickle.HIGHEST_PROTOCOL)
 
     def prepare_data(self, cfg):
         if not os.path.exists(cfg.data_path):
@@ -230,8 +240,9 @@ class Chaos():
         for step_size in cfg.known_to_work.keys():
             for s in samples:
                 if int(s.name) in cfg.known_to_work[step_size]:
-                    working_samples.append(PrepareSample(s.x, s.y, s.name + '_step_size_' + str(step_size), step_size))
-        
+                    working_samples.append(PrepareSample(
+                        s.x, s.y, s.name + '_step_size_' + str(step_size), step_size))
+
         np.random.seed(cfg.trial_id)
         perm = np.random.permutation(len(working_samples))
         tr_length = cfg.training_set_size
@@ -250,7 +261,8 @@ class Chaos():
                 new_samples.append(sample)
 
             with open(cfg.data_path + 'prepared_data_'+datamode+'.pickle', 'wb') as handle:
-                pickle.dump(new_samples, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                pickle.dump(new_samples, handle,
+                            protocol=pickle.HIGHEST_PROTOCOL)
 
             self.create_obj_files(cfg, new_samples, datamode)
         self.create_m_files(cfg)
@@ -274,20 +286,22 @@ class Chaos():
 
             # Voxel to mesh transformation
             y_ = clean_border_pixels(sample.y, step_size=sample.step_size)
-            vertices, faces = voxel2mesh(y_, sample.step_size, torch.tensor(sample.y.shape)[None].float())
+            vertices, faces = voxel2mesh(
+                y_, sample.step_size, torch.tensor(sample.y.shape)[None].float())
 
             vertices = self.center(vertices)
 
             # Save to obj file for meshlab
-            # Points = V x 3 
-            # Points = 1 x V x 3 
-            # Faces =  1 x F x 3 
-            save_to_obj(save_path + 'label_' + sample.name + '.obj', vertices[None], faces[None])
+            # Points = V x 3
+            # Points = 1 x V x 3
+            # Faces =  1 x F x 3
+            save_to_obj(save_path + 'label_' + sample.name +
+                        '.obj', vertices[None], faces[None])
 
     def create_m_files(self, cfg):
         def addLine(outputStr, elem1, elem2, elem3):
             return outputStr + str(elem1) + ' ' + str(elem2) + ' ' + str(elem3) + '; ...\n'
-        
+
         recDir = cfg.data_path + 'reconstructions/'
         if not os.path.exists(recDir):
             os.makedirs(recDir)
@@ -296,7 +310,8 @@ class Chaos():
         folders = os.listdir(dir)
         for folder in folders:
             subDir = dir + '/' + folder
-            files = list(filter(lambda x: x.endswith('.obj'), os.listdir(subDir)))
+            files = list(
+                filter(lambda x: x.endswith('.obj'), os.listdir(subDir)))
             saveDir = cfg.data_path + 'matlab_meshes/' + folder
 
             if not os.path.exists(saveDir):
@@ -307,7 +322,8 @@ class Chaos():
                 for subFolder in subFolders:
                     shutil.rmtree(saveDir+'/'+subFolder)
 
-            print('There are ' + str(len(files)) + ' files to convert for ' + folder)
+            print('There are ' + str(len(files)) +
+                  ' files to convert for ' + folder)
             for i in range(len(files)):
                 print('Convert file ' + str(i))
                 baseName = os.path.splitext(os.path.basename(files[i]))[0]
@@ -318,7 +334,7 @@ class Chaos():
 
                     addFacesHeader = True
                     x = []
-                    y = [] 
+                    y = []
                     z = []
                     line = input.readline()
                     faceCount = 0
@@ -331,7 +347,8 @@ class Chaos():
                             y.append(float(elems[2]))
                             z.append(float(elems[3]))
 
-                            outputContent = addLine(outputContent, elems[1], elems[2], elems[3])
+                            outputContent = addLine(
+                                outputContent, elems[1], elems[2], elems[3])
 
                         elif (elems[0] == 'f'):
                             if (addFacesHeader):
@@ -339,8 +356,9 @@ class Chaos():
                                 outputContent += '], \'faces\', ['
 
                             faceCount += 1
-                            outputContent = addLine(outputContent, elems[1], elems[2], elems[3])
-                        
+                            outputContent = addLine(
+                                outputContent, elems[1], elems[2], elems[3])
+
                         line = input.readline()
 
                 outputContent += '], \'landmarks\', ['
@@ -362,19 +380,21 @@ class Chaos():
 
                 i = z.index(max(z))
                 outputContent = addLine(outputContent, x[i], y[i], z[i])
-                
-                outputContent = addLine(outputContent, mean(x), mean(y), mean(z))
+
+                outputContent = addLine(
+                    outputContent, mean(x), mean(y), mean(z))
 
                 outputContent += ']);\n'
 
                 verticeCount = len(x)
 
-                print('# vertices: ' + str(verticeCount) + ', # faces: ' + str(faceCount) + ' (should have: ' + str(2*(verticeCount-2)) + ')')
+                print('# vertices: ' + str(verticeCount) + ', # faces: ' +
+                      str(faceCount) + ' (should have: ' + str(2*(verticeCount-2)) + ')')
 
                 crtDir = saveDir + '/' + baseName
                 if not os.path.exists(crtDir):
                     os.mkdir(crtDir)
-                
+
                 outputFileName = crtDir + '/' + baseName + '.m'
 
                 with open(outputFileName, 'w') as output:
@@ -387,7 +407,7 @@ class Chaos():
                 numbers.pop(0)
 
                 return torch.FloatTensor(list(map(lambda number: float(number.rstrip('i')), numbers)))
-                
+
         data = {}
         down_sample_shape = cfg.patch_shape
         input_shape = cfg.pad_shape
@@ -410,10 +430,14 @@ class Chaos():
 
                 print(name)
 
-                x = F.interpolate(x[None, None], scale_factor=scale_factor, mode='trilinear')[0, 0]
-                y = F.interpolate(y[None, None].float(), scale_factor=scale_factor, mode='nearest')[0, 0].long()
+                x = F.interpolate(
+                    x[None, None], scale_factor=scale_factor, mode='trilinear')[0, 0]
+                y = F.interpolate(y[None, None].float(
+                ), scale_factor=scale_factor, mode='nearest')[0, 0].long()
 
-                params_path = cfg.data_path+'reconstructions/'+datamode+'/label_'+name+'/output_parameters_degree_'+str(cfg.spharm_degree)+'.txt'
+                params_path = cfg.data_path+'reconstructions/'+datamode+'/label_' + \
+                    name+'/output_parameters_degree_' + \
+                    str(cfg.spharm_degree)+'.txt'
 
                 spharm_coeffs = load_spharm_coeffs_from_file(params_path)
 
@@ -424,16 +448,18 @@ class Chaos():
 
             data[datamode] = ChaosDataset(samples, cfg, datamode)
         print('-end-')
-        data[DataModes.TRAINING_EXTENDED] = ChaosDataset(data[DataModes.TRAINING].data, cfg, DataModes.TRAINING_EXTENDED)
+        data[DataModes.TRAINING_EXTENDED] = ChaosDataset(
+            data[DataModes.TRAINING].data, cfg, DataModes.TRAINING_EXTENDED)
         data[DataModes.VALIDATION] = data[DataModes.TESTING]
         # raise Exception()
         return data
- 
+
     def evaluate(self, target, pred, cfg):
         results = {}
 
         if target.voxel is not None:
-            val_jaccard = jaccard_index(target.voxel, pred.voxel, cfg.num_classes)
+            val_jaccard = jaccard_index(
+                target.voxel, pred.voxel, cfg.num_classes)
             results['jaccard'] = val_jaccard[0]
 
             # inter, union = inter_and_union(target.voxel, pred.voxel)
@@ -450,8 +476,9 @@ class Chaos():
         #     results['chamfer_weighted_symmetric'] = val_chamfer_weighted_symmetric
 
         if target.points is not None:
-            results['chamfer_weighted_symmetric'] = chamfer_distance(target.points, pred.points)[0].item()
-    
+            results['chamfer_weighted_symmetric'] = chamfer_distance(
+                target.points, pred.points)[0].item()
+
         return results
 
     def update_checkpoint(self, best_so_far, new_value):
@@ -465,7 +492,6 @@ class Chaos():
             best_so_far = best_so_far[DataModes.TESTING][key]
             return True if np.mean(new_value) > np.mean(best_so_far) else False
 
-    def center(self, vertices): #TODO needed?
+    def center(self, vertices):  # TODO needed?
         center_of_gravity = torch.mean(vertices, dim=0)
         return vertices-center_of_gravity
- 

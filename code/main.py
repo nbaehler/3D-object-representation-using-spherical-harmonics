@@ -1,40 +1,39 @@
 ''' Dataset '''
 # Command -> nvidia-smi
+from IPython import embed
+from config import load_config
+from utils.utils_common import mkdir
+import wandb
+from utils.utils_common import DataModes
+from torch.utils.data import DataLoader
+import torch.optim as optim
+from shutil import copytree, ignore_patterns
+from data.chaos_spharm import Chaos
+from evaluate import Evaluator
+from train import Trainer
+import numpy as np
+import torch
+import logging
 import os
-GPU_index = "2" # 0, 1, 2, 3
+GPU_index = "2"  # 0, 1, 2, 3
 os.environ["CUDA_VISIBLE_DEVICES"] = GPU_index
 
-import logging
-import torch
-import numpy as np
-from train import Trainer
-from evaluate import Evaluator
 # from data.chaos import Chaos
-from data.chaos_spharm import Chaos
-from shutil import copytree, ignore_patterns
-import torch.optim as optim
-from torch.utils.data import DataLoader
-from utils.utils_common import DataModes
-import wandb
-from IPython import embed 
-from utils.utils_common import mkdir
-
-from config import load_config
-
-
 
 
 logger = logging.getLogger(__name__)
 
- 
+
 def init(cfg):
 
-    save_path = cfg.save_path + cfg.save_dir_prefix + str(cfg.experiment_idx).zfill(3) + '/'
-    
-    mkdir(save_path) 
- 
+    save_path = cfg.save_path + cfg.save_dir_prefix + \
+        str(cfg.experiment_idx).zfill(3) + '/'
+
+    mkdir(save_path)
+
     if cfg.trial_id is None:
-        cfg.trial_id = (len([dir for dir in os.listdir(save_path) if 'trial' in dir]) + 1)
+        cfg.trial_id = (
+            len([dir for dir in os.listdir(save_path) if 'trial' in dir]) + 1)
 
     trial_id = cfg.trial_id
     trial_str = 'trial_' + str(trial_id)
@@ -42,16 +41,18 @@ def init(cfg):
     cfg.data_path = cfg.data_root + trial_str + '/'
 
     if not os.path.isdir(trial_save_path):
-        mkdir(trial_save_path) 
-        copytree(os.getcwd(), trial_save_path + '/source_code', ignore=ignore_patterns('*.git','*.txt','*.tif', '*.pkl', '*.off', '*.so', '*.json','*.jsonl','*.log','*.patch','*.yaml','wandb','run-*'))
-  
+        mkdir(trial_save_path)
+        copytree(os.getcwd(), trial_save_path + '/source_code', ignore=ignore_patterns('*.git', '*.txt', '*.tif',
+                                                                                       '*.pkl', '*.off', '*.so', '*.json', '*.jsonl', '*.log', '*.patch', '*.yaml', 'wandb', 'run-*'))
+
     seed = trial_id
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
-    torch.backends.cudnn.enabled = True  # speeds up the computation 
+    torch.backends.cudnn.enabled = True  # speeds up the computation
 
     return trial_save_path, trial_id
+
 
 def main():
 
@@ -62,9 +63,9 @@ def main():
     # Initialize
     cfg = load_config(exp_id)
     trial_path, trial_id = init(cfg)
- 
+
     print('Experiment ID: {}, Trial ID: {}'.format(cfg.experiment_idx, trial_id))
-    
+
     data_obj = Chaos()
 
     if cfg.mode is 'load':
@@ -85,20 +86,24 @@ def main():
         classifier.cuda()
 
         if cfg.mode is not 'evaluate':
-            wandb.init(name='Experiment_{}/trial_{}'.format(cfg.experiment_idx, trial_id), project="spharm", dir='/home/nbaehler/workspace/ml/')
+            wandb.init(name='Experiment_{}/trial_{}'.format(cfg.experiment_idx,
+                                                            trial_id), project="spharm", dir='/home/nbaehler/workspace/ml/')
 
         print("Initialize optimizer")
-        optimizer = optim.Adam(filter(lambda p: p.requires_grad, classifier.parameters()), lr=cfg.learning_rate)
+        optimizer = optim.Adam(filter(
+            lambda p: p.requires_grad, classifier.parameters()), lr=cfg.learning_rate)
 
-        print("Load data") 
+        print("Load data")
         data = data_obj.quick_load_data(cfg, trial_id)
 
-        loader = DataLoader(data[DataModes.TRAINING_EXTENDED], batch_size=classifier.config.batch_size, shuffle=True)
+        loader = DataLoader(data[DataModes.TRAINING_EXTENDED],
+                            batch_size=classifier.config.batch_size, shuffle=True)
 
         print("Trainset length: {}".format(loader.__len__()))
 
         print("Initialize evaluator")
-        evaluator = Evaluator(classifier, optimizer, data, trial_path, cfg, data_obj)
+        evaluator = Evaluator(classifier, optimizer, data,
+                              trial_path, cfg, data_obj)
 
         if cfg.mode is 'evaluate':
             evaluator.do_complete_evaluations(data_obj, cfg)
@@ -106,8 +111,9 @@ def main():
             print('==> Trial ID: '+str(trial_id))
         else:
             print("Initialize trainer")
-            trainer = Trainer(classifier, loader, optimizer, cfg.numb_of_itrs, cfg.eval_every, trial_path, evaluator)
-        
+            trainer = Trainer(classifier, loader, optimizer,
+                              cfg.numb_of_itrs, cfg.eval_every, trial_path, evaluator)
+
             if cfg.mode is 'pretrained':
                 print("Loading pretrained network")
                 save_path = trial_path + '/best_performance/model.pth'
@@ -122,9 +128,10 @@ def main():
             evaluator.save_incomplete_evaluations()
             print('Successfully trained, evaluate the results')
             print('==> Trial ID: '+str(trial_id))
-    
+
     else:
         print('Invalid mode!')
 
-if __name__ == "__main__": 
+
+if __name__ == "__main__":
     main()

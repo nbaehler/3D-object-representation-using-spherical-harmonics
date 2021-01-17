@@ -2,25 +2,24 @@ import logging
 import torch
 # from torch.utils.tensorboard import SummaryWriter
 from utils.utils_common import DataModes
- 
+
 import numpy as np
-import time 
+import time
 import wandb
 from IPython import embed
 import time
 logger = logging.getLogger(__name__)
 
- 
+
 class Trainer(object):
 
- 
     def training_step(self, data, epoch):
-        # Get the minibatch 
-         
+        # Get the minibatch
+
         self.optimizer.zero_grad()
-        loss, log = self.net.loss(data, epoch) 
+        loss, log = self.net.loss(data, epoch)
         loss.backward()
-        self.optimizer.step()  
+        self.optimizer.step()
         # embed()
 
         return log
@@ -29,24 +28,23 @@ class Trainer(object):
 
         self.net = net
         self.trainloader = trainloader
-        self.optimizer = optimizer 
+        self.optimizer = optimizer
 
         self.numb_of_itrs = numb_of_itrs
         self.eval_every = eval_every
-        self.save_path = save_path 
+        self.save_path = save_path
 
-        self.evaluator = evaluator 
-
+        self.evaluator = evaluator
 
     def train(self, start_iteration=1):
 
         print("Start training...")
- 
+
         self.net = self.net.train()
         iteration = start_iteration
         print_every = 1
 
-        for epoch in range(10000000): # loop over the dataset multiple times
+        for epoch in range(10000000):  # loop over the dataset multiple times
             evaluated = False
             for data in self.trainloader:
 
@@ -70,5 +68,5 @@ class Trainer(object):
                 break
 
             iteration = iteration + 1
-       
+
         print("... end training!")
