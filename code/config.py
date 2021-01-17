@@ -14,8 +14,8 @@ def load_config(exp_id):
 
     # Setup
     # cfg.mode = 'load' #TODO DON'T USE THIS! Needs more than 32 GiB of RAM
-    cfg.mode = 'prepare'  # TODO Needs around 32 GiB of RAM
-    # cfg.mode = 'import_params'
+    # cfg.mode = 'prepare'  # TODO Needs more than 32 GiB of RAM
+    cfg.mode = 'import_params'
 
     # Training
     # cfg.mode = 'train'
