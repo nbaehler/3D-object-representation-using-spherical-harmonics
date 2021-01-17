@@ -31,15 +31,18 @@ class AffineGridGenerator(Function):
         base_grid = theta.new(N, D, H, W, 4)
 
         w_points = (torch.linspace(-1, 1, W) if W > 1 else torch.Tensor([-1]))
-        h_points = (torch.linspace(-1, 1, H) if H > 1 else torch.Tensor([-1])).unsqueeze(-1)
-        d_points = (torch.linspace(-1, 1, D) if D > 1 else torch.Tensor([-1])).unsqueeze(-1).unsqueeze(-1)
+        h_points = (torch.linspace(-1, 1, H) if H >
+                    1 else torch.Tensor([-1])).unsqueeze(-1)
+        d_points = (torch.linspace(-1, 1, D) if D >
+                    1 else torch.Tensor([-1])).unsqueeze(-1).unsqueeze(-1)
 
         base_grid[:, :, :, :, 0] = w_points
         base_grid[:, :, :, :, 1] = h_points
         base_grid[:, :, :, :, 2] = d_points
         base_grid[:, :, :, :, 3] = 1
         ctx.base_grid = base_grid
-        grid = torch.bmm(base_grid.view(N, D * H * W, 4), theta.transpose(1, 2))
+        grid = torch.bmm(base_grid.view(N, D * H * W, 4),
+                         theta.transpose(1, 2))
         grid = grid.view(N, D, H, W, 3)
         return grid
 
