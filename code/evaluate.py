@@ -7,7 +7,7 @@ from skimage import io
 import itertools
 import torch.nn.functional as F
 import os
-import pickle
+import pickle5
 from scipy import ndimage
 from IPython import embed
 import wandb
@@ -170,8 +170,8 @@ class Evaluator(object):
 
     def save_incomplete_evaluations(self):
         with open(self.config.data_path + 'evaluations.pickle', 'wb') as handle:
-            pickle.dump(self.evaluations, handle,
-                        protocol=pickle.HIGHEST_PROTOCOL)
+            pickle5.dump(self.evaluations, handle,
+                         protocol=pickle5.HIGHEST_PROTOCOL)
 
         save_path = self.config.data_path+'evaluations/'
 
@@ -201,7 +201,7 @@ class Evaluator(object):
 
     def do_complete_evaluations(self, data_obj, cfg):
         with open(self.config.data_path + 'evaluations.pickle', 'rb') as handle:
-            evaluations = pickle.load(handle)
+            evaluations = pickle5.load(handle)
 
         save_path = self.config.data_path+'evaluations/'
 

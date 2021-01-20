@@ -17,4 +17,5 @@ __pycache__/
 
 .vscode/settings.json
 execute.sh
-sbatch
+cmds.txt
+slurm*

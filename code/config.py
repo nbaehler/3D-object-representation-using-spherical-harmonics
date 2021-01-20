@@ -22,7 +22,7 @@ def load_config(exp_id):
     # cfg.mode = 'import_params'
 
     # Training
-    cfg.mode = 'train'
+    # cfg.mode = 'train'
     # cfg.mode = 'pretrained'
 
     # Evaluate results

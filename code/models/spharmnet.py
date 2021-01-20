@@ -75,8 +75,8 @@ class SPHarmNet(nn.Module):
         self.fc_layers = nn.Sequential(*fc_layers)
 
         # TODO remove
-        print(self.conv_encoder)
-        print(self.fc_layers)
+        # print(self.conv_encoder)
+        # print(self.fc_layers)
 
     def forward(self, data):
 

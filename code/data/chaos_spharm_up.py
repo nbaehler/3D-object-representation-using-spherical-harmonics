@@ -8,7 +8,7 @@ from utils.utils_common import crop, DataModes, crop_indices, blend, voxel2mesh,
 from torch.utils.data import Dataset
 import torch
 from sklearn.decomposition import PCA
-import pickle
+import pickle5
 import torch.nn.functional as F
 from numpy.linalg import norm
 import itertools as itr
@@ -109,7 +109,7 @@ class Chaos():
         data = {}
         for i, datamode in enumerate([DataModes.TRAINING, DataModes.TESTING]):
             with open(cfg.data_path + 'extended_data_{}_{}.pickle'.format(datamode, "_".join(map(str, down_sample_shape))), 'rb') as handle:
-                samples = pickle.load(handle)
+                samples = pickle5.load(handle)
                 new_samples = self.sample_to_sample_plus(
                     samples, cfg, datamode)
                 data[datamode] = ChaosDataset(new_samples, cfg, datamode)
@@ -221,15 +221,15 @@ class Chaos():
             os.makedirs(cfg.data_root)
 
         with open(cfg.loaded_data_path, 'wb') as handle:
-            pickle.dump(prepare_samples, handle,
-                        protocol=pickle.HIGHEST_PROTOCOL)
+            pickle5.dump(prepare_samples, handle,
+                         protocol=pickle5.HIGHEST_PROTOCOL)
 
     def prepare_data(self, cfg):
         if not os.path.exists(cfg.data_path):
             os.makedirs(cfg.data_path)
 
         with open(cfg.loaded_data_path, 'rb') as handle:
-            samples = pickle.load(handle)
+            samples = pickle5.load(handle)
 
         working_samples = []
 
@@ -272,8 +272,8 @@ class Chaos():
                 new_samples.append(sample)
 
             with open(cfg.data_path + 'prepared_data_{}_{}.pickle'.format(datamode, "_".join(map(str, down_sample_shape))), 'wb') as handle:
-                pickle.dump(new_samples, handle,
-                            protocol=pickle.HIGHEST_PROTOCOL)
+                pickle5.dump(new_samples, handle,
+                             protocol=pickle5.HIGHEST_PROTOCOL)
 
             self.create_obj_files(cfg, new_samples, datamode)
         self.create_m_files(cfg)
@@ -424,7 +424,7 @@ class Chaos():
             samples = []
 
             with open(cfg.data_path + 'prepared_data_'+datamode+'.pickle', 'rb') as handle:
-                prepare_samples = pickle.load(handle)
+                prepare_samples = pickle5.load(handle)
 
             print(datamode)
             print('--')
@@ -445,7 +445,8 @@ class Chaos():
                 samples.append(Sample(x, y, name, spharm_coeffs))
 
             with open(cfg.data_path + 'extended_data.pickle', 'wb') as handle:
-                pickle.dump(samples, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                pickle5.dump(samples, handle,
+                             protocol=pickle5.HIGHEST_PROTOCOL)
 
             data[datamode] = ChaosDataset(samples, cfg, datamode)
         print('-end-')
