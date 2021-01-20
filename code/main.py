@@ -38,7 +38,7 @@ def init(cfg):
     trial_id = cfg.trial_id
     trial_str = 'trial_' + str(trial_id)
     trial_save_path = save_path + trial_str
-    cfg.data_path = cfg.data_root + trial_str + '/'
+    cfg.data_path += trial_str + '/'
 
     if not os.path.isdir(trial_save_path):
         mkdir(trial_save_path)

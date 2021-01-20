@@ -74,6 +74,10 @@ class SPHarmNet(nn.Module):
         self.conv_encoder = nn.Sequential(*down_layers)
         self.fc_layers = nn.Sequential(*fc_layers)
 
+        # TODO remove
+        print(self.conv_encoder)
+        print(self.fc_layers)
+
     def forward(self, data):
 
         x = data['x'].cuda()

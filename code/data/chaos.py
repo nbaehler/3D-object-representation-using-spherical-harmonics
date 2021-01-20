@@ -94,7 +94,7 @@ class Chaos():
     def quick_load_data(self, cfg, trial_id):
         # assert cfg.patch_shape == (64, 256, 256), 'Not supported'
         down_sample_shape = cfg.patch_shape
-        data_root = '/cvlabsrc1/cvlab/datasets_udaranga/datasets/3d/chaos/Train_Sets/CT'
+        data_root = cfg.data_root
         data = {}
         for i, datamode in enumerate([DataModes.TRAINING, DataModes.TESTING]):
             with open(data_root + '/pre_loaded_data_{}_{}_v2.pickle'.format(datamode, "_".join(map(str, down_sample_shape))), 'rb') as handle:
@@ -113,7 +113,7 @@ class Chaos():
          :
         '''
 
-        data_root = '/cvlabsrc1/cvlab/datasets_udaranga/datasets/3d/chaos/Train_Sets/CT'
+        data_root = cfg.data_root
         samples = [dir for dir in os.listdir(data_root)]
 
         pad_shape = (384, 384, 384)

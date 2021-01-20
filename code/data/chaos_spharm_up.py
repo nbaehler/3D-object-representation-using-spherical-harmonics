@@ -120,7 +120,7 @@ class Chaos():
         return data
 
     def load_data(self, cfg):
-        data_root = '/cvlabsrc1/cvlab/datasets_udaranga/datasets/3d/chaos/Train_Sets/CT'
+        data_root = cfg.data_root
         samples = [dir for dir in os.listdir(data_root)]
 
         prepare_samples = []
