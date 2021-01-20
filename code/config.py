@@ -14,11 +14,11 @@ def load_config(exp_id):
     cfg.experiment_idx = exp_id
 
     cfg.trial_id = None  # Use None for generating a new id
-    cfg.trial_id = 91
+    # cfg.trial_id = 91
 
     # Setup
     # cfg.mode = 'load'
-    # cfg.mode = 'prepare'
+    cfg.mode = 'prepare'
     # cfg.mode = 'import_params'
 
     # Training

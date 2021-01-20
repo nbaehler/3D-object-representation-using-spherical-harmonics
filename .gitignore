@@ -16,3 +16,5 @@ __pycache__/
 /SPHARM/scripts/infile
 
 .vscode/settings.json
+execute.sh
+sbatch

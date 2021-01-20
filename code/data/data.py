@@ -8,8 +8,10 @@ import torch.nn.functional as F
 import numpy as np
 from IPython import embed
 
-from pytorch3d.ops import sample_points_from_meshes
-from pytorch3d.structures import Meshes
+# import torch # TODO
+
+# from pytorch3d.ops import sample_points_from_meshes
+# from pytorch3d.structures import Meshes
 
 
 class Sample:
