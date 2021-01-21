@@ -2,20 +2,14 @@ import numpy as np
 from skimage import io
 from data.data import get_item
 
-from utils.metrics import jaccard_index, chamfer_weighted_symmetric, chamfer_directed
-from utils.utils_common import crop, DataModes, crop_indices, blend, voxel2mesh, clean_border_pixels, save_to_obj
+from utils.metrics import jaccard_index,
+from utils.utils_common import crop, DataModes, voxel2mesh, clean_border_pixels, save_to_obj
 
-from torch.utils.data import Dataset
 import torch
-from sklearn.decomposition import PCA
-import pickle5
+import pickle
 import torch.nn.functional as F
-from numpy.linalg import norm
-import itertools as itr
-from scipy import ndimage
 import os
 import shutil
-from IPython import embed
 import pydicom
 from statistics import mean
 
@@ -109,7 +103,7 @@ class Chaos():
         data = {}
         for i, datamode in enumerate([DataModes.TRAINING, DataModes.TESTING]):
             with open(cfg.runs_path + 'extended_data_{}_{}.pickle'.format(datamode, "_".join(map(str, down_sample_shape))), 'rb') as handle:
-                samples = pickle5.load(handle)
+                samples = pickle.load(handle)
                 new_samples = self.sample_to_sample_plus(
                     samples, cfg, datamode)
                 data[datamode] = ChaosDataset(new_samples, cfg, datamode)
@@ -221,15 +215,15 @@ class Chaos():
             os.makedirs(cfg.data_root)
 
         with open(cfg.loaded_data_path, 'wb') as handle:
-            pickle5.dump(prepare_samples, handle,
-                         protocol=pickle5.HIGHEST_PROTOCOL)
+            pickle.dump(prepare_samples, handle,
+                        protocol=pickle.HIGHEST_PROTOCOL)
 
     def prepare_data(self, cfg):
         if not os.path.exists(cfg.runs_path):
             os.makedirs(cfg.runs_path)
 
         with open(cfg.loaded_data_path, 'rb') as handle:
-            samples = pickle5.load(handle)
+            samples = pickle.load(handle)
 
         working_samples = []
 
@@ -272,8 +266,8 @@ class Chaos():
                 new_samples.append(sample)
 
             with open(cfg.runs_path + 'prepared_data_{}_{}.pickle'.format(datamode, "_".join(map(str, down_sample_shape))), 'wb') as handle:
-                pickle5.dump(new_samples, handle,
-                             protocol=pickle5.HIGHEST_PROTOCOL)
+                pickle.dump(new_samples, handle,
+                            protocol=pickle.HIGHEST_PROTOCOL)
 
             self.create_obj_files(cfg, new_samples, datamode)
         self.create_m_files(cfg)
@@ -291,7 +285,7 @@ class Chaos():
                 os.remove(save_path+file)
 
         # Export to other formats
-        print('There are ' + str(len(samples)) + ' files to proccess')
+        print('There are ' + str(len(samples)) + ' files to process')
         for sample in samples:
             print('Process file ' + sample.name)
 
@@ -424,7 +418,7 @@ class Chaos():
             samples = []
 
             with open(cfg.runs_path + 'prepared_data_'+datamode+'.pickle', 'rb') as handle:
-                prepare_samples = pickle5.load(handle)
+                prepare_samples = pickle.load(handle)
 
             print(datamode)
             print('--')
@@ -445,8 +439,8 @@ class Chaos():
                 samples.append(Sample(x, y, name, spharm_coeffs))
 
             with open(cfg.runs_path + 'extended_data.pickle', 'wb') as handle:
-                pickle5.dump(samples, handle,
-                             protocol=pickle5.HIGHEST_PROTOCOL)
+                pickle.dump(samples, handle,
+                            protocol=pickle.HIGHEST_PROTOCOL)
 
             data[datamode] = ChaosDataset(samples, cfg, datamode)
         print('-end-')

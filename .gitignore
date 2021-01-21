@@ -16,6 +16,7 @@ __pycache__/
 /SPHARM/scripts/infile
 
 .vscode/settings.json
-execute.sh
+execute_cpu.sh
+execute_gpu.sh
 cmds.txt
 slurm*
