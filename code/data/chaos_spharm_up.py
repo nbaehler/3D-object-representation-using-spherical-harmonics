@@ -2,20 +2,14 @@ import numpy as np
 from skimage import io
 from data.data import get_item
 
-from utils.metrics import jaccard_index, chamfer_weighted_symmetric, chamfer_directed
-from utils.utils_common import crop, DataModes, crop_indices, blend, voxel2mesh, clean_border_pixels, save_to_obj
+from utils.metrics import jaccard_index
+from utils.utils_common import crop, DataModes, voxel2mesh, clean_border_pixels, save_to_obj
 
-from torch.utils.data import Dataset
 import torch
-from sklearn.decomposition import PCA
 import pickle5
 import torch.nn.functional as F
-from numpy.linalg import norm
-import itertools as itr
-from scipy import ndimage
 import os
 import shutil
-from IPython import embed
 import pydicom
 from statistics import mean
 
@@ -80,7 +74,7 @@ class Chaos():
 
             y = (y > 0).long()
 
-            center = tuple([d // 2 for d in x.shape])
+            center = tuple(d // 2 for d in x.shape)
             x = crop(x, cfg.patch_shape, center)
             y = crop(y, cfg.patch_shape, center)
 
@@ -107,7 +101,7 @@ class Chaos():
         # assert cfg.patch_shape == (64, 256, 256), 'Not supported'
         down_sample_shape = cfg.patch_shape
         data = {}
-        for i, datamode in enumerate([DataModes.TRAINING, DataModes.TESTING]):
+        for datamode in [DataModes.TRAINING, DataModes.TESTING]:
             with open(cfg.runs_path + 'extended_data_{}_{}.pickle'.format(datamode, "_".join(map(str, down_sample_shape))), 'rb') as handle:
                 samples = pickle5.load(handle)
                 new_samples = self.sample_to_sample_plus(
@@ -158,7 +152,7 @@ class Chaos():
                 D = int(D * d_resolution)
                 H = int(H * h_resolution)
                 W = int(W * w_resolution)
-                # we resample such that 1 pixel is 1 mm in x,y and z directiions
+                # we resample such that 1 pixel is 1 mm in x,y and z directions
                 base_grid = torch.zeros((1, D, H, W, 3))
                 w_points = (torch.linspace(-1, 1, W) if W >
                             1 else torch.Tensor([-1]))
@@ -315,10 +309,10 @@ class Chaos():
         if not os.path.exists(recDir):
             os.makedirs(recDir)
 
-        dir = cfg.runs_path + 'label_meshes'
-        folders = os.listdir(dir)
+        directory = cfg.runs_path + 'label_meshes'
+        folders = os.listdir(directory)
         for folder in folders:
-            subDir = dir + '/' + folder
+            subDir = directory + '/' + folder
             files = list(
                 filter(lambda x: x.endswith('.obj'), os.listdir(subDir)))
             saveDir = cfg.runs_path + 'matlab_meshes/' + folder
@@ -419,7 +413,7 @@ class Chaos():
 
         data = {}
 
-        for i, datamode in enumerate([DataModes.TRAINING, DataModes.TESTING]):
+        for datamode in [DataModes.TRAINING, DataModes.TESTING]:
 
             samples = []
 
@@ -490,6 +484,5 @@ class Chaos():
 
         if best_so_far is None:
             return True
-        else:
-            best_so_far = best_so_far[DataModes.TESTING][key]
-            return True if np.mean(new_value) > np.mean(best_so_far) else False
+        best_so_far = best_so_far[DataModes.TESTING][key]
+        return np.mean(new_value) > np.mean(best_so_far)
