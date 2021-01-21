@@ -17,8 +17,8 @@ def load_config(exp_id):
     cfg.trial_id = 1
 
     # Setup
-    # cfg.mode = 'load'
-    cfg.mode = 'prepare'
+    cfg.mode = 'load'
+    # cfg.mode = 'prepare'
     # cfg.mode = 'import_params'
 
     # Training

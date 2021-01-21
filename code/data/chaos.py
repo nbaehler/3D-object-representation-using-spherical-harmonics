@@ -11,7 +11,7 @@ from utils.utils_common import crop, DataModes, crop_indices, blend
 from torch.utils.data import Dataset
 import torch
 from sklearn.decomposition import PCA
-import pickle5
+import pickle
 import torch.nn.functional as F
 from numpy.linalg import norm
 import itertools as itr
@@ -98,7 +98,7 @@ class Chaos():
         data = {}
         for i, datamode in enumerate([DataModes.TRAINING, DataModes.TESTING]):
             with open(data_root + '/pre_loaded_data_{}_{}_v2.pickle'.format(datamode, "_".join(map(str, down_sample_shape))), 'rb') as handle:
-                samples = pickle5.load(handle)
+                samples = pickle.load(handle)
                 new_samples = self.sample_to_sample_plus(
                     samples, cfg, datamode)
                 data[datamode] = ChaosDataset(new_samples, cfg, datamode)
@@ -245,8 +245,8 @@ class Chaos():
                 # break
 
             with open(data_root + '/pre_loaded_data_{}_{}_v2.pickle'.format(datamode, "_".join(map(str, down_sample_shape))), 'wb') as handle:
-                pickle5.dump(samples, handle,
-                             protocol=pickle5.HIGHEST_PROTOCOL)
+                pickle.dump(samples, handle,
+                            protocol=pickle.HIGHEST_PROTOCOL)
 
             data[datamode] = ChaosDataset(samples, cfg, datamode)
         print('-end-')
