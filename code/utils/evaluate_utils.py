@@ -1,6 +1,6 @@
 import torch
 
-from ctypes import *
+from ctypes import POINTER, c_int, c_float, c_size_t
 import ctypes
 import numpy as np
 
@@ -23,7 +23,7 @@ def cuda_get_rasterize():
 __cuda_rasterize = cuda_get_rasterize()
 
 # convenient python wrapper for __cuda_sum
-# it does all job with types convertation
+# it does all job with types conversion
 # from python ones to C++ ones
 
 

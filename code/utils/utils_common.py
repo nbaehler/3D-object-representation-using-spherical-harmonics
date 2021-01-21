@@ -23,28 +23,26 @@ class DataModes:
     ALL = 'all'
 
     def __init__(self):
-        dataset_splits = [DataModes.TRAINING, DataModes.TRAINING_EXTENDED,
-                          DataModes.VALIDATION, DataModes.TESTING]
+        pass
+        # dataset_splits = [DataModes.TRAINING, DataModes.TRAINING_EXTENDED,
+        #                   DataModes.VALIDATION, DataModes.TESTING]
 
 
 def write_lines(path, lines):
-    f = open(path, 'w')
-    for line in lines:
-        f.write(line + '\n')
-    f.close()
+    with open(path, 'w') as f:
+        for line in lines:
+            f.write(line + '\n')
 
 
 def append_line(path, line):
-    f = open(path, 'a')
-    f.write(line + '\n')
-    f.close()
+    with open(path, 'a') as f:
+        f.write(line + '\n')
 
 
 def pytorch_count_params(model):
     "count number trainable parameters in a pytorch model"
-    total_params = sum(reduce(lambda a, b: a*b, x.size())
-                       for x in model.parameters())
-    return total_params
+    return sum(reduce(lambda a, b: a*b, x.size())
+               for x in model.parameters())
 
 
 def mkdir(path):
@@ -56,7 +54,7 @@ def blend(img, mask):
 
     img = cv2.cvtColor(np.uint8(img * 255), cv2.COLOR_GRAY2RGB)
 
-    rows, cols, d = img.shape
+    rows, cols, _ = img.shape
     pre_synaptic = np.zeros((rows, cols, 1))
     pre_synaptic[mask == 1] = 1
 
@@ -69,14 +67,12 @@ def blend(img, mask):
     color_mask = np.dstack((synpase, pre_synaptic, post_synaptic))
     color_mask = np.uint8(color_mask*255)
 
-    blended = cv2.addWeighted(img, 0.8, color_mask, 0.2, 0)
-    return blended
+    return cv2.addWeighted(img, 0.8, color_mask, 0.2, 0)
 
 
 def crop_slices(shape1, shape2):
-    slices = [slice((sh1 - sh2) // 2, (sh1 - sh2) // 2 + sh2)
-              for sh1, sh2 in zip(shape1, shape2)]
-    return slices
+    return [slice((sh1 - sh2) // 2, (sh1 - sh2) // 2 + sh2)
+            for sh1, sh2 in zip(shape1, shape2)]
 
 
 def crop_and_merge(tensor1, tensor2):
@@ -118,7 +114,7 @@ def crop(image, patch_shape, center, mode='constant'):
         image.shape, patch_shape, center)
     patch = image[slices]
 
-    if needs_padding and mode is not 'nopadding':
+    if needs_padding and mode != 'nopadding':
         if isinstance(image, np.ndarray):
             if len(pad_width) < patch.ndim:
                 pad_width.append((0, 0))
@@ -126,8 +122,8 @@ def crop(image, patch_shape, center, mode='constant'):
         elif isinstance(image, torch.Tensor):
             assert len(pad_width) == patch.dim(), "not supported"
             # [int(element) for element in np.flip(np.array(pad_width).flatten())]
-            patch = F.pad(patch, tuple([int(element) for element in np.flip(
-                np.array(pad_width), axis=0).flatten()]), mode=mode)
+            patch = F.pad(patch, tuple(int(element) for element in np.flip(
+                np.array(pad_width), axis=0).flatten()), mode=mode)
 
     return patch
 
@@ -142,8 +138,7 @@ def blend(img, labels, num_classes):
         masks += torch.ones_like(img) * \
             colors[cls] * (labels == cls).float()[:, :, :, None]
 
-    overlay = np.uint8((255 * img * 0.8 + masks * 0.2).data.cpu().numpy())
-    return overlay
+    return np.uint8((255 * img * 0.8 + masks * 0.2).data.cpu().numpy())
 
 
 def blend_cpu(img, labels, num_classes):
@@ -156,8 +151,7 @@ def blend_cpu(img, labels, num_classes):
         masks += torch.ones_like(img) * \
             colors[cls] * (labels == cls).float()[:, :, :, None]
 
-    overlay = np.uint8((255 * img * 0.8 + masks * 0.2).data.numpy())
-    return overlay
+    return np.uint8((255 * img * 0.8 + masks * 0.2).data.numpy())
 
 
 def stn_quaternion_rotations(params):
@@ -234,19 +228,19 @@ def save_to_obj(filepath, vertices, faces, normals=None):
     with open(filepath, 'w') as file:
         vals = ''
 
-        for i, vertice in enumerate(vertices[0]):
+        for vertice in vertices[0]:
             vertice = vertice.data.cpu().numpy()
-            vals += 'v ' + ' '.join([str(val) for val in vertice]) + '\n'
+            vals += 'v ' + ' '.join(str(val) for val in vertice) + '\n'
 
         if normals is not None:
-            for i, normal in enumerate(normals[0]):
+            for normal in normals[0]:
                 normal = normal.data.cpu().numpy()
-                vals += 'vn ' + ' '.join([str(val) for val in normal]) + '\n'
+                vals += 'vn ' + ' '.join(str(val) for val in normal) + '\n'
 
         if len(faces) > 0:
-            for i, face in enumerate(faces[0]):
+            for face in faces[0]:
                 face = face.data.cpu().numpy()
-                vals += 'f ' + ' '.join([str(val+1) for val in face]) + '\n'
+                vals += 'f ' + ' '.join(str(val+1) for val in face) + '\n'
 
         file.write(vals)
 

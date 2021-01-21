@@ -23,7 +23,7 @@ class AffineGridGenerator(Function):
     @staticmethod
     def forward(ctx, theta, size):
         assert type(size) == torch.Size
-        N, C, D, H, W = size
+        N, _, D, H, W = size
         ctx.size = size
 
         #ctx.is_cuda = True
@@ -49,7 +49,7 @@ class AffineGridGenerator(Function):
     @staticmethod
     @once_differentiable
     def backward(ctx, grad_grid):
-        N, C, D, H, W = ctx.size
+        N, _, D, H, W = ctx.size
         assert grad_grid.size() == torch.Size([N, D, H, W, 3])
         base_grid = ctx.base_grid
         grad_theta = torch.bmm(
