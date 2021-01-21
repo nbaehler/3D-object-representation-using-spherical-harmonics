@@ -9,7 +9,7 @@ import numpy as np
 
 def cuda_get_rasterize():
     dll = ctypes.CDLL(
-        '/home/nbaehler/workspace/3D-object-representation-using-spherical-harmonics/code/kernel.so', mode=ctypes.RTLD_GLOBAL)
+        '/home/nbaehler/workspace/spharm/code/kernel.so', mode=ctypes.RTLD_GLOBAL)
 
     func = dll.cuda_rasterize
     func.argtypes = [POINTER(c_int), POINTER(c_float), POINTER(c_int), POINTER(

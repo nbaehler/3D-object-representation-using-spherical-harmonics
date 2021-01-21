@@ -14,7 +14,7 @@ def load_config(exp_id):
     cfg.experiment_idx = exp_id
 
     cfg.trial_id = None  # Use None for generating a new id
-    # cfg.trial_id = 1
+    cfg.trial_id = 1
 
     # Setup
     # cfg.mode = 'load'
@@ -29,11 +29,11 @@ def load_config(exp_id):
     # cfg.mode = 'evaluate'
 
     ''' Save at '''
-    cfg.root_path = '/home/nbaehler/workspace/3D-object-representation-using-spherical-harmonics/'
+    cfg.root_path = '/home/nbaehler/workspace/spharm/'
     cfg.save_path = cfg.root_path + 'experiments/'
     cfg.save_dir_prefix = 'Experiment_'
     cfg.data_root = cfg.root_path + 'data/Train_Sets/CT'
-    cfg.data_path = cfg.root_path + 'runs/'
+    cfg.runs_path = cfg.root_path + 'runs/'
     cfg.loaded_data_path = cfg.root_path + 'data/loaded_data.pickle'
 
     # sample names

@@ -169,11 +169,11 @@ class Evaluator(object):
         return dataSamples
 
     def save_incomplete_evaluations(self):
-        with open(self.config.data_path + 'evaluations.pickle', 'wb') as handle:
+        with open(self.config.runs_path + 'evaluations.pickle', 'wb') as handle:
             pickle5.dump(self.evaluations, handle,
                          protocol=pickle5.HIGHEST_PROTOCOL)
 
-        save_path = self.config.data_path+'evaluations/'
+        save_path = self.config.runs_path+'evaluations/'
 
         # Delete evaluations folder if it already exists
         if os.path.exists(save_path):
@@ -183,7 +183,7 @@ class Evaluator(object):
         os.makedirs(save_path)
 
         for eval in self.evaluations:
-            save_path = self.config.data_path + \
+            save_path = self.config.runs_path + \
                 'evaluations/'+str(eval.iteration)+'/'
 
             # Create folders for the output
@@ -200,10 +200,10 @@ class Evaluator(object):
                 f.close()
 
     def do_complete_evaluations(self, data_obj, cfg):
-        with open(self.config.data_path + 'evaluations.pickle', 'rb') as handle:
+        with open(self.config.runs_path + 'evaluations.pickle', 'rb') as handle:
             evaluations = pickle5.load(handle)
 
-        save_path = self.config.data_path+'evaluations/'
+        save_path = self.config.runs_path+'evaluations/'
 
         chamfer = open(save_path + 'chamfer_distance.dat', 'w')
         IoU = open(save_path + 'intersection_over_union.dat', 'w')

@@ -38,12 +38,12 @@ def init(cfg):
     trial_id = cfg.trial_id
     trial_str = 'trial_' + str(trial_id)
     trial_save_path = save_path + trial_str
-    cfg.data_path += trial_str + '/'
+    cfg.runs_path += trial_str + '/'
 
     if not os.path.isdir(trial_save_path):
         mkdir(trial_save_path)
         copytree(os.getcwd()+'/code/', trial_save_path + '/source_code', ignore=ignore_patterns('*.git', '*.txt', '*.tif',
-                                                                                                '*.pkl', '*.off', '*.pyc', '*.json', '*.jsonl', '*.log', '*.patch', '*.yaml', 'wandb', 'run-*'))
+                                                                                                '*.pkl', '*.off', '__pycache__', '*.json', '*.jsonl', '*.log', '*.patch', '*.yaml', 'wandb', 'run-*'))
 
     seed = trial_id
     np.random.seed(seed)
@@ -88,7 +88,7 @@ def main():
 
         if cfg.mode != 'evaluate':
             wandb.init(name='Experiment_{}/trial_{}'.format(cfg.experiment_idx, trial_id),
-                       project="spharm", dir='/home/nbaehler/workspace/3D-object-representation-using-spherical-harmonics/experiments/')
+                       project="spharm", dir='/home/nbaehler/workspace/spharm/experiments/')
 
         print("Initialize optimizer")
         optimizer = optim.Adam(filter(
