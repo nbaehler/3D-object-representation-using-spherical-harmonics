@@ -5,7 +5,7 @@ from IPython import embed
 import time
 
 
-def stn_all_ratations_with_all_theta(angles, inverse=False):
+def stn_all_rotations_with_all_theta(angles, inverse=False):
     # 3,2
     angles_x, angles_y, angles_z = torch.chunk(angles, 3)
 
@@ -23,16 +23,12 @@ def stn_all_ratations_with_all_theta(angles, inverse=False):
     theta_z[0, 0:2] = angles_z * torch.FloatTensor([[1, -1]])
     theta_z[1, 0:2] = angles_z.index_select(1, torch.LongTensor([1, 0]))
 
-    if inverse:
-        theta = theta_z @ theta_x @ theta_y
-    else:
-        theta = theta_y @ theta_x @ theta_z
-
+    theta = theta_z @ theta_x @ theta_y if inverse else theta_y @ theta_x @ theta_z
     return theta, theta_x, theta_y, theta_z
 
 
-def stn_all_ratations(params, inverse=False):
-    theta, theta_x, theta_y, theta_z = stn_all_ratations_with_all_theta(
+def stn_all_rotations(params, inverse=False):
+    theta, _, _, _ = stn_all_rotations_with_all_theta(
         params, inverse)
     return theta
 
@@ -90,9 +86,7 @@ def rotate(angles):
     params = torch.Tensor([torch.cos(angle_x), torch.sin(angle_x), torch.cos(
         angle_y), torch.sin(angle_y), torch.cos(angle_z), torch.sin(angle_z)])
     params = params.view(3, 2)
-    theta = stn_all_ratations(params)
-
-    return theta
+    return stn_all_rotations(params)
 
 
 def mirror(axes):

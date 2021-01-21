@@ -5,13 +5,12 @@ import torch.nn.functional as F
 
 
 def rmse_all(target, pred, num_classes):
-    rmse = []
-    pred = pred
-    target = target
-
-    for cls in range(1, num_classes):
-        rmse.append(torch.sqrt(torch.mean(
-            (pred[:, cls] - target[:, cls])**2)).data.cpu().numpy())
+    rmse = [
+        torch.sqrt(torch.mean((pred[:, cls] - target[:, cls]) ** 2))
+        .data.cpu()
+        .numpy()
+        for cls in range(1, num_classes)
+    ]
 
     return np.array(rmse)
 
@@ -70,8 +69,7 @@ def chamfer_symmetric(A, B):
     loss1, _ = torch.min(diff, dim=1)
     loss2, _ = torch.min(diff, dim=2)
 
-    loss = torch.sum(loss1) + torch.sum(loss2)
-    return loss
+    return torch.sum(loss1) + torch.sum(loss2)
 
 
 def chamfer_weighted_symmetric(A, B):
@@ -85,8 +83,7 @@ def chamfer_weighted_symmetric(A, B):
 
     loss1, _ = torch.min(diff, dim=1)
     loss2, _ = torch.min(diff, dim=2)
-    loss = torch.mean(loss1) + torch.mean(loss2)
-    return loss
+    return torch.mean(loss1) + torch.mean(loss2)
 
 
 def chamfer_weighted_symmetric_with_dtf(A, B, B_dtf):
@@ -103,8 +100,7 @@ def chamfer_weighted_symmetric_with_dtf(A, B, B_dtf):
     loss2 = F.grid_sample(B_dtf, A_, mode='bilinear',
                           padding_mode='border', align_corners=True)
 
-    loss = torch.mean(loss1) + torch.mean(loss2)
-    return loss
+    return torch.mean(loss1) + torch.mean(loss2)
 
 
 def rmse(target, pred):
@@ -114,6 +110,5 @@ def rmse(target, pred):
 def angle_error(target, pred):
     target = target.data.cpu().numpy()
     pred = pred.data.cpu().numpy()
-    angle = np.arccos(np.dot(target, pred) /
-                      (np.linalg.norm(target) * np.linalg.norm(pred)))
-    return angle
+    return np.arccos(np.dot(target, pred) /
+                     (np.linalg.norm(target) * np.linalg.norm(pred)))

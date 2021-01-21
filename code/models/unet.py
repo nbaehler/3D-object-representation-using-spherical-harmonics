@@ -92,9 +92,7 @@ class UNet(nn.Module):
             x = crop_and_merge(down_output, x)
             x = unet_layer(x)
 
-        pred = self.final_layer(x)
-
-        return pred
+        return self.final_layer(x)
 
     def loss(self, data, epoch):
 

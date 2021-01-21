@@ -44,7 +44,7 @@ class Trainer(object):
         iteration = start_iteration
         print_every = 1
 
-        for epoch in range(10000000):  # loop over the dataset multiple times
+        for _ in range(10000000):  # loop over the dataset multiple times
             evaluated = False
             for data in self.trainloader:
 
@@ -52,9 +52,8 @@ class Trainer(object):
                 loss = self.training_step(data, start_iteration)
 
             if iteration % print_every == 0:
-                log_vals = {}
-                for key, value in loss.items():
-                    log_vals[key] = value / print_every
+                log_vals = {key: value / print_every for key,
+                            value in loss.items()}
                 log_vals['iteration'] = iteration
                 wandb.log(log_vals)
 

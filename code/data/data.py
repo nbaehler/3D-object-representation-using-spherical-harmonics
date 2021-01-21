@@ -56,44 +56,51 @@ def get_item(item, mode, config):
     spharm_coeffs = item.spharm_coeffs
 
     # augmentation done only during training TODO comment -> training loss will reduce
-    # if mode == DataModes.TRAINING_EXTENDED:  # if training do augmentation
-    #     if torch.rand(1)[0] > 0.5:
-    #         x = x.permute([0, 1, 3, 2])
-    #         y = y.permute([0, 2, 1])
+    if mode == DataModes.TRAINING_EXTENDED:  # if training do augmentation
+        #     if torch.rand(1)[0] > 0.5:
+        #         x = x.permute([0, 1, 3, 2])
+        #         y = y.permute([0, 2, 1])
 
-    #     if torch.rand(1)[0] > 0.5:
-    #         x = torch.flip(x, dims=[1])
-    #         y = torch.flip(y, dims=[0])
+        #     if torch.rand(1)[0] > 0.5:
+        #         x = torch.flip(x, dims=[1])
+        #         y = torch.flip(y, dims=[0])
 
-    #     if torch.rand(1)[0] > 0.5:
-    #         x = torch.flip(x, dims=[2])
-    #         y = torch.flip(y, dims=[1])
+        #     if torch.rand(1)[0] > 0.5:
+        #         x = torch.flip(x, dims=[2])
+        #         y = torch.flip(y, dims=[1])
 
-    #     if torch.rand(1)[0] > 0.5:
-    #         x = torch.flip(x, dims=[3])
-    #         y = torch.flip(y, dims=[2])
+        #     if torch.rand(1)[0] > 0.5:
+        #         x = torch.flip(x, dims=[3])
+        #         y = torch.flip(y, dims=[2])
 
-    #     orientation = torch.tensor([0, -1, 0]).float()
-    #     new_orientation = (torch.rand(3) - 0.5) * 2 * np.pi
-    #     # new_orientation[2] = new_orientation[2] * 0 # no rotation outside x-y plane
-    #     new_orientation = F.normalize(new_orientation, dim=0)
-    #     q = orientation + new_orientation
-    #     q = F.normalize(q, dim=0)
-    #     theta_rotate = stns.stn_quaternion_rotations(q)
+        #     orientation = torch.tensor([0, -1, 0]).float()
+        #     new_orientation = (torch.rand(3) - 0.5) * 2 * np.pi
+        #     # new_orientation[2] = new_orientation[2] * 0 # no rotation outside x-y plane
+        #     new_orientation = F.normalize(new_orientation, dim=0)
+        #     q = orientation + new_orientation
+        #     q = F.normalize(q, dim=0)
+        #     theta_rotate = stns.stn_quaternion_rotations(q)
 
-    #     shift = torch.tensor([d / (D // 2) for d, D in zip(2 * (torch.rand(3) - 0.5) * config.augmentation_shift_range, y.shape)])
-    #     theta_shift = stns.shift(shift)
+        #     shift = torch.tensor([d / (D // 2) for d, D in zip(2 * (torch.rand(3) - 0.5) * config.augmentation_shift_range, y.shape)])
+        #     theta_shift = stns.shift(shift)
 
-    #     f = 0.1
-    #     scale = 1.0 - 2 * f *(torch.rand(1) - 0.5)
-    #     theta_scale = stns.scale(scale)
+        #     f = 0.1
+        #     scale = 1.0 - 2 * f *(torch.rand(1) - 0.5)
+        #     theta_scale = stns.scale(scale)
 
-    #     theta = theta_rotate @ theta_shift @ theta_scale
+        #     theta = theta_rotate @ theta_shift @ theta_scale
 
-    #     # x, y = stns.transform(theta, x, y)
-    #     x, y = stns.transform(theta, x, y)
+        #     # x, y = stns.transform(theta, x, y)
+        #     x, y = stns.transform(theta, x, y)
 
-    #     # not necessary during training
+        #     # not necessary during training
+
+        return {
+            'name': name,
+            'x': x,
+            'y_voxels': y,
+            'y_spharm_coeffs': spharm_coeffs
+        }
 
     vertices_mc_all = []
     faces_mc_all = []
@@ -107,24 +114,16 @@ def get_item(item, mode, config):
             vertices_mc_all += [vertices_mc]
             faces_mc_all += [faces_mc]
 
-    if mode == DataModes.TRAINING_EXTENDED:
-        return {
-            'name': name,
-            'x': x,
-            'y_voxels': y,
-            'y_spharm_coeffs': spharm_coeffs
-        }
-    else:
-        meshes = Meshes(vertices_mc_all, faces_mc_all)
-        surface_points_all = [sample_points_from_meshes(
-            meshes, config.samples_for_chamfer)]
+    meshes = Meshes(vertices_mc_all, faces_mc_all)
+    surface_points_all = [sample_points_from_meshes(
+        meshes, config.samples_for_chamfer)]
 
-        return {
-            'name': name,
-            'x': x,
-            'y_voxels': y,
-            'y_spharm_coeffs': spharm_coeffs,
-            'vertices_mc': vertices_mc_all,
-            'faces_mc': faces_mc_all,
-            'surface_points': surface_points_all
-        }
+    return {
+        'name': name,
+        'x': x,
+        'y_voxels': y,
+        'y_spharm_coeffs': spharm_coeffs,
+        'vertices_mc': vertices_mc_all,
+        'faces_mc': faces_mc_all,
+        'surface_points': surface_points_all
+    }

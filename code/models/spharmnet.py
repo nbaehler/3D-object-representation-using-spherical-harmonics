@@ -39,8 +39,8 @@ class SPHarmNet(nn.Module):
         self.config = config
 
         max_pool = nn.MaxPool3d(2) if config.ndims == 3 else nn.MaxPool2d(2)
-        ConvLayer = nn.Conv3d if config.ndims == 3 else nn.Conv2d
-        ConvTransposeLayer = nn.ConvTranspose3d if config.ndims == 3 else nn.ConvTranspose2d
+        # ConvLayer = nn.Conv3d if config.ndims == 3 else nn.Conv2d
+        # ConvTransposeLayer = nn.ConvTranspose3d if config.ndims == 3 else nn.ConvTranspose2d
 
         out_shape = np.array(config.patch_shape)
         '''  Down layers '''
@@ -87,9 +87,7 @@ class SPHarmNet(nn.Module):
         _, C, D, H, W = latent.shape
         latent = latent.view(-1, C*D*H*W)
 
-        coeffs = self.fc_layers(latent)
-
-        return coeffs
+        return self.fc_layers(latent)
 
     def loss(self, data, epoch):
 

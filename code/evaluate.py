@@ -1,5 +1,4 @@
-from utils.utils_common import DataModes, mkdir, blend, crop, crop_indices, blend_cpu, append_line, write_lines
-from utils.utils_common import save_to_obj
+from utils.utils_common import DataModes, mkdir, blend, crop, crop_indices, blend_cpu, append_line, write_lines, save_to_obj
 from torch.utils.data import DataLoader
 import numpy as np
 import torch
@@ -48,7 +47,7 @@ class Structure(object):
 
 def write_to_wandb(writer, epoch, split, performances, num_classes):
     log_vals = {}
-    for key, value in performances[split].items():
+    for key, _ in performances[split].items():
         log_vals[split + '_' + key +
                  '/mean'] = np.mean(performances[split][key])
         for i in range(1, num_classes):
@@ -56,7 +55,7 @@ def write_to_wandb(writer, epoch, split, performances, num_classes):
                      str(i)] = np.mean(performances[split][key][:, i - 1])
     try:
         wandb.log(log_vals)
-    except:
+    except Exception:
         print('')
 
 
@@ -83,8 +82,8 @@ class Evaluator(object):
 
     def evaluate(self, epoch, writer=None, backup_writer=None):
         # self.net = self.net.eval()
-        performances = {}
-        predictions = {}
+        # performances = {}
+        # predictions = {}
 
         for split in [DataModes.TESTING]:
             dataloader = DataLoader(
@@ -148,7 +147,7 @@ class Evaluator(object):
 
         dataSamples = []
 
-        for i, data in enumerate(dataloader):
+        for data in dataloader:
 
             x, y, y_hat_spharm_coeffs = self.predict(data, self.config)
             dataSamples.append(DataSample(
@@ -169,11 +168,13 @@ class Evaluator(object):
         return dataSamples
 
     def save_incomplete_evaluations(self):
-        with open(self.config.runs_path + 'evaluations.pickle', 'wb') as handle:
+        eval_str = 'evaluations'
+
+        with open(self.config.runs_path + eval_str + '.pickle', 'wb') as handle:
             pickle.dump(self.evaluations, handle,
                         protocol=pickle.HIGHEST_PROTOCOL)
 
-        save_path = self.config.runs_path+'evaluations/'
+        save_path = self.config.runs_path+eval_str+'/'
 
         # Delete evaluations folder if it already exists
         if os.path.exists(save_path):
@@ -182,22 +183,20 @@ class Evaluator(object):
         # Create the folder
         os.makedirs(save_path)
 
-        for eval in self.evaluations:
+        for eval_str in self.evaluations:
             save_path = self.config.runs_path + \
-                'evaluations/'+str(eval.iteration)+'/'
+                eval_str+'/'+str(eval_str.iteration)+'/'
 
             # Create folders for the output
             os.makedirs(save_path)
 
-            for i, data in enumerate(eval.data):
-                f = open(save_path+data.name+'.txt', 'w')
+            for data in eval_str.data:
+                with open(save_path+data.name+'.txt', 'w') as f:
+                    params = data.y_hat_spharm_coeffs[0]
 
-                params = data.y_hat_spharm_coeffs[0]
-
-                for j in range(len(params)):
-                    delimiter = '\n' if j % 6 == 5 else ' '
-                    f.write(str(params[j].item())+delimiter)
-                f.close()
+                    for j in range(len(params)):
+                        delimiter = '\n' if j % 6 == 5 else ' '
+                        f.write(str(params[j].item())+delimiter)
 
     def do_complete_evaluations(self, data_obj, cfg):
         with open(self.config.runs_path + 'evaluations.pickle', 'rb') as handle:
@@ -206,134 +205,134 @@ class Evaluator(object):
         save_path = self.config.runs_path+'evaluations/'
 
         chamfer = open(save_path + 'chamfer_distance.dat', 'w')
-        IoU = open(save_path + 'intersection_over_union.dat', 'w')
+        with open(save_path + 'intersection_over_union.dat', 'w') as IoU:
+            for eval in evaluations:
+                print('evaluation at iteration '+str(eval.iteration))
+                dist = 0
+                ratio = 0
 
-        for eval in evaluations:
-            print('evaluation at iteration '+str(eval.iteration))
-            dist = 0
-            ratio = 0
+                for data in eval.data:
+                    current_path = save_path+'/'+str(eval.iteration)+'/'
+                    files = os.listdir(current_path)
+                    p = re.compile(data.name+r'(.*).STL')
+                    mesh_file = [f for f in files if p.match(f)][0]
 
-            for i, data in enumerate(eval.data):
-                current_path = save_path+'/'+str(eval.iteration)+'/'
-                files = os.listdir(current_path)
-                p = re.compile(data.name+r'(.*).STL')
-                mesh_file = [f for f in files if p.match(f)][0]
+                    # For now only one in the list TODO
+                    data.y.mesh = data.y.mesh[0]
+                    data.y.points = data.y.points[0][0][0]
+                    data.y.voxel = data.y.voxel[0][0].cpu()
 
-                # For now only one in the list TODO
-                data.y.mesh = data.y.mesh[0]
-                data.y.points = data.y.points[0][0][0]
-                data.y.voxel = data.y.voxel[0][0].cpu()
+                    mesh = load_mesh(current_path+mesh_file)
 
-                mesh = load_mesh(current_path+mesh_file)
+                    vertices = mesh.vertices.tolist()
+                    faces = mesh.faces.tolist()
+                    pred_meshes = {'vertices': vertices,
+                                   'faces': faces, 'normals': None}
 
-                vertices = mesh.vertices.tolist()
-                faces = mesh.faces.tolist()
-                pred_meshes = {'vertices': vertices,
-                               'faces': faces, 'normals': None}
+                    vertices = torch.Tensor([vertices])
+                    faces = torch.Tensor([faces])
 
-                vertices = torch.Tensor([vertices])
-                faces = torch.Tensor([faces])
+                    mesh = Meshes(vertices, faces)
+                    pred_points = sample_points_from_meshes(
+                        mesh, cfg.samples_for_chamfer)
 
-                mesh = Meshes(vertices, faces)
-                pred_points = sample_points_from_meshes(
-                    mesh, cfg.samples_for_chamfer)
+                    vertices = vertices[0]
+                    faces = faces[0]
 
-                vertices = vertices[0]
-                faces = faces[0]
+                    grid_size = data.y.voxel.shape
 
-                grid_size = data.y.voxel.shape
+                    v, f = prepare_run(vertices, faces, grid_size=grid_size)
+                    # Need to keep this trick!
+                    voxels = run_rasterize(v * 0, f, grid_size=grid_size)
+                    voxels = run_rasterize(v, f, grid_size=grid_size)
 
-                v, f = prepare_run(vertices, faces, grid_size=grid_size)
-                voxels = run_rasterize(v * 0, f, grid_size=grid_size)
-                voxels = run_rasterize(v, f, grid_size=grid_size)
+                    pred_voxels = torch.from_numpy(voxels/255).int()
 
-                pred_voxels = torch.from_numpy(voxels/255).int()
+                    # , voxel_rasterized=pred_voxels) TODO
+                    y_hat = Structure(mesh=pred_meshes,
+                                      voxel=pred_voxels, points=pred_points)
 
-                # , voxel_rasterized=pred_voxels) TODO
-                y_hat = Structure(mesh=pred_meshes,
-                                  voxel=pred_voxels, points=pred_points)
+                    results = data_obj.evaluate(data.y, y_hat, cfg)
 
-                results = data_obj.evaluate(data.y, y_hat, cfg)
+                    # --- Plots TODO
 
-                # --- Plots TODO
+                    import matplotlib.pyplot as plt
+                    import numpy as np
+                    fig = plt.figure()
+                    ax = fig.gca(projection='3d')
+                    ax.voxels(pred_voxels)
 
-                import matplotlib.pyplot as plt
-                import numpy as np
-                fig = plt.figure()
-                ax = fig.gca(projection='3d')
-                ax.voxels(pred_voxels)
+                    plt.savefig(current_path+data.name+'_voxel_pred.png')
 
-                plt.savefig(current_path+data.name+'_voxel_pred.png')
+                    plt.close(fig)
 
-                plt.close(fig)
+                    fig = plt.figure()
+                    ax = fig.gca(projection='3d')
+                    ax.voxels(data.y.voxel)
 
-                fig = plt.figure()
-                ax = fig.gca(projection='3d')
-                ax.voxels(data.y.voxel)
+                    plt.savefig(current_path+data.name+'_voxel_gt.png')
 
-                plt.savefig(current_path+data.name+'_voxel_gt.png')
+                    plt.close(fig)
 
-                plt.close(fig)
+                    # --- Point clouds TODO
 
-                # --- Point clouds TODO
+                    xs = [p[0].item() for p in pred_points[0]]
+                    ys = [p[1].item() for p in pred_points[0]]
+                    zs = [p[2].item() for p in pred_points[0]]
 
-                xs = [p[0].item() for p in pred_points[0]]
-                ys = [p[1].item() for p in pred_points[0]]
-                zs = [p[2].item() for p in pred_points[0]]
+                    fig = plt.figure()
+                    ax = fig.gca(projection='3d')
+                    ax.scatter(xs, ys, zs)
 
-                fig = plt.figure()
-                ax = fig.gca(projection='3d')
-                ax.scatter(xs, ys, zs)
+                    plt.savefig(current_path+data.name+'_points_pred.png')
 
-                plt.savefig(current_path+data.name+'_points_pred.png')
+                    plt.close(fig)
 
-                plt.close(fig)
+                    xs = [p[0].item() for p in data.y.points[0]]
+                    ys = [p[1].item() for p in data.y.points[0]]
+                    zs = [p[2].item() for p in data.y.points[0]]
 
-                xs = [p[0].item() for p in data.y.points[0]]
-                ys = [p[1].item() for p in data.y.points[0]]
-                zs = [p[2].item() for p in data.y.points[0]]
+                    fig = plt.figure()
+                    ax = fig.gca(projection='3d')
+                    ax.scatter(xs, ys, zs)
 
-                fig = plt.figure()
-                ax = fig.gca(projection='3d')
-                ax.scatter(xs, ys, zs)
+                    plt.savefig(current_path+data.name+'_points_gt.png')
 
-                plt.savefig(current_path+data.name+'_points_gt.png')
+                    plt.close(fig)
 
-                plt.close(fig)
+                    # --- Meshes TODO
 
-                # --- Meshes TODO
+                    mesh = form_mesh(
+                        np.array(pred_meshes['vertices']), np.array(pred_meshes['faces']))
+                    save_mesh(current_path+data.name+'_mesh_pred.obj', mesh)
 
-                mesh = form_mesh(
-                    np.array(pred_meshes['vertices']), np.array(pred_meshes['faces']))
-                save_mesh(current_path+data.name+'_mesh_pred.obj', mesh)
+                    verts = [vert.tolist()
+                             for vert in data.y.mesh['vertices'][0][0]]
+                    fcs = [fc.tolist() for fc in data.y.mesh['faces'][0][0]]
 
-                verts = [vert.tolist()
-                         for vert in data.y.mesh['vertices'][0][0]]
-                fcs = [fc.tolist() for fc in data.y.mesh['faces'][0][0]]
+                    mesh = form_mesh(np.array(verts), np.array(fcs))
+                    save_mesh(current_path+data.name+'_mesh_gt.obj', mesh)
 
-                mesh = form_mesh(np.array(verts), np.array(fcs))
-                save_mesh(current_path+data.name+'_mesh_gt.obj', mesh)
+                    # ---
 
-                # ---
+                    dist += results['chamfer_weighted_symmetric']
+                    ratio += results['jaccard']
 
-                dist += results['chamfer_weighted_symmetric']
-                ratio += results['jaccard']
+                chamfer.write(str(eval.iteration)+' ' +
+                              str(dist/len(eval.data))+'\n')
+                IoU.write(str(eval.iteration)+' ' +
+                          str(ratio/len(eval.data))+'\n')
 
-            chamfer.write(str(eval.iteration)+' ' +
-                          str(dist/len(eval.data))+'\n')
-            IoU.write(str(eval.iteration)+' '+str(ratio/len(eval.data))+'\n')
-
-        chamfer.close()
-        IoU.close()
+            chamfer.close()
 
     def save_results(self, predictions, epoch, performance, save_path, mode):
 
         xs = []
         ys_voxels = []
-        ys_points = []
+        # ys_points = []
         y_hats_voxels = []
-        y_hats_points = []
-        y_hats_meshes = []
+        # y_hats_points = []
+        # y_hats_meshes = []
 
         for i, data in enumerate(predictions):
             x, y, y_hat = data
@@ -363,7 +362,7 @@ class Evaluator(object):
                 # io.imsave(save_path + '/voxels/y_hat_'+str(i)+'.tif', np.uint8(y_hat.voxel[0].data.cpu().numpy()))
 
         if performance is not None:
-            for key, value in performance.items():
+            for key, _ in performance.items():
                 performance_mean = np.mean(performance[key], axis=0)
                 summary = ('{}: ' + ', '.join(['{:.8f}' for _ in range(
                     self.config.num_classes-1)])).format(epoch, *performance_mean)
@@ -371,8 +370,16 @@ class Evaluator(object):
                             key + '.txt', summary)
                 print(summary)
 
-                all_results = [('{}: ' + ', '.join(['{:.8f}' for _ in range(self.config.num_classes-1)])
-                                ).format(*((i+1,) + tuple(vals))) for i, vals in enumerate(performance[key])]
+                all_results = [
+                    (
+                        '{}: '
+                        + ', '.join(
+                            '{:.8f}' for _ in range(self.config.num_classes - 1)
+                        )
+                    ).format(*((i + 1,) + tuple(vals)))
+                    for i, vals in enumerate(performance[key])
+                ]
+
                 write_lines(save_path + mode + 'all_results_' +
                             key + '.txt', all_results)
 

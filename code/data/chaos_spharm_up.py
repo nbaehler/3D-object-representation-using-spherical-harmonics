@@ -2,14 +2,20 @@ import numpy as np
 from skimage import io
 from data.data import get_item
 
-from utils.metrics import jaccard_index
-from utils.utils_common import crop, DataModes, voxel2mesh, clean_border_pixels, save_to_obj
+from utils.metrics import jaccard_index, chamfer_weighted_symmetric, chamfer_directed
+from utils.utils_common import crop, DataModes, crop_indices, blend, voxel2mesh, clean_border_pixels, save_to_obj
 
+from torch.utils.data import Dataset
 import torch
+from sklearn.decomposition import PCA
 import pickle
 import torch.nn.functional as F
+from numpy.linalg import norm
+import itertools as itr
+from scipy import ndimage
 import os
 import shutil
+from IPython import embed
 import pydicom
 from statistics import mean
 
@@ -285,7 +291,7 @@ class Chaos():
                 os.remove(save_path+file)
 
         # Export to other formats
-        print('There are ' + str(len(samples)) + ' files to process')
+        print('There are ' + str(len(samples)) + ' files to proccess')
         for sample in samples:
             print('Process file ' + sample.name)
 
