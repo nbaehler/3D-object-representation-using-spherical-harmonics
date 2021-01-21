@@ -168,7 +168,7 @@ class Chaos():
 
                 x = torch.from_numpy(x).cuda()
                 x = F.grid_sample(
-                    x[None, None], grid, mode='bilinear', padding_mode='border')[0, 0]
+                    x[None, None], grid, mode='bilinear', padding_mode='border', align_corners=True)[0, 0]
                 x = x.data.cpu().numpy()
                 # ----
 
@@ -201,7 +201,7 @@ class Chaos():
 
                 y = torch.from_numpy(y).cuda()
                 y = F.grid_sample(y[None, None].float(), grid,
-                                  mode='nearest', padding_mode='border')[0, 0]
+                                  mode='nearest', padding_mode='border', align_corners=True)[0, 0]
                 y = y.data.cpu().numpy()
 
                 y = np.int64(y)
