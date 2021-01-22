@@ -127,7 +127,7 @@ def main():
             trainer.train(start_iteration=epoch)
             evaluator.save_incomplete_evaluations()
             print('Successfully trained, evaluate the results')
-        print('==> Trial ID: '+str(trial_id))
+        print(message)
     else:
         print('Invalid mode!')
 
