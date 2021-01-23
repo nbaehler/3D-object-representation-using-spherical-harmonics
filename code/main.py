@@ -1,5 +1,4 @@
 ''' Dataset '''
-# Command -> nvidia-smi
 from IPython import embed
 from config import load_config
 from utils.utils_common import mkdir
@@ -8,18 +7,16 @@ from utils.utils_common import DataModes
 from torch.utils.data import DataLoader
 import torch.optim as optim
 from shutil import copytree, ignore_patterns
-from data.chaos_spharm import Chaos
 from evaluate import Evaluator
 from train import Trainer
 import numpy as np
 import torch
 import logging
 import os
+
+# Command -> nvidia-smi
 GPU_index = "0"  # 0, 1, 2, 3
 os.environ["CUDA_VISIBLE_DEVICES"] = GPU_index
-
-# from data.chaos import Chaos
-
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +52,7 @@ def init(cfg):
 
 
 def main():
+    from data.chaos_spharm import Chaos
 
     #from models.unet import UNet as network
     from models.spharmnet import SPHarmNet as network
