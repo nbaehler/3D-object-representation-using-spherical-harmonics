@@ -19,7 +19,7 @@ from IPython import embed
 import pydicom
 from statistics import mean
 
-# from pytorch3d.loss.chamfer import chamfer_distance # TODO
+from pytorch3d.loss.chamfer import chamfer_distance
 
 
 class PrepareSample:
