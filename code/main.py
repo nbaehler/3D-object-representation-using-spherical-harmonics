@@ -88,7 +88,7 @@ def main():
 
         if cfg.mode != 'evaluate':
             wandb.init(name='Experiment_{}/trial_{}'.format(cfg.experiment_idx, trial_id),
-                       project="spharm", dir='/home/nicolas/workspace/ba6/spharm-project/experiments/')
+                       project="spharm", dir='/home/nicolas/workspace/ma/misc/spharm-project/experiments/')
 
         print("Initialize optimizer")
         optimizer = optim.Adam(filter(
