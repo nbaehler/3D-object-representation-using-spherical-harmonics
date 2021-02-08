@@ -4,10 +4,8 @@ __pycache__/
 
 /experiments/
 /scripts/
-/results/
 /test/
 /data/
-/notes/
 /runs/
 /SPHARM/SPHARM v1.4 Documentation.pdf
 /SPHARM/data/
@@ -16,3 +14,8 @@ __pycache__/
 /SPHARM/scripts/infile
 
 .vscode/settings.json
+execute_cpu.sh
+execute_gpu.sh
+cmds.txt
+slurm*
+delete_slurms

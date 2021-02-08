@@ -15,7 +15,7 @@ import numpy as np
 import torch
 import logging
 import os
-GPU_index = "2"  # 0, 1, 2, 3
+GPU_index = "0"  # 0, 1, 2, 3
 os.environ["CUDA_VISIBLE_DEVICES"] = GPU_index
 
 # from data.chaos import Chaos
