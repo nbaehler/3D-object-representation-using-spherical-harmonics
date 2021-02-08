@@ -1,5 +1,5 @@
 disp('INSIDE RUN INVERSE.');
-workspace = '/home/nicolas/workspace/ba6/spharm-project/runs/trial_2/evaluations';
+workspace = '/home/nicolas/workspace/ma/misc/spharm-project/runs/trial_2/evaluations';
 files = dir(workspace);
 dirFlags = [files.isdir];
 iterations = {files(dirFlags).name};
