@@ -1,5 +1,4 @@
 ''' Dataset '''
-# Command -> nvidia-smi
 from IPython import embed
 from config import load_config
 from utils.utils_common import mkdir
@@ -8,17 +7,22 @@ from utils.utils_common import DataModes
 from torch.utils.data import DataLoader
 import torch.optim as optim
 from shutil import copytree, ignore_patterns
-from data.chaos_spharm import Chaos
 from evaluate import Evaluator
 from train import Trainer
 import numpy as np
 import torch
 import logging
 import os
+
+from models.spharmnet import SPHarmNet as network
+from data.chaos_spharm import Chaos
+# from data.chaos import Chaos
+#from models.unet import UNet as network
+
+
+# Command -> nvidia-smi
 GPU_index = "0"  # 0, 1, 2, 3
 os.environ["CUDA_VISIBLE_DEVICES"] = GPU_index
-
-# from data.chaos import Chaos
 
 
 logger = logging.getLogger(__name__)
@@ -38,12 +42,12 @@ def init(cfg):
     trial_id = cfg.trial_id
     trial_str = 'trial_' + str(trial_id)
     trial_save_path = save_path + trial_str
-    cfg.data_path = cfg.data_root + trial_str + '/'
+    cfg.runs_path += trial_str + '/'
 
     if not os.path.isdir(trial_save_path):
         mkdir(trial_save_path)
-        copytree(os.getcwd(), trial_save_path + '/source_code', ignore=ignore_patterns('*.git', '*.txt', '*.tif',
-                                                                                       '*.pkl', '*.off', '*.so', '*.json', '*.jsonl', '*.log', '*.patch', '*.yaml', 'wandb', 'run-*'))
+        copytree(os.getcwd()+'/code/', trial_save_path + '/source_code', ignore=ignore_patterns('*.git', '*.txt', '*.tif',
+                                                                                                '*.pkl', '*.off', '*.so', '*.json', '*.jsonl', '*.log', '*.patch', '*.yaml', 'wandb', 'run-*'))
 
     seed = trial_id
     np.random.seed(seed)
@@ -55,9 +59,6 @@ def init(cfg):
 
 
 def main():
-
-    #from models.unet import UNet as network
-    from models.spharmnet import SPHarmNet as network
     exp_id = 1
 
     # Initialize
@@ -86,8 +87,8 @@ def main():
         classifier.cuda()
 
         if cfg.mode is not 'evaluate':
-            wandb.init(name='Experiment_{}/trial_{}'.format(cfg.experiment_idx,
-                                                            trial_id), project="spharm", dir='/home/nbaehler/workspace/ml/')
+            wandb.init(name='Experiment_{}/trial_{}'.format(cfg.experiment_idx, trial_id),
+                       project="spharm", dir='/home/nbaehler/workspace/spharm/experiments/')
 
         print("Initialize optimizer")
         optimizer = optim.Adam(filter(

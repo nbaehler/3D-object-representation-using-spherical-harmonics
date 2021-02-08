@@ -13,27 +13,28 @@ def load_config(exp_id):
     ''' Experiment '''
     cfg.experiment_idx = exp_id
 
-    cfg.trial_id = None  # Use None for generating a new id
+    # cfg.trial_id = None  # Use None for generating a new id
     cfg.trial_id = 1
 
     # Setup
     # cfg.mode = 'load'
-    # cfg.mode = 'prepare'
+    cfg.mode = 'prepare'
     # cfg.mode = 'import_params'
 
     # Training
-    cfg.mode = 'train'
+    # cfg.mode = 'train'
     # cfg.mode = 'pretrained'
 
     # Evaluate results
     # cfg.mode = 'evaluate'
 
     ''' Save at '''
-    cfg.save_path = '/home/nbaehler/workspace/ml/experiments/'
+    cfg.root_path = '/home/nbaehler/workspace/spharm/'
+    cfg.save_path = cfg.root_path + 'experiments/'
     cfg.save_dir_prefix = 'Experiment_'
-    cfg.data_root = '/cvlabdata2/cvlab/datasets_nicolas/chaos/ml/'
-    cfg.data_path = None
-    cfg.loaded_data_path = cfg.data_root + 'loaded_data.pickle'
+    cfg.data_root = cfg.root_path + 'data/Train_Sets/CT'
+    cfg.runs_path = cfg.root_path + 'runs/'
+    cfg.loaded_data_path = cfg.root_path + 'data/loaded_data.pickle'
 
     # sample names
     # [1,10,14,16,18,19,2,21,22,23,24,25,26,27,28,29,30,5,6,8] <- 20 in total

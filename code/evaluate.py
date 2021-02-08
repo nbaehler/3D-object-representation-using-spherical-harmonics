@@ -14,9 +14,9 @@ import wandb
 # from utils import stns
 
 import re
-from pymesh import load_mesh, save_mesh, form_mesh
-from pytorch3d.ops import sample_points_from_meshes
-from pytorch3d.structures import Meshes
+# from pymesh import load_mesh, save_mesh, form_mesh #TODO
+# from pytorch3d.ops import sample_points_from_meshes
+# from pytorch3d.structures import Meshes
 from utils.evaluate_utils import prepare_run, run_rasterize
 import shutil
 

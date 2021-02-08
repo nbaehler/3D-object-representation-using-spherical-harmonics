@@ -19,7 +19,7 @@ from IPython import embed
 import pydicom
 from statistics import mean
 
-from pytorch3d.loss.chamfer import chamfer_distance
+# from pytorch3d.loss.chamfer import chamfer_distance #TODO
 
 
 class PrepareSample:
@@ -108,7 +108,7 @@ class Chaos():
         down_sample_shape = cfg.patch_shape
         data = {}
         for i, datamode in enumerate([DataModes.TRAINING, DataModes.TESTING]):
-            with open(cfg.data_path + 'extended_data_{}_{}.pickle'.format(datamode, "_".join(map(str, down_sample_shape))), 'rb') as handle:
+            with open(cfg.runs_path + 'extended_data_{}_{}.pickle'.format(datamode, "_".join(map(str, down_sample_shape))), 'rb') as handle:
                 samples = pickle.load(handle)
                 new_samples = self.sample_to_sample_plus(
                     samples, cfg, datamode)
@@ -120,7 +120,7 @@ class Chaos():
         return data
 
     def load_data(self, cfg):
-        data_root = '/cvlabsrc1/cvlab/datasets_udaranga/datasets/3d/chaos/Train_Sets/CT'
+        data_root = cfg.data_root
         samples = [dir for dir in os.listdir(data_root)]
 
         prepare_samples = []
@@ -158,7 +158,7 @@ class Chaos():
                 D = int(D * d_resolution)
                 H = int(H * h_resolution)
                 W = int(W * w_resolution)
-                # we resample such that 1 pixel is 1 mm in x,y and z directiions
+                # we resample such that 1 pixel is 1 mm in x,y and z directions
                 base_grid = torch.zeros((1, D, H, W, 3))
                 w_points = (torch.linspace(-1, 1, W) if W >
                             1 else torch.Tensor([-1]))
@@ -225,8 +225,8 @@ class Chaos():
                         protocol=pickle.HIGHEST_PROTOCOL)
 
     def prepare_data(self, cfg):
-        if not os.path.exists(cfg.data_path):
-            os.makedirs(cfg.data_path)
+        if not os.path.exists(cfg.runs_path):
+            os.makedirs(cfg.runs_path)
 
         with open(cfg.loaded_data_path, 'rb') as handle:
             samples = pickle.load(handle)
@@ -260,7 +260,7 @@ class Chaos():
                 print(sample.name)
                 new_samples.append(sample)
 
-            with open(cfg.data_path + 'prepared_data_'+datamode+'.pickle', 'wb') as handle:
+            with open(cfg.runs_path + 'prepared_data_'+datamode+'.pickle', 'wb') as handle:
                 pickle.dump(new_samples, handle,
                             protocol=pickle.HIGHEST_PROTOCOL)
 
@@ -268,7 +268,7 @@ class Chaos():
         self.create_m_files(cfg)
 
     def create_obj_files(self, cfg, samples, datamode):
-        save_path = cfg.data_path+'label_meshes/'+datamode+'/'
+        save_path = cfg.runs_path+'label_meshes/'+datamode+'/'
 
         # Create folders for the output
         if not os.path.exists(save_path):
@@ -280,7 +280,7 @@ class Chaos():
                 os.remove(save_path+file)
 
         # Export to other formats
-        print('There are ' + str(len(samples)) + ' files to proccess')
+        print('There are ' + str(len(samples)) + ' files to process')
         for sample in samples:
             print('Process file ' + sample.name)
 
@@ -302,17 +302,17 @@ class Chaos():
         def addLine(outputStr, elem1, elem2, elem3):
             return outputStr + str(elem1) + ' ' + str(elem2) + ' ' + str(elem3) + '; ...\n'
 
-        recDir = cfg.data_path + 'reconstructions/'
+        recDir = cfg.runs_path + 'reconstructions/'
         if not os.path.exists(recDir):
             os.makedirs(recDir)
 
-        dir = cfg.data_path + 'label_meshes'
+        dir = cfg.runs_path + 'label_meshes'
         folders = os.listdir(dir)
         for folder in folders:
             subDir = dir + '/' + folder
             files = list(
                 filter(lambda x: x.endswith('.obj'), os.listdir(subDir)))
-            saveDir = cfg.data_path + 'matlab_meshes/' + folder
+            saveDir = cfg.runs_path + 'matlab_meshes/' + folder
 
             if not os.path.exists(saveDir):
                 os.makedirs(saveDir)
@@ -417,7 +417,7 @@ class Chaos():
 
             samples = []
 
-            with open(cfg.data_path + 'prepared_data_'+datamode+'.pickle', 'rb') as handle:
+            with open(cfg.runs_path + 'prepared_data_'+datamode+'.pickle', 'rb') as handle:
                 prepare_samples = pickle.load(handle)
 
             print(datamode)
@@ -435,7 +435,7 @@ class Chaos():
                 y = F.interpolate(y[None, None].float(
                 ), scale_factor=scale_factor, mode='nearest')[0, 0].long()
 
-                params_path = cfg.data_path+'reconstructions/'+datamode+'/label_' + \
+                params_path = cfg.runs_path+'reconstructions/'+datamode+'/label_' + \
                     name+'/output_parameters_degree_' + \
                     str(cfg.spharm_degree)+'.txt'
 
@@ -443,7 +443,7 @@ class Chaos():
 
                 samples.append(Sample(x, y, name, spharm_coeffs))
 
-            with open(cfg.data_path + 'extended_data_{}_{}.pickle'.format(datamode, "_".join(map(str, down_sample_shape))), 'wb') as handle:
+            with open(cfg.runs_path + 'extended_data_{}_{}.pickle'.format(datamode, "_".join(map(str, down_sample_shape))), 'wb') as handle:
                 pickle.dump(samples, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
             data[datamode] = ChaosDataset(samples, cfg, datamode)
