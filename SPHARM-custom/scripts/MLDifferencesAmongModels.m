@@ -85,7 +85,7 @@ function [currentDir] = MLDifferencesAmongModels(currentDir, referenceModelSelec
             referenceFaces = spharmFaces;
             numModelVertices = size(referenceVertices, 1);
             numModelFaces = size(referenceFaces, 1);
-            centroid = mean(referenceVertices); %TODO really?
+            % centroid = mean(referenceVertices); %TODO really?
         case 'average' % calculate average model to use as comparison
             % first calculate average fvec model
             for i = 1:n
@@ -258,18 +258,13 @@ function [currentDir] = MLDifferencesAmongModels(currentDir, referenceModelSelec
         end
 
         new_name = names{i};
-        % This writes a matlab file format that can be used in DisplayDifferenceSurfaces.m
         new_name = new_name(1:end - 4);
-        mat_name = sprintf('%smod.mat', new_name);
-        save(fullfile(currentDir, mat_name), ...
-            'fvec', 'vertices', 'faces', 'dg', 'meshsize', 'spharmVertices', 'spharmFaces', ...
-            'vertexValues', 'faceValues');
-
-        % new_name = new_name(1:end - 4); %TODO really?
-        % %     mat_name = sprintf('%smod.mat',new_name);
-        % %     save(fullfile(currentDir,mat_name), ...
-        % %         'fvec', 'vertices', 'faces', 'dg', 'meshsize', 'spharmVertices', 'spharmFaces', ...
-        % %         'vertexValues', 'faceValues');
+%         % This writes a matlab file format that can be used in
+%         DisplayDifferenceSurfaces.m  %TODO really?
+%         mat_name = sprintf('%smod.mat', new_name);
+%         save(fullfile(currentDir, mat_name), ...
+%             'fvec', 'vertices', 'faces', 'dg', 'meshsize', 'spharmVertices', 'spharmFaces', ...
+%             'vertexValues', 'faceValues');
 
         % output surface in Amira format
         surfName = sprintf('%smod', new_name);
