@@ -33,7 +33,7 @@ for f = 3 : length(folders)
 
     % x, smooth (bool)
     % y, degree
-    AUTOMLMakeTemplate(crtDir, 0, degree, inputFile, smoothFile);
+    AUTOMLMakeTemplate(crtDir, 1, degree, inputFile, smoothFile);
 
     inputFile = strcat(baseName,num2str(degree),'_0_des',ext);
 
