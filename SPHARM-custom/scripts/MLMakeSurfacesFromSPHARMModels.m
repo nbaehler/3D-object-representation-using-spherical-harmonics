@@ -57,9 +57,13 @@ function [currentDir] = MLMakeSurfacesFromSPHARMModels(currentDir, x, y)
         % specified by input meshsize.
         if (meshsize == 0)
             meshsize = []; suffix = '_orig'; meshsize{1} = sph_verts; meshsize{2} = faces;
-        elseif (meshsize > 0)
+        end
+
+        if (meshsize > 0)
             suffix = ['_grid' int2str(meshsize)];
-        else %(meshsize < 0)
+        end
+
+        if (meshsize < 0)
             suffix = ['_ico' int2str((-1 * meshsize))];
         end
 
