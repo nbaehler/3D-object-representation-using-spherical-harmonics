@@ -3,6 +3,7 @@ from utils import stns
 
 import torch
 import torch.nn.functional as F
+
 # from utils import stns
 # from utils.utils_mesh import voxel2mesh, clean_border_pixels
 import numpy as np
@@ -17,7 +18,7 @@ class Sample:
     def __init__(self, x, y, spharm_coeffs):
         self.x = x
         self.y = y
-        #self.atlas = atlas
+        # self.atlas = atlas
         self.spharm_coeffs = spharm_coeffs
 
 
@@ -33,17 +34,20 @@ class SamplePlus:
 
 
 class DatasetAndSupport(object):
+    def quick_load_data(self, patch_shape):
+        raise NotImplementedError
 
-    def quick_load_data(self, patch_shape): raise NotImplementedError
+    def load_data(self, patch_shape):
+        raise NotImplementedError
 
-    def load_data(self, patch_shape): raise NotImplementedError
+    def evaluate(self, target, pred, cfg):
+        raise NotImplementedError
 
-    def evaluate(self, target, pred, cfg): raise NotImplementedError
+    def save_results(self, target, pred, cfg):
+        raise NotImplementedError
 
-    def save_results(self, target, pred, cfg): raise NotImplementedError
-
-    def update_checkpoint(
-        self, best_so_far, new_value): raise NotImplementedError
+    def update_checkpoint(self, best_so_far, new_value):
+        raise NotImplementedError
 
 
 def get_item(item, mode, config):
@@ -94,12 +98,7 @@ def get_item(item, mode, config):
 
         #     # not necessary during training
 
-        return {
-            'name': name,
-            'x': x,
-            'y_voxels': y,
-            'y_spharm_coeffs': spharm_coeffs
-        }
+        return {"name": name, "x": x, "y_voxels": y, "y_spharm_coeffs": spharm_coeffs}
 
     vertices_mc_all = []
     faces_mc_all = []
@@ -118,11 +117,11 @@ def get_item(item, mode, config):
         meshes, config.samples_for_chamfer)]
 
     return {
-        'name': name,
-        'x': x,
-        'y_voxels': y,
-        'y_spharm_coeffs': spharm_coeffs,
-        'vertices_mc': vertices_mc_all,
-        'faces_mc': faces_mc_all,
-        'surface_points': surface_points_all
+        "name": name,
+        "x": x,
+        "y_voxels": y,
+        "y_spharm_coeffs": spharm_coeffs,
+        "vertices_mc": vertices_mc_all,
+        "faces_mc": faces_mc_all,
+        "surface_points": surface_points_all,
     }

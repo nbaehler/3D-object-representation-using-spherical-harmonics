@@ -18,7 +18,8 @@ def stn_all_rotations_with_all_theta(angles, inverse=False):
 
     theta_y[0, 0:3:2] = angles_y
     theta_y[2, 0:3:2] = angles_y.index_select(
-        1, torch.LongTensor([1, 0])) * torch.FloatTensor([[-1, 1]])
+        1, torch.LongTensor([1, 0])
+    ) * torch.FloatTensor([[-1, 1]])
 
     theta_z[0, 0:2] = angles_z * torch.FloatTensor([[1, -1]])
     theta_z[1, 0:2] = angles_z.index_select(1, torch.LongTensor([1, 0]))
@@ -28,8 +29,7 @@ def stn_all_rotations_with_all_theta(angles, inverse=False):
 
 
 def stn_all_rotations(params, inverse=False):
-    theta, _, _, _ = stn_all_rotations_with_all_theta(
-        params, inverse)
+    theta, _, _, _ = stn_all_rotations_with_all_theta(params, inverse)
     return theta
 
 
@@ -83,8 +83,16 @@ def scale(param):
 
 def rotate(angles):
     angle_x, angle_y, angle_z = angles
-    params = torch.Tensor([torch.cos(angle_x), torch.sin(angle_x), torch.cos(
-        angle_y), torch.sin(angle_y), torch.cos(angle_z), torch.sin(angle_z)])
+    params = torch.Tensor(
+        [
+            torch.cos(angle_x),
+            torch.sin(angle_x),
+            torch.cos(angle_y),
+            torch.sin(angle_y),
+            torch.cos(angle_z),
+            torch.sin(angle_z),
+        ]
+    )
     params = params.view(3, 2)
     return stn_all_rotations(params)
 
@@ -110,21 +118,33 @@ def shift(axes):
 def transform(theta, x, y=None, w=None, w2=None):
     theta = theta[0:3, :].view(-1, 3, 4)
     grid = affine_3d_grid_generator.affine_grid(
-        theta, x[None].shape, align_corners=True)
-    if x.device.type == 'cuda':
+        theta, x[None].shape, align_corners=True
+    )
+    if x.device.type == "cuda":
         grid = grid.cuda()
-    x = F.grid_sample(x[None], grid, mode='bilinear',
-                      padding_mode='zeros', align_corners=False)[0]
+    x = F.grid_sample(
+        x[None], grid, mode="bilinear", padding_mode="zeros", align_corners=False
+    )[0]
     if y is not None:
-        y = F.grid_sample(y[None, None].float(), grid, mode='nearest',
-                          padding_mode='zeros', align_corners=False).long()[0, 0]
+        y = F.grid_sample(
+            y[None, None].float(),
+            grid,
+            mode="nearest",
+            padding_mode="zeros",
+            align_corners=False,
+        ).long()[0, 0]
     else:
         return x
     if w is not None:
-        w = F.grid_sample(w[None, None].float(), grid, mode='nearest',
-                          padding_mode='zeros', align_corners=False).long()[0, 0]
+        w = F.grid_sample(
+            w[None, None].float(),
+            grid,
+            mode="nearest",
+            padding_mode="zeros",
+            align_corners=False,
+        ).long()[0, 0]
         return x, y, w
     else:
         return x, y
     # if w2 is not None:
-        # w2 = F.grid_sample(w2[None, None].float(), grid, mode='nearest', padding_mode='zeros').long()[0, 0]
+    # w2 = F.grid_sample(w2[None, None].float(), grid, mode='nearest', padding_mode='zeros').long()[0, 0]

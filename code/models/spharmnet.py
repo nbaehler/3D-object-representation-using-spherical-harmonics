@@ -7,7 +7,7 @@ import numpy as np
 
 
 class Layer(nn.Module):
-    """ U-Net Layer """
+    """U-Net Layer"""
 
     def __init__(self, num_channels_in, num_channels_out, ndims, batch_norm=False):
 
@@ -16,7 +16,7 @@ class Layer(nn.Module):
         conv_op = nn.Conv2d if ndims == 2 else nn.Conv3d
         batch_nrom_op = nn.BatchNorm2d if ndims == 2 else nn.BatchNorm3d
 
-        conv1 = conv_op(num_channels_in,  num_channels_out,
+        conv1 = conv_op(num_channels_in, num_channels_out,
                         kernel_size=3, padding=1)
         conv2 = conv_op(num_channels_out, num_channels_out,
                         kernel_size=3, padding=1)
@@ -31,7 +31,7 @@ class Layer(nn.Module):
 
 
 class SPHarmNet(nn.Module):
-    """ The U-Net. """
+    """The U-Net."""
 
     def __init__(self, config):
 
@@ -43,35 +43,43 @@ class SPHarmNet(nn.Module):
         # ConvTransposeLayer = nn.ConvTranspose3d if config.ndims == 3 else nn.ConvTranspose2d
 
         out_shape = np.array(config.patch_shape)
-        '''  Down layers '''
-        down_layers = [Layer(config.num_input_channels,
-                             config.first_layer_channels, config.ndims)]
+        """  Down layers """
+        down_layers = [
+            Layer(config.num_input_channels,
+                  config.first_layer_channels, config.ndims)
+        ]
         for i in range(1, config.steps + 1):
             down_layers.append(max_pool)
-            lyr = Layer(config.first_layer_channels * 2**(i - 1),
-                        config.first_layer_channels * 2**i, config.ndims, config.batch_norm)
+            lyr = Layer(
+                config.first_layer_channels * 2 ** (i - 1),
+                config.first_layer_channels * 2 ** i,
+                config.ndims,
+                config.batch_norm,
+            )
             down_layers.append(lyr)
-            out_shape = out_shape//2
+            out_shape = out_shape // 2
 
-        feature_count = np.prod(out_shape) * config.first_layer_channels * 2**i
+        feature_count = np.prod(out_shape) * \
+            config.first_layer_channels * 2 ** i
 
-        fc_layers = [nn.Linear(feature_count, feature_count//8)]
-        fc_layers.append(nn.Linear(feature_count//8, feature_count//64))
-        fc_layers.append(nn.Linear(feature_count//64, feature_count//256))
-        fc_layers.append(nn.Linear(feature_count//256,
-                                   config.spharm_coefficient_count))
+        fc_layers = [nn.Linear(feature_count, feature_count // 8)]
+        fc_layers.append(nn.Linear(feature_count // 8, feature_count // 64))
+        fc_layers.append(nn.Linear(feature_count // 64, feature_count // 256))
+        fc_layers.append(
+            nn.Linear(feature_count // 256, config.spharm_coefficient_count)
+        )
 
         self.conv_encoder = nn.Sequential(*down_layers)
         self.fc_layers = nn.Sequential(*fc_layers)
 
     def forward(self, data):
 
-        x = data['x'].cuda()
+        x = data["x"].cuda()
 
         latent = self.conv_encoder(x)
 
         _, C, D, H, W = latent.shape
-        latent = latent.view(-1, C*D*H*W)
+        latent = latent.view(-1, C * D * H * W)
 
         return self.fc_layers(latent)
 
@@ -80,7 +88,7 @@ class SPHarmNet(nn.Module):
         pred = self.forward(data)
 
         MSE_Loss = nn.MSELoss()
-        loss = MSE_Loss(pred, data['y_spharm_coeffs'].cuda())
+        loss = MSE_Loss(pred, data["y_spharm_coeffs"].cuda())
 
         log = {"loss": loss.detach()}
 

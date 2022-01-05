@@ -1,0 +1,2 @@
+sshfs nbaehler@iccvlabsrv27.iccluster.epfl.ch:/ /mnt/IC-EPFL -o IdentityFile=~/.ssh/id_rsa,allow_other,default_permissions,uid=$(id -u),gid=$(id -g)
+
