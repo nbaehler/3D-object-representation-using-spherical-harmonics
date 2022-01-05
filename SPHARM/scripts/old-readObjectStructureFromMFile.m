@@ -1,154 +1,131 @@
 function [vertices, faces, landmarks] = readObjectStructureFromMFile(fname)
-    % Read triangular mesh from and m file
-    % Reads a triangular mesh containing vertices, faces and landmarks from a
-    % .m file that contains theses variables in a structure in Matlab format.
-    % The function assumes that these variables come in the order of
-    % 'vertices', then 'faces' and then 'landmarks'.  They must also be
-    % identified by these variable names with all lowercase.  The variables
-    % 'vertices' and 'faces' must be present, but 'landmarks' are optional.
+% Read triangular mesh from and m file
+% Reads a triangular mesh containing vertices, faces and landmarks from a
+% .m file that contains theses variables in a structure in Matlab format.
+% The function assumes that these variables come in the order of
+% 'vertices', then 'faces' and then 'landmarks'.  They must also be
+% identified by these variable names with all lowercase.  The variables
+% 'vertices' and 'faces' must be present, but 'landmarks' are optional.
 
-    % %debugging------------------
-    % clear;
-    % path = '.';
-    %
-    % % get file to make template from disk
-    % [name, dir] = uigetfile({'*.m','Matlab .m files'},'Select File to Make Template',path);
-    % fullFileName = fullfile(dir, name);
-    % disp(name);
-    % disp(fullFileName);
-    % [dir, name, ext] = fileparts(fullFileName);
-    % fname = fullFileName;
-    % %debugging------------------
-    %
-    %
 
-    vertices = [];
-    faces = [];
-    landmarks = [];
 
-    disp(fname);
+% %debugging------------------
+% clear;
+% path = '.';
+% 
+% % get file to make template from disk
+% [name, dir] = uigetfile({'*.m','Matlab .m files'},'Select File to Make Template',path);
+% fullFileName = fullfile(dir, name);
+% disp(name);
+% disp(fullFileName);
+% [dir, name, ext] = fileparts(fullFileName);
+% fname = fullFileName;
+% %debugging------------------
+% 
+% 
 
-    fid = fopen(fname);
 
-    while 1
-        tline = fgetl(fid);
-        % test for end of file
-        if (~ischar(tline))
+vertices = [];
+faces = [];
+landmarks = [];
+
+disp(fname);
+
+fid=fopen(fname);
+while 1
+    tline = fgetl(fid);
+    % test for end of file
+    if (~ischar(tline))
+        break
+    end
+    %if line is empty
+    if (strcmp(tline,''))
+        continue
+    end
+    % if line is a comment, pass by
+    if (strcmp(tline(1),'%'))
+        continue
+    end
+    % found beginning of structure
+    if (strcmp(tline(1:7),'surface'))
+        % find if vertices is located in this line
+        k = strfind(tline, '''vertices''');
+        if (isempty(k))
+            errordlg('File does not contain vertices first.','Wrong file format.','modal');
             break
         end
-
-        %if line is empty
-        if (strcmp(tline, ''))
-            continue
-        end
-
-        % if line is a comment, pass by
-        if (strcmp(tline(1), '%'))
-            continue
-        end
-
-        % found beginning of structure
-        if (strcmp(tline(1:7), 'surface'))
-            % find if vertices is located in this line
-            k = strfind(tline, '''vertices''');
-
-            if (isempty(k))
-                errordlg('File does not contain vertices first.', 'Wrong file format.', 'modal');
+        % line contains vertices, so get first data
+        startIndex = regexp(tline,'[');
+        endIndex = regexp(tline, ';');
+        a = str2num(tline((startIndex+1):(endIndex-1)));
+        vertices(end+1,:) = a;
+        % get rest of vertices
+        while 1
+            tline = fgetl(fid);
+            if (strcmp(tline(1),']'))
+                % go on to find faces
                 break
             end
-
-            % line contains vertices, so get first data
-            startIndex = regexp(tline, '[');
+            % another line of data
             endIndex = regexp(tline, ';');
-            a = str2num(tline((startIndex + 1):(endIndex - 1)));
-            vertices(end + 1, :) = a;
-            % get rest of vertices
-            while 1
-                tline = fgetl(fid);
-
-                if (strcmp(tline(1), ']'))
-                    % go on to find faces
-                    break
-                end
-
-                % another line of data
-                endIndex = regexp(tline, ';');
-
-                if (~isempty(endIndex)) % pass over empty lines
-                    a = str2num(tline(1:(endIndex - 1)));
-                    vertices(end + 1, :) = a;
-                end
-
+            if (~isempty(endIndex)) % pass over empty lines
+                a = str2num(tline(1:(endIndex-1)));
+                vertices(end+1,:) = a;
             end
-
-            % get faces
-            k = strfind(tline, '''faces''');
-
-            if (isempty(k))
-                errordlg('File does not contain faces after vertices.', 'Wrong file format.', 'modal');
+        end
+        % get faces
+        k = strfind(tline, '''faces''');
+        if (isempty(k))
+            errordlg('File does not contain faces after vertices.','Wrong file format.','modal');
+            break
+        end
+        % line contains vfaces, so get first data
+        startIndex = regexp(tline,'[');
+        endIndex = regexp(tline, ';');
+        a = str2num(tline((startIndex+1):(endIndex-1)));
+        faces(end+1,:) = a;
+        % get rest of faces
+        while 1
+            tline = fgetl(fid);
+            if (strcmp(tline(1),']'))
+                % go on to find landmarks
                 break
             end
-
-            % line contains vfaces, so get first data
-            startIndex = regexp(tline, '[');
+            % another line of data
             endIndex = regexp(tline, ';');
-            a = str2num(tline((startIndex + 1):(endIndex - 1)));
-            faces(end + 1, :) = a;
-            % get rest of faces
-            while 1
-                tline = fgetl(fid);
-
-                if (strcmp(tline(1), ']'))
-                    % go on to find landmarks
-                    break
-                end
-
-                % another line of data
-                endIndex = regexp(tline, ';');
-
-                if (~isempty(endIndex)) % pass over empty lines
-                    a = str2num(tline(1:(endIndex - 1)));
-                    faces(end + 1, :) = a;
-                end
-
+            if (~isempty(endIndex)) % pass over empty lines
+                a = str2num(tline(1:(endIndex-1)));
+                faces(end+1,:) = a;
             end
-
-            % get landmarks
-            k = strfind(tline, '''landmarks''');
-
-            if (isempty(k))
-                % no landmarks so we're done
-                break
-            end
-
-            % line contains landmarks, so get first data
-            startIndex = regexp(tline, '[');
-            endIndex = regexp(tline, ';');
-            a = str2num(tline((startIndex + 1):(endIndex - 1)));
-            landmarks(end + 1, :) = a;
-            % get rest of landmarks
-            while 1
-                tline = fgetl(fid);
-
-                if (strcmp(tline(1), ']'))
-                    % go on to find landmarks
-                    break
-                end
-
-                % another line of data
-                endIndex = regexp(tline, ';');
-
-                if (~isempty(endIndex)) % pass over empty lines
-                    a = str2num(tline(1:(endIndex - 1)));
-                    landmarks(end + 1, :) = a;
-                end
-
-            end
-
         end
 
+        % get landmarks
+        k = strfind(tline, '''landmarks''');
+        if (isempty(k))
+            % no landmarks so we're done
+            break
+        end
+        % line contains landmarks, so get first data
+        startIndex = regexp(tline,'[');
+        endIndex = regexp(tline, ';');
+        a = str2num(tline((startIndex+1):(endIndex-1)));
+        landmarks(end+1,:) = a;
+        % get rest of landmarks
+        while 1
+            tline = fgetl(fid);
+            if (strcmp(tline(1),']'))
+                % go on to find landmarks
+                break
+            end
+            % another line of data
+            endIndex = regexp(tline, ';');
+            if (~isempty(endIndex)) % pass over empty lines
+                a = str2num(tline(1:(endIndex-1)));
+                landmarks(end+1,:) = a;
+            end
+        end
     end
-
-    fclose(fid);
+end
+fclose(fid);
 
 end

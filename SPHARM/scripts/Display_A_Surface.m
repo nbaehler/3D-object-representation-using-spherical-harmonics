@@ -7,7 +7,7 @@ disp(' ');
 [inFile, inDir, n] = uigetfile('*.*', 'Open Surface File');
 
 fileString = fullfile(inDir, inFile);
-fileString = deblank(fileString);
+fileString = deblank(fileString); 
 
 load(fileString);
 display_surface(inFile, vertices, faces);

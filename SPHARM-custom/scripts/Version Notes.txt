@@ -1,0 +1,5 @@
+In Version 1.1 I changed the following.
+
+I added a feature to the MLCombineAndResize file to read STL formatted files.
+
+I also changed the way MLCombineAndResize calculates centroid size so as to not produce a huge matrix that blows the memory limits.
