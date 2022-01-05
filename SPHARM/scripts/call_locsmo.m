@@ -20,6 +20,8 @@ end
 
 !spa infile outfile 4
 
+% !wine spa infile outfile 4 %TODO switch for linux
+
 % read from outfile
 disp(sprintf('read verts from outfile ...'));
 fid = fopen('outfile','r');

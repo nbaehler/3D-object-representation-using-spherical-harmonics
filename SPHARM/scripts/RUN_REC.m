@@ -1,10 +1,16 @@
 
 disp('INSIDE RUN.');
-workspace = 'C:\Users\baehl\Downloads\matlab_input_files';
+
+workspace = 'C:\Users\baehl\Downloads\matlab_meshes\testing';
+% workspace = 'C:\Users\baehl\Downloads\matlab_meshes\training';
+
+% workspace = '/home/nicolas/Downloads/matlab_meshes/testing';
+% workspace = '/home/nicolas/Downloads/matlab_meshes/training';
+
 files = dir(workspace);
 dirFlags = [files.isdir];
 folders = {files(dirFlags).name};
-degree = 1;
+degree = 8;
 
 % Skip the folders '.' and '..'
 for f = 3 : length(folders)        

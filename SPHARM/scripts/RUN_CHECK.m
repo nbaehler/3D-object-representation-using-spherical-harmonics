@@ -1,6 +1,12 @@
 
 disp('INSIDE RUN CHECK.');
-workspace = 'C:\Users\baehl\Downloads\matlab_input_files';
+
+workspace = 'C:\Users\baehl\Downloads\matlab_meshes\testing';
+% workspace = 'C:\Users\baehl\Downloads\matlab_meshes\training';
+
+% workspace = '/home/nicolas/Downloads/matlab_meshes/testing';
+% workspace = '/home/nicolas/Downloads/matlab_meshes/training';
+
 files = dir(workspace);
 dirFlags = [files.isdir];
 folders = {files(dirFlags).name};
