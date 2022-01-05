@@ -12,12 +12,13 @@ def affine_grid(theta, size):
 
 
 class AffineGridGenerator(Function):
-
     @staticmethod
     def _enforce_cudnn(input):
         if not cudnn.enabled:
-            raise RuntimeError("AffineGridGenerator needs CuDNN for "
-                               "processing CUDA inputs, but CuDNN is not enabled")
+            raise RuntimeError(
+                "AffineGridGenerator needs CuDNN for "
+                "processing CUDA inputs, but CuDNN is not enabled"
+            )
         assert cudnn.is_acceptable(input)
 
     @staticmethod
@@ -26,23 +27,26 @@ class AffineGridGenerator(Function):
         N, _, D, H, W = size
         ctx.size = size
 
-        #ctx.is_cuda = True
+        # ctx.is_cuda = True
 
         base_grid = theta.new(N, D, H, W, 4)
 
-        w_points = (torch.linspace(-1, 1, W) if W > 1 else torch.Tensor([-1]))
-        h_points = (torch.linspace(-1, 1, H) if H >
-                    1 else torch.Tensor([-1])).unsqueeze(-1)
-        d_points = (torch.linspace(-1, 1, D) if D >
-                    1 else torch.Tensor([-1])).unsqueeze(-1).unsqueeze(-1)
+        w_points = torch.linspace(-1, 1, W) if W > 1 else torch.Tensor([-1])
+        h_points = (
+            torch.linspace(-1, 1, H) if H > 1 else torch.Tensor([-1])
+        ).unsqueeze(-1)
+        d_points = (
+            (torch.linspace(-1, 1, D) if D > 1 else torch.Tensor([-1]))
+            .unsqueeze(-1)
+            .unsqueeze(-1)
+        )
 
         base_grid[:, :, :, :, 0] = w_points
         base_grid[:, :, :, :, 1] = h_points
         base_grid[:, :, :, :, 2] = d_points
         base_grid[:, :, :, :, 3] = 1
         ctx.base_grid = base_grid
-        grid = torch.bmm(base_grid.view(N, D * H * W, 4),
-                         theta.transpose(1, 2))
+        grid = torch.bmm(base_grid.view(N, D * H * W, 4), theta.transpose(1, 2))
         grid = grid.view(N, D, H, W, 3)
         return grid
 
@@ -54,6 +58,7 @@ class AffineGridGenerator(Function):
         base_grid = ctx.base_grid
         grad_theta = torch.bmm(
             base_grid.view(N, D * H * W, 4).transpose(1, 2),
-            grad_grid.view(N, D * H * W, 3))
+            grad_grid.view(N, D * H * W, 3),
+        )
         grad_theta = grad_theta.transpose(1, 2)
         return grad_theta, None

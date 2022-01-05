@@ -1,5 +1,6 @@
 import logging
 import torch
+
 # from torch.utils.tensorboard import SummaryWriter
 from utils.utils_common import DataModes
 
@@ -8,11 +9,11 @@ import time
 import wandb
 from IPython import embed
 import time
+
 logger = logging.getLogger(__name__)
 
 
 class Trainer(object):
-
     def training_step(self, data, epoch):
         # Get the minibatch
 
@@ -24,7 +25,16 @@ class Trainer(object):
 
         return log
 
-    def __init__(self, net, trainloader, optimizer, numb_of_itrs, eval_every, save_path, evaluator):
+    def __init__(
+        self,
+        net,
+        trainloader,
+        optimizer,
+        numb_of_itrs,
+        eval_every,
+        save_path,
+        evaluator,
+    ):
 
         self.net = net
         self.trainloader = trainloader
@@ -52,9 +62,8 @@ class Trainer(object):
                 loss = self.training_step(data, start_iteration)
 
             if iteration % print_every == 0:
-                log_vals = {key: value / print_every for key,
-                            value in loss.items()}
-                log_vals['iteration'] = iteration
+                log_vals = {key: value / print_every for key, value in loss.items()}
+                log_vals["iteration"] = iteration
                 wandb.log(log_vals)
 
             if iteration % self.eval_every == 0:  # print every K epochs

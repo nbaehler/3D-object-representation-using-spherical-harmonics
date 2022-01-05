@@ -5,6 +5,7 @@ from data.data import get_item
 
 from utils.metrics import jaccard_index, chamfer_weighted_symmetric, chamfer_directed
 from utils.utils_common import crop, DataModes, crop_indices, blend
+
 # from utils.utils_mesh import sample_outer_surface, get_extremity_landmarks, voxel2mesh, clean_border_pixels, sample_outer_surface_in_voxel, normalize_vertices
 
 # from utils import stns
@@ -30,7 +31,16 @@ class Sample:
 
 
 class SamplePlus:
-    def __init__(self, x, y, y_outer=None, x_super_res=None, y_super_res=None, y_outer_super_res=None, shape=None):
+    def __init__(
+        self,
+        x,
+        y,
+        y_outer=None,
+        x_super_res=None,
+        y_super_res=None,
+        y_outer_super_res=None,
+        shape=None,
+    ):
         self.x = x
         self.y = y
         self.y_outer = y_outer
@@ -39,8 +49,7 @@ class SamplePlus:
         self.shape = shape
 
 
-class ChaosDataset():
-
+class ChaosDataset:
     def __init__(self, data, cfg, mode):
         self.data = data
         # self.data = [data[0]] # <<<<<<<<<<<<<<<
@@ -56,8 +65,7 @@ class ChaosDataset():
         return get_item(item, self.mode, self.cfg)
 
 
-class Chaos():
-
+class Chaos:
     def sample_to_sample_plus(self, samples, cfg, datamode):
 
         new_samples = []
@@ -97,21 +105,27 @@ class Chaos():
         data_root = cfg.data_root
         data = {}
         for datamode in [DataModes.TRAINING, DataModes.TESTING]:
-            with open(data_root + '/pre_loaded_data_{}_{}_v2.pickle'.format(datamode, "_".join(map(str, down_sample_shape))), 'rb') as handle:
+            with open(
+                data_root
+                + "/pre_loaded_data_{}_{}_v2.pickle".format(
+                    datamode, "_".join(map(str, down_sample_shape))
+                ),
+                "rb",
+            ) as handle:
                 samples = pickle.load(handle)
-                new_samples = self.sample_to_sample_plus(
-                    samples, cfg, datamode)
+                new_samples = self.sample_to_sample_plus(samples, cfg, datamode)
                 data[datamode] = ChaosDataset(new_samples, cfg, datamode)
         data[DataModes.TRAINING_EXTENDED] = ChaosDataset(
-            data[DataModes.TRAINING].data, cfg, DataModes.TRAINING_EXTENDED)
+            data[DataModes.TRAINING].data, cfg, DataModes.TRAINING_EXTENDED
+        )
         # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< switch to testing
         data[DataModes.VALIDATION] = data[DataModes.TESTING]
         return data
 
     def load_data(self, cfg, trial_id):
-        '''
-         :
-        '''
+        """
+        :
+        """
 
         data_root = cfg.data_root
         samples = [dir for dir in os.listdir(data_root)]
@@ -121,14 +135,18 @@ class Chaos():
         labels = []
 
         for sample in samples:
-            if 'pickle' not in sample:
+            if "pickle" not in sample:
                 print(sample)
                 x = []
-                images_path = [dir for dir in os.listdir(
-                    '{}/{}/DICOM_anon'.format(data_root, sample)) if 'dcm' in dir]
+                images_path = [
+                    dir
+                    for dir in os.listdir("{}/{}/DICOM_anon".format(data_root, sample))
+                    if "dcm" in dir
+                ]
                 for image_path in images_path:
                     file = pydicom.dcmread(
-                        '{}/{}/DICOM_anon/{}'.format(data_root, sample, image_path))
+                        "{}/{}/DICOM_anon/{}".format(data_root, sample, image_path)
+                    )
                     x += [file.pixel_array]
 
                 d_resolution = file.SliceThickness
@@ -154,12 +172,15 @@ class Chaos():
                 W = int(W * w_resolution)
                 # we resample such that 1 pixel is 1 mm in x,y and z directions
                 base_grid = torch.zeros((1, D, H, W, 3))
-                w_points = (torch.linspace(-1, 1, W) if W >
-                            1 else torch.Tensor([-1]))
-                h_points = (torch.linspace(-1, 1, H) if H >
-                            1 else torch.Tensor([-1])).unsqueeze(-1)
-                d_points = (torch.linspace(-1, 1, D) if D >
-                            1 else torch.Tensor([-1])).unsqueeze(-1).unsqueeze(-1)
+                w_points = torch.linspace(-1, 1, W) if W > 1 else torch.Tensor([-1])
+                h_points = (
+                    torch.linspace(-1, 1, H) if H > 1 else torch.Tensor([-1])
+                ).unsqueeze(-1)
+                d_points = (
+                    (torch.linspace(-1, 1, D) if D > 1 else torch.Tensor([-1]))
+                    .unsqueeze(-1)
+                    .unsqueeze(-1)
+                )
                 base_grid[:, :, :, :, 0] = w_points
                 base_grid[:, :, :, :, 1] = h_points
                 base_grid[:, :, :, :, 2] = d_points
@@ -168,7 +189,12 @@ class Chaos():
 
                 x = torch.from_numpy(x).cuda()
                 x = F.grid_sample(
-                    x[None, None], grid, mode='bilinear', padding_mode='border', align_corners=True)[0, 0]
+                    x[None, None],
+                    grid,
+                    mode="bilinear",
+                    padding_mode="border",
+                    align_corners=True,
+                )[0, 0]
                 x = x.data.cpu().numpy()
                 # ----
 
@@ -183,52 +209,61 @@ class Chaos():
 
                 # io.imsave('{}/{}/DICOM_anon/volume_resampled_2.tif'.format(data_root, sample), np.uint16(x))
 
-                x = (x - mean_x)/std_x
+                x = (x - mean_x) / std_x
                 x = torch.from_numpy(x)
                 inputs += [x]
 
                 # ----
 
                 y = []
-                images_path = [dir for dir in os.listdir(
-                    '{}/{}/Ground'.format(data_root, sample)) if 'png' in dir]
+                images_path = [
+                    dir
+                    for dir in os.listdir("{}/{}/Ground".format(data_root, sample))
+                    if "png" in dir
+                ]
                 for image_path in images_path:
                     file = io.imread(
-                        '{}/{}/Ground/{}'.format(data_root, sample, image_path))
+                        "{}/{}/Ground/{}".format(data_root, sample, image_path)
+                    )
                     y += [file]
 
                 y = np.array(y)
                 y = np.int64(y)
 
                 y = torch.from_numpy(y).cuda()
-                y = F.grid_sample(y[None, None].float(), grid,
-                                  mode='nearest', padding_mode='border', align_corners=True)[0, 0]
+                y = F.grid_sample(
+                    y[None, None].float(),
+                    grid,
+                    mode="nearest",
+                    padding_mode="border",
+                    align_corners=True,
+                )[0, 0]
                 y = y.data.cpu().numpy()
 
                 y = np.int64(y)
                 y = crop(y, (D, H, W), (center_z, center_y, center_x))
 
-                y = torch.from_numpy(y/255)
+                y = torch.from_numpy(y / 255)
 
                 labels += [y]
 
         np.random.seed(0)
         perm = np.random.permutation(len(inputs))
         tr_length = cfg.training_set_size
-        counts = [perm[:tr_length], perm[len(inputs)//2:]]
+        counts = [perm[:tr_length], perm[len(inputs) // 2 :]]
         # counts = [perm[:tr_length], perm[16:]]
 
         data = {}
         down_sample_shape = cfg.patch_shape
 
         input_shape = x.shape
-        scale_factor = (np.max(down_sample_shape)/np.max(input_shape))
+        scale_factor = np.max(down_sample_shape) / np.max(input_shape)
 
         for i, datamode in enumerate([DataModes.TRAINING, DataModes.TESTING]):
 
             samples = []
             print(i)
-            print('--')
+            print("--")
 
             for j in counts[i]:
                 print(j)
@@ -236,22 +271,30 @@ class Chaos():
                 y = labels[j]
 
                 x = F.interpolate(
-                    x[None, None], scale_factor=scale_factor, mode='trilinear')[0, 0]
-                y = F.interpolate(y[None, None].float(
-                ), scale_factor=scale_factor, mode='nearest')[0, 0].long()
+                    x[None, None], scale_factor=scale_factor, mode="trilinear"
+                )[0, 0]
+                y = F.interpolate(
+                    y[None, None].float(), scale_factor=scale_factor, mode="nearest"
+                )[0, 0].long()
 
                 samples.append(Sample(x, y))
                 # print('A BREAK IS HERE!!!!!!!!!!!!!!!!!!!!!<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
                 # break
 
-            with open(data_root + '/pre_loaded_data_{}_{}_v2.pickle'.format(datamode, "_".join(map(str, down_sample_shape))), 'wb') as handle:
-                pickle.dump(samples, handle,
-                            protocol=pickle.HIGHEST_PROTOCOL)
+            with open(
+                data_root
+                + "/pre_loaded_data_{}_{}_v2.pickle".format(
+                    datamode, "_".join(map(str, down_sample_shape))
+                ),
+                "wb",
+            ) as handle:
+                pickle.dump(samples, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
             data[datamode] = ChaosDataset(samples, cfg, datamode)
-        print('-end-')
+        print("-end-")
         data[DataModes.TRAINING_EXTENDED] = ChaosDataset(
-            data[DataModes.TRAINING].data, cfg, DataModes.TRAINING_EXTENDED)
+            data[DataModes.TRAINING].data, cfg, DataModes.TRAINING_EXTENDED
+        )
         data[DataModes.VALIDATION] = data[DataModes.TESTING]
         # raise Exception()
         return data
@@ -260,9 +303,8 @@ class Chaos():
         results = {}
 
         if target.voxel is not None:
-            val_jaccard = jaccard_index(
-                target.voxel, pred.voxel, cfg.num_classes)
-            results['jaccard'] = val_jaccard
+            val_jaccard = jaccard_index(target.voxel, pred.voxel, cfg.num_classes)
+            results["jaccard"] = val_jaccard
 
         if target.mesh is not None:
             target_points = target.points
@@ -271,15 +313,16 @@ class Chaos():
 
             for i in range(len(target_points)):
                 val_chamfer_weighted_symmetric[i] = chamfer_weighted_symmetric(
-                    target_points[i].cpu(), pred_points[i]['vertices'])
+                    target_points[i].cpu(), pred_points[i]["vertices"]
+                )
 
-            results['chamfer_weighted_symmetric'] = val_chamfer_weighted_symmetric
+            results["chamfer_weighted_symmetric"] = val_chamfer_weighted_symmetric
 
         return results
 
     def update_checkpoint(self, best_so_far, new_value):
 
-        key = 'jaccard'
+        key = "jaccard"
         new_value = new_value[DataModes.TESTING][key]
 
         if best_so_far is None:
