@@ -246,7 +246,7 @@ def save_to_obj(filepath, vertices, faces, normals=None):
 
         file.write(vals)
 
-        mat_path = filepath.rename(filepath.with_suffix('.mat'))
+        mat_path = os.path.splitext(filepath)[0]+'.mat'
 
     if normals is not None:
         savemat(mat_path, mdict={'vertices': vertices[0].data.cpu().numpy(
