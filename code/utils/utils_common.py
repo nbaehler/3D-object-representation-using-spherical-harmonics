@@ -1,5 +1,6 @@
 import os
 import logging
+import pathlib
 
 import numpy as np
 import torch
@@ -47,7 +48,7 @@ def pytorch_count_params(model):
 
 def mkdir(path):
     if not os.path.isdir(path):
-        os.mkdir(path)
+        pathlib.Path(path).mkdir(parents=True, exist_ok=True)
 
 
 def blend(img, mask):
@@ -214,6 +215,7 @@ def voxel2mesh(volume, step_size, shape):
     :param shape:
     :return:
     '''
+    # vertices_mc, faces_mc, _, _ = measure.marching_cubes_lewiner( #TODO old version
     vertices_mc, faces_mc, _, _ = measure.marching_cubes(
         volume.cpu().data.numpy(), 0, step_size=step_size, allow_degenerate=False)
     vertices_mc = torch.flip(torch.from_numpy(vertices_mc), dims=[
@@ -244,11 +246,13 @@ def save_to_obj(filepath, vertices, faces, normals=None):
 
         file.write(vals)
 
+        mat_path = filepath.rename(filepath.with_suffix('.mat'))
+
     if normals is not None:
-        savemat(filepath.replace('obj', 'mat'), mdict={'vertices': vertices[0].data.cpu().numpy(
+        savemat(mat_path, mdict={'vertices': vertices[0].data.cpu().numpy(
         ), 'faces': faces[0].data.cpu().numpy(), 'normals': normals[0].data.cpu().numpy()})
     else:
-        savemat(filepath.replace('obj', 'mat'), mdict={
+        savemat(mat_path, mdict={
                 'vertices': vertices[0].data.cpu().numpy(), 'faces': faces[0].data.cpu().numpy()})
 
 

@@ -29,7 +29,7 @@ def load_config(exp_id):
     # cfg.mode = 'evaluate'
 
     ''' Save at '''
-    cfg.root_path = '/home/nbaehler/workspace/spharm/'
+    cfg.root_path = '/home/nbaehler/workspace/3D-object-representation-using-spherical-harmonics/'
     cfg.save_path = cfg.root_path + 'experiments/'
     cfg.save_dir_prefix = 'Experiment_'
     cfg.data_root = cfg.root_path + 'data/Train_Sets/CT'

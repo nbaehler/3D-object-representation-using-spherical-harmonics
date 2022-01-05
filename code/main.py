@@ -15,8 +15,8 @@ import logging
 import os
 
 # Command -> nvidia-smi
-GPU_index = "0"  # 0, 1, 2, 3
-os.environ["CUDA_VISIBLE_DEVICES"] = GPU_index
+# GPU_index = "0"  # 0, 1, 2, 3
+# os.environ["CUDA_VISIBLE_DEVICES"] = GPU_index #TODO set locally
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +86,7 @@ def main():
 
         if cfg.mode != 'evaluate':
             wandb.init(name='Experiment_{}/trial_{}'.format(cfg.experiment_idx, trial_id),
-                       project="spharm", dir='/home/nbaehler/workspace/spharm/experiments/')
+                       project="spharm", dir=cfg.save_path)
 
         print("Initialize optimizer")
         optimizer = optim.Adam(filter(

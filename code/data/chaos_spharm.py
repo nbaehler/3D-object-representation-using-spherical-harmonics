@@ -121,7 +121,7 @@ class Chaos():
 
     def load_data(self, cfg):
         data_root = cfg.data_root
-        samples = [dir for dir in os.listdir(data_root)]
+        samples = list(os.listdir(data_root))
 
         prepare_samples = []
 
@@ -492,6 +492,6 @@ class Chaos():
         best_so_far = best_so_far[DataModes.TESTING][key]
         return np.mean(new_value) > np.mean(best_so_far)
 
-    def center(self, vertices):  # TODO needed?
+    def center(self, vertices):  # TODO needed when using down sample only
         center_of_gravity = torch.mean(vertices, dim=0)
         return vertices-center_of_gravity

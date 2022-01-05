@@ -2,20 +2,15 @@ __pycache__/
 *.pyc
 **/._*.py
 
+.vscode/settings.json
+
 /experiments/
-/scripts/
 /test/
 /data/
 /runs/
-/SPHARM/SPHARM v1.4 Documentation.pdf
-/SPHARM/data/
+
 /SPHARM/scripts/metric
 /SPHARM/scripts/outfile
 /SPHARM/scripts/infile
 
-.vscode/settings.json
-execute_cpu.sh
-execute_gpu.sh
-cmds.txt
 slurm*
-delete_slurms

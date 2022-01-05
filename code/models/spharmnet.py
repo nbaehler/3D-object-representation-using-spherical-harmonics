@@ -61,22 +61,8 @@ class SPHarmNet(nn.Module):
         fc_layers.append(nn.Linear(feature_count//256,
                                    config.spharm_coefficient_count))
 
-        # print('-->'+str(feature_count + feature_count//8 + feature_count//64 + feature_count//256 + config.spharm_coefficient_count)) #TODO
-
-        # fc_layers.append(nn.Linear(feature_count, feature_count//4))  # TODO
-        # fc_layers.append(nn.Linear(feature_count//4, feature_count//16))
-        # fc_layers.append(nn.Linear(feature_count//16, feature_count//64))
-        # fc_layers.append(nn.Linear(feature_count//64, feature_count//128))
-        # fc_layers.append(nn.Linear(feature_count//128, feature_count//256))
-        # fc_layers.append(nn.Linear(feature_count//256,
-        #                            config.spharm_coefficient_count))
-
         self.conv_encoder = nn.Sequential(*down_layers)
         self.fc_layers = nn.Sequential(*fc_layers)
-
-        # TODO remove
-        # print(self.conv_encoder)
-        # print(self.fc_layers)
 
     def forward(self, data):
 

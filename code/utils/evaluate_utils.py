@@ -6,10 +6,13 @@ import numpy as np
 
 ''' too many functions, combine them'''
 
+# TODO adapt to usage
+kernel_path = '/home/nbaehler/workspace/3D-object-representation-using-spherical-harmonics/code/kernel.so'
+
 
 def cuda_get_rasterize():
     dll = ctypes.CDLL(
-        '/home/nbaehler/workspace/spharm/code/kernel.so', mode=ctypes.RTLD_GLOBAL)
+        kernel_path, mode=ctypes.RTLD_GLOBAL)
 
     func = dll.cuda_rasterize
     func.argtypes = [POINTER(c_int), POINTER(c_float), POINTER(c_int), POINTER(

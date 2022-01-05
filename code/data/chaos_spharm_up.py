@@ -291,7 +291,7 @@ class Chaos():
                 os.remove(save_path+file)
 
         # Export to other formats
-        print('There are ' + str(len(samples)) + ' files to proccess')
+        print('There are ' + str(len(samples)) + ' files to process')
         for sample in samples:
             print('Process file ' + sample.name)
 

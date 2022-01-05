@@ -13,7 +13,7 @@ import wandb
 # from utils import stns
 
 import re
-from pymesh import load_mesh, save_mesh, form_mesh
+# from pymesh import load_mesh, save_mesh, form_mesh #TODO fail to install
 from pytorch3d.ops import sample_points_from_meshes
 from pytorch3d.structures import Meshes
 from utils.evaluate_utils import prepare_run, run_rasterize
@@ -64,7 +64,7 @@ class Evaluator(object):
         self.data = data
         self.net = net
         self.current_best = None
-        self.save_path = save_path + '/best_performance3'
+        self.save_path = save_path + '/best_performance'
         self.latest = save_path + '/latest'
         self.optimizer = optimizer
         self.config = config
