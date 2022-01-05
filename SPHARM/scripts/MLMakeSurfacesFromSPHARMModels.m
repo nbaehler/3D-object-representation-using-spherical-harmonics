@@ -18,59 +18,57 @@ meshsize = x;
 outputFormat = y;
 disp('INSIDE MLMakeSurfacesFromSPHARMModels.');
 
-[names, currentDir] = uigetfile({'*.mat','Matlab .mat files'},'Select SPHARM model Files',currentDir,'MultiSelect','on');
-[fake, n] = size(names);
+[ names, currentDir ] =
+    uigetfile({'*.mat', 'Matlab .mat files'}, 'Select SPHARM model Files',
+              currentDir, 'MultiSelect', 'on');
+[ fake, n ] = size(names);
 moreThanOneFile = iscell(names);
 if (isnumeric(names))
-    disp('No files chosen to Make Surfaces From SPHARM Models.');
-    currentDir = cd;
+  disp('No files chosen to Make Surfaces From SPHARM Models.');
+currentDir = cd;
     return
 else
     if moreThanOneFile
         for i=1:n
             disp(names{i});
-        end
-    else
-        n = 1;
-        disp(names);
+    end else n = 1;
+    disp(names);
     end
 end
 
 for i = 1:n;
     if (moreThanOneFile)
-        file = fullfile(currentDir,names{i});
+      file = fullfile(currentDir, names{i});
     else
-        file = fullfile(currentDir,names);
-    end
-    file = deblank(file);
-    [currentDir, name, ext] = fileparts(file);
+      file = fullfile(currentDir, names);
+    end file = deblank(file);
+    [ currentDir, name, ext ] = fileparts(file);
     load(file);
 
-	% if meshsize == 0 reconstruct original.  Otherwise, build model based on sampling resolution
-    % specified by input meshsize.
-    if (meshsize == 0)
-        meshsize = []; suffix = '_orig'; meshsize{1} = sph_verts; meshsize{2} = faces; 
+    % if meshsize == 0 reconstruct original.Otherwise,
+        build model based on sampling resolution %
+            specified by input meshsize.if (meshsize == 0) meshsize = [];
+    suffix = '_orig';
+    meshsize{1} = sph_verts;
+    meshsize{2} = faces;
+    elseif(meshsize > 0) suffix = ['_grid' int2str(meshsize)];
+    else suffix = ['_ico' int2str((-1 * meshsize))];
     end
-    if (meshsize > 0)
-        suffix = ['_grid' int2str(meshsize)];
-    end
-    if (meshsize < 0)
-        suffix = ['_ico' int2str((-1*meshsize))];
-    end
-	
-	% make surface based on mesh picked
-	[spharm_vertices, spharm_faces] = surf_spharm(fvec,dg,meshsize);
+
+        % make surface based on mesh picked[spharm_vertices, spharm_faces] =
+        surf_spharm(fvec, dg, meshsize);
     switch outputFormat  % format to use for output
         case 'Amira'
             outputToAmira(currentDir, [name suffix], spharm_vertices, spharm_faces, landmarks);
-        case 'STL'
-            outputToSTL(currentDir, [name suffix], spharm_vertices, spharm_faces, landmarks);
-        otherwise   % Amira output is default
-            outputToAmira(currentDir, [name suffix], spharm_vertices, spharm_faces, landmarks);
-    end
-    
-    clear spharm_vertices spharm_faces;
-end
+    case 'STL' outputToSTL(currentDir, [name suffix], spharm_vertices,
+                           spharm_faces, landmarks);
+        otherwise % Amira output is
+        default outputToAmira(currentDir, [name suffix], spharm_vertices,
+                              spharm_faces, landmarks);
+        end
 
-disp('MLMakeSurfacesFromSPHARMModels finished.');
-end
+        clear spharm_vertices spharm_faces;
+        end
+
+        disp('MLMakeSurfacesFromSPHARMModels finished.');
+        end

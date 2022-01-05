@@ -22,7 +22,7 @@ function varargout = SPHARMGUI(varargin)
 
 % Edit the above text to modify the response to help SPHARMGUI
 
-% Last Modified by GUIDE v2.5 06-Oct-2013 16:28:22
+% Last Modified by GUIDE v2.5 07-Jun-2017 17:14:54
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -102,6 +102,9 @@ function resizeCheckBox_Callback(hObject, eventdata, handles)
 %         % Code for when there is no match.
 % end
 % 
+
+% added to see if this fixes problem - McP 7 June 2017
+function distancesButtonGroup_ResizeFcn(hObject, eventdata, handles)
 
 
 function distancePairsTextBox_Callback(hObject, eventdata, handles)
@@ -598,3 +601,21 @@ end
 handles.currentDir = MLDifferencesAmongModels(handles.currentDir, compareTo, compare, b);
 
 guidata(hObject, handles);
+
+
+% --- Executes on button press in distancesRadioButton.
+function distancesRadioButton_Callback(hObject, eventdata, handles)
+% hObject    handle to distancesRadioButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of distancesRadioButton
+
+
+% --- Executes on button press in centroidRadioButton.
+function centroidRadioButton_Callback(hObject, eventdata, handles)
+% hObject    handle to centroidRadioButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of centroidRadioButton
