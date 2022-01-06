@@ -77,7 +77,7 @@ class Chaos:
 
             y = (y > 0).long()
 
-            center = tuple([d // 2 for d in x.shape])
+            center = tuple(d // 2 for d in x.shape)
             x = crop(x, cfg.patch_shape, center)
             y = crop(y, cfg.patch_shape, center)
 
@@ -113,8 +113,7 @@ class Chaos:
                 "rb",
             ) as handle:
                 samples = pickle.load(handle)
-                new_samples = self.sample_to_sample_plus(
-                    samples, cfg, datamode)
+                new_samples = self.sample_to_sample_plus(samples, cfg, datamode)
                 data[datamode] = ChaosDataset(new_samples, cfg, datamode)
         data[DataModes.TRAINING_EXTENDED] = ChaosDataset(
             data[DataModes.TRAINING].data, cfg, DataModes.TRAINING_EXTENDED
@@ -129,7 +128,7 @@ class Chaos:
         """
 
         data_root = cfg.data_root
-        samples = [dir for dir in os.listdir(data_root)]
+        samples = list(os.listdir(data_root))
 
         pad_shape = (384, 384, 384)
         inputs = []
@@ -146,8 +145,7 @@ class Chaos:
                 ]
                 for image_path in images_path:
                     file = pydicom.dcmread(
-                        "{}/{}/DICOM_anon/{}".format(data_root,
-                                                     sample, image_path)
+                        "{}/{}/DICOM_anon/{}".format(data_root, sample, image_path)
                     )
                     x += [file.pixel_array]
 
@@ -174,8 +172,7 @@ class Chaos:
                 W = int(W * w_resolution)
                 # we resample such that 1 pixel is 1 mm in x,y and z directions
                 base_grid = torch.zeros((1, D, H, W, 3))
-                w_points = torch.linspace(-1, 1,
-                                          W) if W > 1 else torch.Tensor([-1])
+                w_points = torch.linspace(-1, 1, W) if W > 1 else torch.Tensor([-1])
                 h_points = (
                     torch.linspace(-1, 1, H) if H > 1 else torch.Tensor([-1])
                 ).unsqueeze(-1)
@@ -196,7 +193,7 @@ class Chaos:
                     grid,
                     mode="bilinear",
                     padding_mode="border",
-                    align_corners=True,
+                    align_corners=True,  # TODO new, before without this param
                 )[0, 0]
                 x = x.data.cpu().numpy()
                 # ----
@@ -239,7 +236,7 @@ class Chaos:
                     grid,
                     mode="nearest",
                     padding_mode="border",
-                    align_corners=True,
+                    align_corners=True,  # TODO new, before without this param
                 )[0, 0]
                 y = y.data.cpu().numpy()
 
@@ -253,7 +250,7 @@ class Chaos:
         np.random.seed(0)
         perm = np.random.permutation(len(inputs))
         tr_length = cfg.training_set_size
-        counts = [perm[:tr_length], perm[len(inputs) // 2:]]
+        counts = [perm[:tr_length], perm[len(inputs) // 2 :]]
         # counts = [perm[:tr_length], perm[16:]]
 
         data = {}
@@ -306,8 +303,7 @@ class Chaos:
         results = {}
 
         if target.voxel is not None:
-            val_jaccard = jaccard_index(
-                target.voxel, pred.voxel, cfg.num_classes)
+            val_jaccard = jaccard_index(target.voxel, pred.voxel, cfg.num_classes)
             results["jaccard"] = val_jaccard
 
         if target.mesh is not None:
@@ -325,11 +321,11 @@ class Chaos:
         return results
 
     def update_checkpoint(self, best_so_far, new_value):
-
-        key = "jaccard"
-        new_value = new_value[DataModes.TESTING][key]
-
         if best_so_far is None:
             return True
+
+        key = "jaccard"
         best_so_far = best_so_far[DataModes.TESTING][key]
+        new_value = new_value[DataModes.TESTING][key]
+
         return np.mean(new_value) > np.mean(best_so_far)

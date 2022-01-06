@@ -16,15 +16,12 @@ class UNetLayer(nn.Module):
         conv_op = nn.Conv2d if ndims == 2 else nn.Conv3d
         batch_nrom_op = nn.BatchNorm2d if ndims == 2 else nn.BatchNorm3d
 
-        conv1 = conv_op(num_channels_in, num_channels_out,
-                        kernel_size=3, padding=1)
-        conv2 = conv_op(num_channels_out, num_channels_out,
-                        kernel_size=3, padding=1)
+        conv1 = conv_op(num_channels_in, num_channels_out, kernel_size=3, padding=1)
+        conv2 = conv_op(num_channels_out, num_channels_out, kernel_size=3, padding=1)
 
         bn1 = batch_nrom_op(num_channels_out)
         bn2 = batch_nrom_op(num_channels_out)
-        self.unet_layer = nn.Sequential(
-            conv1, bn1, nn.ReLU(), conv2, bn2, nn.ReLU())
+        self.unet_layer = nn.Sequential(conv1, bn1, nn.ReLU(), conv2, bn2, nn.ReLU())
 
     def forward(self, x):
         return self.unet_layer(x)
@@ -38,8 +35,7 @@ class UNet(nn.Module):
         super(UNet, self).__init__()
         self.config = config
 
-        self.max_pool = nn.MaxPool3d(
-            2) if config.ndims == 3 else nn.MaxPool2d(2)
+        self.max_pool = nn.MaxPool3d(2) if config.ndims == 3 else nn.MaxPool2d(2)
 
         ConvLayer = nn.Conv3d if config.ndims == 3 else nn.Conv2d
         ConvTransposeLayer = (

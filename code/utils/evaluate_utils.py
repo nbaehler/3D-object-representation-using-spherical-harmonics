@@ -44,8 +44,7 @@ def cuda_rasterize(grid, vertices, faces, D, H, W, N_vertices, N_faces, debug):
     faces_p = faces.ctypes.data_as(POINTER(c_int))
     debug_p = debug.ctypes.data_as(POINTER(c_float))
 
-    __cuda_rasterize(grid_p, vertices_p, faces_p, debug_p,
-                     D, H, W, N_vertices, N_faces)
+    __cuda_rasterize(grid_p, vertices_p, faces_p, debug_p, D, H, W, N_vertices, N_faces)
 
 
 # testing, sum of two arrays of ones and output head part of resulting array
@@ -61,8 +60,7 @@ def rasterize_gpu(vertices, faces, grid_size):
     vertices = vertices.astype("float32")
     faces = faces.astype("int32")
 
-    cuda_rasterize(volume, vertices, faces, D, H,
-                   W, N_vertices, N_faces, debug)
+    cuda_rasterize(volume, vertices, faces, D, H, W, N_vertices, N_faces, debug)
 
     return volume, debug
 

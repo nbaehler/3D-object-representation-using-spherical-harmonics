@@ -6,8 +6,7 @@ import torch.nn.functional as F
 
 def rmse_all(target, pred, num_classes):
     rmse = [
-        torch.sqrt(torch.mean(
-            (pred[:, cls] - target[:, cls]) ** 2)).data.cpu().numpy()
+        torch.sqrt(torch.mean((pred[:, cls] - target[:, cls]) ** 2)).data.cpu().numpy()
         for cls in range(1, num_classes)
     ]
 

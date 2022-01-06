@@ -2,7 +2,7 @@ __pycache__/
 *.pyc
 **/._*.py
 
-.vscode/settings.json
+.vscode/
 
 /experiments/
 /test/
@@ -12,5 +12,9 @@ __pycache__/
 /SPHARM/scripts/metric
 /SPHARM/scripts/outfile
 /SPHARM/scripts/infile
+
+SPHARM-custom/scripts/infile
+SPHARM-custom/scripts/outfile
+SPHARM-custom/scripts/metric
 
 slurm*
