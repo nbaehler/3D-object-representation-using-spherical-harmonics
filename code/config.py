@@ -17,8 +17,8 @@ def load_config(exp_id):
     cfg.trial_id = 1
 
     # Setup
-    # cfg.mode = 'load'
-    cfg.mode = "prepare"
+    # cfg.mode = 'load' #TODO DON'T USE THIS LOCALLY! Needs more than 32 GiB of RAM
+    cfg.mode = "prepare"  # TODO DON'T USE THIS LOCALLY! Needs more than 32 GiB of RAM
     # cfg.mode = 'import_params'
 
     # Training
@@ -32,6 +32,7 @@ def load_config(exp_id):
     cfg.root_path = (
         "/home/nbaehler/workspace/3D-object-representation-using-spherical-harmonics/"
     )
+    # cfg.root_path = '/home/nicolas/workspace/own/spharm-project/' TODO Path
     cfg.save_path = cfg.root_path + "experiments/"
     cfg.save_dir_prefix = "Experiment_"
     cfg.data_root = cfg.root_path + "data/Train_Sets/CT"

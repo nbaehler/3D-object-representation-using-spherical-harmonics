@@ -2,6 +2,8 @@ disp('INSIDE RUN INVERSE.');
 
 workspace = 'C:\Users\baehl\Downloads\working_evaluations\';
 % workspace = '/home/nicolas/Downloads/evaluations/';
+sep = '\'
+% sep = '/'
 
 files = dir(workspace);
 dirFlags = [files.isdir];
@@ -19,7 +21,7 @@ for iter = 3:length(iterations)
 
         fvec = {{}};
         i = 1;
-        fid = fopen(strcat(crtDir, '\', inputFile));
+        fid = fopen(strcat(crtDir, sep, inputFile));
         line = fgetl(fid);
 
         while ischar(line)

@@ -2,6 +2,8 @@ disp('INSIDE RUN CHECK.');
 
 workspace = 'C:\Users\baehl\Downloads\check\';
 % workspace = '/home/nicolas/Downloads/check/';
+sep = '\'
+% sep = '/'
 
 files = dir(workspace);
 dirFlags = [files.isdir];
@@ -48,7 +50,7 @@ for f = 3:length(folders)
                 deg = erase(file, baseName);
                 deg = erase(deg, '_0_des.mat');
                 degree = str2num(deg);
-                delete(strcat(crtDir, '\', file));
+                delete(strcat(crtDir, sep, file));
             end
 
         end

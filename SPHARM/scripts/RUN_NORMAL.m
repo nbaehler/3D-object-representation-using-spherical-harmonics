@@ -2,6 +2,8 @@ disp('INSIDE RUN.');
 
 root = 'C:\Users\baehl\Downloads\working_matlab_meshes\';
 % root = '/home/nicolas/Downloads/matlab_meshes/';
+sep = '\'
+% sep = '/'
 
 type = {'testing', 'training'};
 
