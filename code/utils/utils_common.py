@@ -166,29 +166,29 @@ def blend_cpu(img, labels, num_classes):
     return np.uint8((255 * img * 0.8 + masks * 0.2).data.numpy())
 
 
-def stn_quaternion_rotations(params):  # TODO twice???
+# def stn_quaternion_rotations(params):  # TODO twice???
 
-    params = params.view(3)
-    qi, qj, qk = params
+#     params = params.view(3)
+#     qi, qj, qk = params
 
-    s = qi ** 2 + qj ** 2 + qk ** 2
+#     s = qi ** 2 + qj ** 2 + qk ** 2
 
-    theta = torch.eye(4, device=params.device)
+#     theta = torch.eye(4, device=params.device)
 
-    theta[0, 0] = 1 - 2 * s * (qj ** 2 + qk ** 2)
-    theta[1, 1] = 1 - 2 * s * (qi ** 2 + qk ** 2)
-    theta[2, 2] = 1 - 2 * s * (qi ** 2 + qj ** 2)
+#     theta[0, 0] = 1 - 2 * s * (qj ** 2 + qk ** 2)
+#     theta[1, 1] = 1 - 2 * s * (qi ** 2 + qk ** 2)
+#     theta[2, 2] = 1 - 2 * s * (qi ** 2 + qj ** 2)
 
-    theta[0, 1] = 2 * s * qi * qj
-    theta[0, 2] = 2 * s * qi * qk
+#     theta[0, 1] = 2 * s * qi * qj
+#     theta[0, 2] = 2 * s * qi * qk
 
-    theta[1, 0] = 2 * s * qi * qj
-    theta[1, 2] = 2 * s * qj * qk
+#     theta[1, 0] = 2 * s * qi * qj
+#     theta[1, 2] = 2 * s * qj * qk
 
-    theta[2, 0] = 2 * s * qi * qk
-    theta[2, 1] = 2 * s * qj * qk
+#     theta[2, 0] = 2 * s * qi * qk
+#     theta[2, 1] = 2 * s * qj * qk
 
-    return theta
+#     return theta
 
 
 def clean_border_pixels(image, step_size):

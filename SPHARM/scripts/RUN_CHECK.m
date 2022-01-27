@@ -1,9 +1,10 @@
 disp('INSIDE RUN CHECK.');
 
+% TODO switch for linux
 workspace = 'C:\Users\baehl\Downloads\check\';
 % workspace = '/home/nicolas/Downloads/check/';
-sep = '\'
-% sep = '/'
+sep = '\';
+% sep = '/';
 
 files = dir(workspace);
 dirFlags = [files.isdir];

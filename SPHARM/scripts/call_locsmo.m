@@ -21,7 +21,6 @@ function verts = call_locsmo(param_vs, obj_vs, faces, extents, reso);
     end
 
     !spa infile outfile 4
-
     % !wine spa infile outfile 4 %TODO switch for linux
 
     % read from outfile

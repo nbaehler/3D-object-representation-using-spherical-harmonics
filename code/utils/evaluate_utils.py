@@ -6,7 +6,7 @@ import numpy as np
 
 """ too many functions, combine them"""
 
-# TODO adapt to usage
+# TODO adapt to local if needed
 kernel_path = "/home/nbaehler/workspace/3D-object-representation-using-spherical-harmonics/code/kernel.so"
 # kernel_path = '/home/nicolas/workspace/own/spharm-project/code/kernel.so'
 

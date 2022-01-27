@@ -85,7 +85,7 @@ function [currentDir] = MLDifferencesAmongModels(currentDir, referenceModelSelec
             referenceFaces = spharmFaces;
             numModelVertices = size(referenceVertices, 1);
             numModelFaces = size(referenceFaces, 1);
-            centroid = mean(referenceVertices); %TODO really?
+            centroid = mean(referenceVertices); %TODO really? was commented in some versions
         case 'average' % calculate average model to use as comparison
             % first calculate average fvec model
             for i = 1:n
@@ -259,7 +259,7 @@ function [currentDir] = MLDifferencesAmongModels(currentDir, referenceModelSelec
 
         new_name = names{i};
         new_name = new_name(1:end - 4);
-        % This writes a matlab file format that can be used in DisplayDifferenceSurfaces.m  %TODO really?
+        % This writes a matlab file format that can be used in DisplayDifferenceSurfaces.m  %TODO really? was commented in some versions
         mat_name = sprintf('%smod.mat', new_name);
         save(fullfile(currentDir, mat_name), ...
             'fvec', 'vertices', 'faces', 'dg', 'meshsize', 'spharmVertices', 'spharmFaces', ...
