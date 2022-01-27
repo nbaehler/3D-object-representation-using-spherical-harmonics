@@ -1,7 +1,7 @@
 disp('INSIDE RUN.');
 
 % TODO switch for linux
-root = 'C:\Users\baehl\Downloads\working_matlab_meshes\';
+root = 'C:\Users\baehl\Downloads\matlab_meshes\';
 % root = '/home/nicolas/Downloads/matlab_meshes/';
 sep = '\';
 % sep = '/';
@@ -29,7 +29,8 @@ for t = 1:length(type)
         [~, translation] = AUTOMLCombineAndResize(crtDir, 0, '[]', 0, inputFile);
 
         ext = '.mat';
-        baseName = strcat(char(folders(f)), '_OL_2O');
+        % baseName = strcat(char(folders(f)), '_OL_2O'); %TODO To origin, remove?
+        baseName = strcat(char(folders(f)), '_OL');
         inputFile = strcat(baseName, ext);
 
         baseName = strcat('template_', baseName, '_');

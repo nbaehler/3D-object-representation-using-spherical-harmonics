@@ -1,7 +1,7 @@
 disp('INSIDE RUN INVERSE.');
 
 % TODO switch for linux
-workspace = 'C:\Users\baehl\Downloads\working_evaluations\';
+workspace = 'C:\Users\baehl\Downloads\evaluations\';
 % workspace = '/home/nicolas/Downloads/evaluations/';
 sep = '\';
 % sep = '/';
