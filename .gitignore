@@ -4,17 +4,14 @@ __pycache__/
 
 .vscode/
 
-/experiments/
-/test/
-/data/
-/runs/
+experiments/
+test/
+data/
+runs/
+zipped/CHAOS_*
 
-/SPHARM/scripts/metric
-/SPHARM/scripts/outfile
-/SPHARM/scripts/infile
-
-SPHARM-custom/scripts/infile
-SPHARM-custom/scripts/outfile
-SPHARM-custom/scripts/metric
+SPHARM/scripts/metric
+SPHARM/scripts/outfile
+SPHARM/scripts/infile
 
 slurm*

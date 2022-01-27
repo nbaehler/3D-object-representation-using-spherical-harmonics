@@ -81,7 +81,6 @@ def load_config(exp_id):
 
     """ Model """
     cfg.first_layer_channels = 32
-    # cfg.first_layer_channels = 64
     cfg.num_input_channels = 1
     cfg.steps = 5
     cfg.batch_size = 1
@@ -96,10 +95,7 @@ def load_config(exp_id):
     cfg.learning_rate = 1e-4
 
     """ Training """
-    # cfg.numb_of_itrs = 300000
     cfg.numb_of_itrs = 10000
-
-    # cfg.eval_every = 1000
     cfg.eval_every = 1000
 
     return cfg
