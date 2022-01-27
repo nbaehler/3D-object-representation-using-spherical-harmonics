@@ -144,11 +144,11 @@ class Chaos:
                 print(sample)
 
                 x = []
-                images_path = [
+                images_path = sorted([
                     dir
                     for dir in os.listdir("{}/{}/DICOM_anon".format(data_root, sample))
                     if "dcm" in dir
-                ]
+                ])
                 for image_path in images_path:
                     file = pydicom.dcmread(
                         "{}/{}/DICOM_anon/{}".format(data_root,
@@ -223,11 +223,11 @@ class Chaos:
                 # ----
 
                 y = []
-                images_path = [
+                images_path = sorted([
                     dir
                     for dir in os.listdir("{}/{}/Ground".format(data_root, sample))
                     if "png" in dir
-                ]
+                ])
                 for image_path in images_path:
                     file = io.imread(
                         "{}/{}/Ground/{}".format(data_root, sample, image_path)
