@@ -67,8 +67,7 @@ class Structure(object):
 def write_to_wandb(writer, epoch, split, performances, num_classes):
     log_vals = {}
     for key, _ in performances[split].items():
-        log_vals[split + "_" + key +
-                 "/mean"] = np.mean(performances[split][key])
+        log_vals[split + "_" + key + "/mean"] = np.mean(performances[split][key])
         for i in range(1, num_classes):
             log_vals[split + "_" + key + "/class_" + str(i)] = np.mean(
                 performances[split][key][:, i - 1]
@@ -109,12 +108,10 @@ class Evaluator(object):
         # predictions = {}
 
         for split in [DataModes.TESTING]:
-            dataloader = DataLoader(
-                self.data[split], batch_size=1, shuffle=False)
+            dataloader = DataLoader(self.data[split], batch_size=1, shuffle=False)
             # performances[split], predictions[split] = self.evaluate_set(dataloader)
             dataSamples = self.evaluate_set(dataloader)
-            self.evaluations.append(Evaluation(
-                iteration=epoch, data=dataSamples))
+            self.evaluations.append(Evaluation(iteration=epoch, data=dataSamples))
 
             # write_to_wandb(writer, epoch, split, performances, self.config.num_classes)
 
@@ -163,8 +160,7 @@ class Evaluator(object):
 
             x = x.detach().data.cpu()
             # , voxel_rasterized=true_voxels)# TODO true mesh (dict) marching cube, voxel binary mask, points 1xNx3
-            y = Structure(mesh=true_meshes, voxel=true_voxels,
-                          points=true_points)
+            y = Structure(mesh=true_meshes, voxel=true_voxels, points=true_points)
 
         x = (x - torch.min(x)) / (torch.max(x) - torch.min(x))
         return x, y, pred
@@ -205,8 +201,7 @@ class Evaluator(object):
         eval_str = "evaluations"
 
         with open(self.config.runs_path + eval_str + ".pickle", "wb") as handle:
-            pickle.dump(self.evaluations, handle,
-                        protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump(self.evaluations, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
         save_path = self.config.runs_path + eval_str + "/"
 
@@ -219,8 +214,7 @@ class Evaluator(object):
 
         for eval_str in self.evaluations:
             save_path = (
-                self.config.runs_path + eval_str +
-                "/" + str(eval_str.iteration) + "/"
+                self.config.runs_path + eval_str + "/" + str(eval_str.iteration) + "/"
             )
 
             # Create folders for the output
@@ -295,7 +289,20 @@ class Evaluator(object):
 
                     results = data_obj.evaluate(data.y, y_hat, cfg)
 
-                    # --- Plots TODO
+                    # --- Centroid #TODO
+
+                    gt = torch.mean(data.y.mesh["vertices"][0][0], dim=0)
+                    pred = torch.mean(torch.Tensor(pred_meshes["vertices"]), dim=0)
+                    diff = gt - pred
+
+                    with open(
+                        current_path + data.name + "_centroid.txt", "w"
+                    ) as centroid:
+                        centroid.write("Ground truth: " + str(gt) + "\n")
+                        centroid.write("Prediction: " + str(pred) + "\n")
+                        centroid.write("Difference: " + str(diff) + "\n")
+
+                    # --- Plots #TODO
 
                     import matplotlib.pyplot as plt
                     import numpy as np
@@ -316,7 +323,7 @@ class Evaluator(object):
 
                     plt.close(fig)
 
-                    # --- Point clouds TODO
+                    # --- Point clouds #TODO
 
                     xs = [p[0].item() for p in pred_points[0]]
                     ys = [p[1].item() for p in pred_points[0]]
@@ -342,17 +349,15 @@ class Evaluator(object):
 
                     plt.close(fig)
 
-                    # --- Meshes TODO
+                    # --- Meshes #TODO
 
                     mesh = form_mesh(
                         np.array(pred_meshes["vertices"]),
                         np.array(pred_meshes["faces"]),
                     )
-                    save_mesh(current_path + data.name +
-                              "_mesh_pred.obj", mesh)
+                    save_mesh(current_path + data.name + "_mesh_pred.obj", mesh)
 
-                    verts = [vert.tolist()
-                             for vert in data.y.mesh["vertices"][0][0]]
+                    verts = [vert.tolist() for vert in data.y.mesh["vertices"][0][0]]
                     fcs = [fc.tolist() for fc in data.y.mesh["faces"][0][0]]
 
                     mesh = form_mesh(np.array(verts), np.array(fcs))
@@ -364,12 +369,10 @@ class Evaluator(object):
                     ratio += results["jaccard"]
 
                 chamfer.write(
-                    str(eval.iteration) + " " +
-                    str(dist / len(eval.data)) + "\n"
+                    str(eval.iteration) + " " + str(dist / len(eval.data)) + "\n"
                 )
                 IoU.write(
-                    str(eval.iteration) + " " +
-                    str(ratio / len(eval.data)) + "\n"
+                    str(eval.iteration) + " " + str(ratio / len(eval.data)) + "\n"
                 )
 
             chamfer.close()
@@ -461,8 +464,7 @@ class Evaluator(object):
                     "{}: "
                     + ", ".join(["{:.8f}" for _ in range(self.config.num_classes - 1)])
                 ).format(epoch, *performance_mean)
-                append_line(save_path + mode + "summary" +
-                            key + ".txt", summary)
+                append_line(save_path + mode + "summary" + key + ".txt", summary)
                 print(summary)
 
                 all_results = [
@@ -495,8 +497,7 @@ class Evaluator(object):
             y_overlap[ys_voxels == 1] = 3
             y_overlap[(ys_voxels == 1) & (y_hats_voxels == 1)] = 2
 
-            overlay_y_hat = blend_cpu(
-                xs, y_hats_voxels, self.config.num_classes)
+            overlay_y_hat = blend_cpu(xs, y_hats_voxels, self.config.num_classes)
             overlay_y = blend_cpu(xs, ys_voxels, self.config.num_classes)
             overlay_overlap = blend_cpu(xs, y_overlap, 4)
             overlay = np.concatenate(

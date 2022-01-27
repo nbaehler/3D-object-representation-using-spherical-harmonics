@@ -59,11 +59,10 @@ class Trainer(object):
             for data in self.trainloader:
 
                 # training step
-                loss = self.training_step(data, start_iteration)
+                loss = self.training_step(data, iteration)
 
             if iteration % print_every == 0:
-                log_vals = {key: value / print_every for key,
-                            value in loss.items()}
+                log_vals = {key: value / print_every for key, value in loss.items()}
                 log_vals["iteration"] = iteration
                 wandb.log(log_vals)
 

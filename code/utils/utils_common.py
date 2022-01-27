@@ -104,16 +104,14 @@ def _box_in_bounds(box, image_shape):
 
 
 def crop_indices(image_shape, patch_shape, center):
-    box = [(i - ps // 2, i - ps // 2 + ps)
-           for i, ps in zip(center, patch_shape)]
+    box = [(i - ps // 2, i - ps // 2 + ps) for i, ps in zip(center, patch_shape)]
     box, pad_width, needs_padding = _box_in_bounds(box, image_shape)
     slices = tuple(slice(i[0], i[1]) for i in box)
     return slices, pad_width, needs_padding
 
 
 def crop(image, patch_shape, center, mode="constant"):
-    slices, pad_width, needs_padding = crop_indices(
-        image.shape, patch_shape, center)
+    slices, pad_width, needs_padding = crop_indices(image.shape, patch_shape, center)
     patch = image[slices]
 
     if needs_padding and mode != "nopadding":
@@ -138,8 +136,7 @@ def crop(image, patch_shape, center, mode="constant"):
 
 def blend(img, labels, num_classes):
     colors = (
-        torch.tensor([[0, 0, 0], [0, 255, 0], [255, 0, 0],
-                     [0, 0, 255], [255, 0, 255]])
+        torch.tensor([[0, 0, 0], [0, 255, 0], [255, 0, 0], [0, 0, 255], [255, 0, 255]])
         .cuda()
         .float()
     )
@@ -148,8 +145,7 @@ def blend(img, labels, num_classes):
     masks = torch.zeros_like(img)
     for cls in range(1, num_classes):
         masks += (
-            torch.ones_like(img) * colors[cls] *
-            (labels == cls).float()[:, :, :, None]
+            torch.ones_like(img) * colors[cls] * (labels == cls).float()[:, :, :, None]
         )
 
     return np.uint8((255 * img * 0.8 + masks * 0.2).data.cpu().numpy())
@@ -164,14 +160,13 @@ def blend_cpu(img, labels, num_classes):
     masks = torch.zeros_like(img)
     for cls in range(1, num_classes):
         masks += (
-            torch.ones_like(img) * colors[cls] *
-            (labels == cls).float()[:, :, :, None]
+            torch.ones_like(img) * colors[cls] * (labels == cls).float()[:, :, :, None]
         )
 
     return np.uint8((255 * img * 0.8 + masks * 0.2).data.numpy())
 
 
-def stn_quaternion_rotations(params):
+def stn_quaternion_rotations(params):  # TODO twice???
 
     params = params.view(3)
     qi, qj, qk = params
@@ -209,7 +204,7 @@ def clean_border_pixels(image, step_size):
     y_[:step_size] = 0
     y_[:, :step_size] = 0
     y_[:, :, :step_size] = 0
-    y_[D - step_size:] = 0
+    y_[D - step_size :] = 0
     y_[:, H - step_size] = 0
     y_[:, :, W - step_size] = 0
 
@@ -217,8 +212,7 @@ def clean_border_pixels(image, step_size):
 
 
 def normalize_vertices(vertices, shape):
-    assert len(vertices.shape) == 2 and len(
-        shape.shape) == 2, "Inputs must be 2 dim"
+    assert len(vertices.shape) == 2 and len(shape.shape) == 2, "Inputs must be 2 dim"
     assert shape.shape[0] == 1, "first dim of shape should be length 1"
 
     return 2 * (vertices / (torch.max(shape) - 1) - 0.5)

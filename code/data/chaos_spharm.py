@@ -97,8 +97,7 @@ class Chaos:
             # x_super_res = torch.tensor(1)
             # y_super_res = torch.tensor(1)
             new_samples += [
-                SamplePlus(x.cpu(), y.cpu(), sample.name,
-                           sample.spharm_coeffs, y_outer)
+                SamplePlus(x.cpu(), y.cpu(), sample.name, sample.spharm_coeffs, y_outer)
             ]
 
         return new_samples
@@ -125,8 +124,7 @@ class Chaos:
                 "rb",
             ) as handle:
                 samples = pickle.load(handle)
-                new_samples = self.sample_to_sample_plus(
-                    samples, cfg, datamode)
+                new_samples = self.sample_to_sample_plus(samples, cfg, datamode)
                 data[datamode] = ChaosDataset(new_samples, cfg, datamode)
         data[DataModes.TRAINING_EXTENDED] = ChaosDataset(
             data[DataModes.TRAINING].data, cfg, DataModes.TRAINING_EXTENDED
@@ -146,16 +144,19 @@ class Chaos:
                 print(sample)
 
                 x = []
-                images_path = sorted([
-                    file
-                    for file in os.listdir("{}/{}/DICOM_anon".format(data_root, sample))
-                    if "dcm" in file
-                ])
+                images_path = sorted(
+                    [
+                        file
+                        for file in os.listdir(
+                            "{}/{}/DICOM_anon".format(data_root, sample)
+                        )
+                        if "dcm" in file
+                    ]
+                )
 
                 for image_path in images_path:
                     file = pydicom.dcmread(
-                        "{}/{}/DICOM_anon/{}".format(data_root,
-                                                     sample, image_path)
+                        "{}/{}/DICOM_anon/{}".format(data_root, sample, image_path)
                     )
                     x += [file.pixel_array]
 
@@ -185,8 +186,7 @@ class Chaos:
                 W = int(W * w_resolution)
                 # we resample such that 1 pixel is 1 mm in x,y and z directions
                 base_grid = torch.zeros((1, D, H, W, 3))
-                w_points = torch.linspace(-1, 1,
-                                          W) if W > 1 else torch.Tensor([-1])
+                w_points = torch.linspace(-1, 1, W) if W > 1 else torch.Tensor([-1])
                 h_points = (
                     torch.linspace(-1, 1, H) if H > 1 else torch.Tensor([-1])
                 ).unsqueeze(-1)
@@ -232,11 +232,13 @@ class Chaos:
                 # ----
 
                 y = []
-                images_path = sorted([
-                    dir
-                    for dir in os.listdir("{}/{}/Ground".format(data_root, sample))
-                    if "png" in dir
-                ])
+                images_path = sorted(
+                    [
+                        dir
+                        for dir in os.listdir("{}/{}/Ground".format(data_root, sample))
+                        if "png" in dir
+                    ]
+                )
                 for image_path in images_path:
                     file = io.imread(
                         "{}/{}/Ground/{}".format(data_root, sample, image_path)
@@ -270,8 +272,7 @@ class Chaos:
             os.makedirs(cfg.data_root)
 
         with open(cfg.loaded_data_path, "wb") as handle:
-            pickle.dump(prepare_samples, handle,
-                        protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump(prepare_samples, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     def prepare_data(self, cfg):
         if not os.path.exists(cfg.runs_path):
@@ -282,7 +283,7 @@ class Chaos:
 
         working_samples = []
 
-        # for step_size in range(3, 21):
+        # for step_size in range(3, 21): #TODO: for check
         #     for s in samples:
         #         working_samples.append(PrepareSample(s.x, s.y, s.name + '_step_size_' + str(step_size), step_size))
 
@@ -291,8 +292,7 @@ class Chaos:
                 if int(s.name) in cfg.known_to_work[step_size]:
                     working_samples.append(
                         PrepareSample(
-                            s.x, s.y, s.name + "_step_size_" +
-                            str(step_size), step_size
+                            s.x, s.y, s.name + "_step_size_" + str(step_size), step_size
                         )
                     )
 
@@ -316,8 +316,7 @@ class Chaos:
             with open(
                 cfg.runs_path + "prepared_data_" + datamode + ".pickle", "wb"
             ) as handle:
-                pickle.dump(new_samples, handle,
-                            protocol=pickle.HIGHEST_PROTOCOL)
+                pickle.dump(new_samples, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
             self.create_obj_files(cfg, new_samples, datamode)
         self.create_m_files(cfg)
@@ -342,8 +341,7 @@ class Chaos:
             # Voxel to mesh transformation
             y_ = clean_border_pixels(sample.y, step_size=sample.step_size)
             vertices, faces = voxel2mesh(
-                y_, sample.step_size, torch.tensor(
-                    sample.y.shape)[None].float()
+                y_, sample.step_size, torch.tensor(sample.y.shape)[None].float()
             )
 
             vertices = self.center(vertices)
@@ -353,15 +351,13 @@ class Chaos:
             # Points = 1 x V x 3
             # Faces =  1 x F x 3
             save_to_obj(
-                save_path + "label_" + sample.name +
-                ".obj", vertices[None], faces[None]
+                save_path + "label_" + sample.name + ".obj", vertices[None], faces[None]
             )
 
     def create_m_files(self, cfg):
         def addLine(outputStr, elem1, elem2, elem3):
             return (
-                outputStr + str(elem1) + " " + str(elem2) +
-                " " + str(elem3) + "; ...\n"
+                outputStr + str(elem1) + " " + str(elem2) + " " + str(elem3) + "; ...\n"
             )
 
         recDir = cfg.runs_path + "reconstructions/"
@@ -372,8 +368,7 @@ class Chaos:
         folders = os.listdir(directory)
         for folder in folders:
             subDir = directory + "/" + folder
-            files = list(
-                filter(lambda x: x.endswith(".obj"), os.listdir(subDir)))
+            files = list(filter(lambda x: x.endswith(".obj"), os.listdir(subDir)))
             saveDir = cfg.runs_path + "matlab_meshes/" + folder
 
             if not os.path.exists(saveDir):
@@ -384,8 +379,7 @@ class Chaos:
                 for subFolder in subFolders:
                     shutil.rmtree(saveDir + "/" + subFolder)
 
-            print("There are " + str(len(files)) +
-                  " files to convert for " + folder)
+            print("There are " + str(len(files)) + " files to convert for " + folder)
             for i in range(len(files)):
                 print("Convert file " + str(i))
                 baseName = os.path.splitext(os.path.basename(files[i]))[0]
@@ -399,7 +393,7 @@ class Chaos:
                     y = []
                     z = []
                     line = input.readline()
-                    faceCount = 0
+                    # faceCount = 0
 
                     while line:
                         elems = line.split()
@@ -418,7 +412,7 @@ class Chaos:
                                 addFacesHeader = False
                                 outputContent += "], 'faces', ["
 
-                            faceCount += 1
+                            # faceCount += 1
                             outputContent = addLine(
                                 outputContent, elems[1], elems[2], elems[3]
                             )
@@ -445,22 +439,20 @@ class Chaos:
                 i = z.index(max(z))
                 outputContent = addLine(outputContent, x[i], y[i], z[i])
 
-                outputContent = addLine(
-                    outputContent, mean(x), mean(y), mean(z))
+                outputContent = addLine(outputContent, mean(x), mean(y), mean(z))
 
                 outputContent += "]);\n"
 
-                verticeCount = len(x)
-
-                print(
-                    "# vertices: "
-                    + str(verticeCount)
-                    + ", # faces: "
-                    + str(faceCount)
-                    + " (should have: "
-                    + str(2 * (verticeCount - 2))
-                    + ")"
-                )
+                # verticeCount = len(x)
+                # print(
+                #     "# vertices: "
+                #     + str(verticeCount)
+                #     + ", # faces: "
+                #     + str(faceCount)
+                #     + " (should have: "
+                #     + str(2 * (verticeCount - 2))
+                #     + ")"
+                # )
 
                 crtDir = saveDir + "/" + baseName
                 if not os.path.exists(crtDir):
@@ -549,8 +541,7 @@ class Chaos:
         results = {}
 
         if target.voxel is not None:
-            val_jaccard = jaccard_index(
-                target.voxel, pred.voxel, cfg.num_classes)
+            val_jaccard = jaccard_index(target.voxel, pred.voxel, cfg.num_classes)
             results["jaccard"] = val_jaccard[0]
 
             # inter, union = inter_and_union(target.voxel, pred.voxel)

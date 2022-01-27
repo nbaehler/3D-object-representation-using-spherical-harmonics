@@ -23,7 +23,8 @@ for f = 3:length(folders)
     AUTOMLCombineAndResize(crtDir, 0, '[]', 0, inputFile);
 
     ext = '.mat';
-    baseName = strcat(baseName, '_OL_2O');
+    % baseName = strcat(baseName, '_OL_2O'); %TODO To origin, remove?
+    baseName = strcat(baseName, '_OL');
     inputFile = strcat(baseName, ext);
 
     baseName = strcat('template_', baseName, '_');
@@ -45,11 +46,14 @@ for f = 3:length(folders)
 
         for i = 3:length(files)
             file = char(files(i).name);
+            disp(file);
 
             if contains(file, '_0_des.mat')
                 deg = erase(file, baseName);
                 deg = erase(deg, '_0_des.mat');
                 degree = str2num(deg);
+                delete(strcat(crtDir, sep, file));
+            elseif isempty(regexp(file, '\w+.m$', 'once'))
                 delete(strcat(crtDir, sep, file));
             end
 

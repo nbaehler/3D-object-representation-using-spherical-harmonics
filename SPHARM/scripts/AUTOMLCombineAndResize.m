@@ -113,19 +113,19 @@ function [currentDir, translation] = AUTOMLCombineAndResize(currentDir, x, y, z,
         % calculate centroid
         centroid = mean(vertices);
         translation = sqrt(4 * pi) * centroid;
-        % Move objects and landmarks to origin
-        [nverts, a] = size(vertices);
-        [nlandmarks, a] = size(landmarks);
-        holdCent = centroid;
+        % Move objects and landmarks to origin %TODO needed? 2O from before!
+        % [nverts, a] = size(vertices);
+        % [nlandmarks, a] = size(landmarks);
+        % holdCent = centroid;
 
-        for j = 2:nverts
-            holdCent = [holdCent; centroid];
-        end
+        % for j = 2:nverts
+        %     holdCent = [holdCent; centroid];
+        % end
 
-        vertices = vertices - holdCent;
-        holdCent(1:nlandmarks, :);
-        landmarks = landmarks - holdCent(1:nlandmarks, :);
-        newName = [newName '_2O'];
+        % vertices = vertices - holdCent;
+        % holdCent(1:nlandmarks, :);
+        % landmarks = landmarks - holdCent(1:nlandmarks, :);
+        % newName = [newName '_2O'];
 
         % calculate rescale size factors if necessary
         centroidSize = sqrt(sum(sum(vertices' .* vertices')')); % New way to calculate centroid size changed in version 1.1

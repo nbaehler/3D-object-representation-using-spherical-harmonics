@@ -4,6 +4,8 @@ from utils import affine_3d_grid_generator
 from IPython import embed
 import time
 
+import math
+
 
 def stn_all_rotations_with_all_theta(angles, inverse=False):
     # 3,2
@@ -33,12 +35,37 @@ def stn_all_rotations(params, inverse=False):
     return theta
 
 
+# def stn_quaternion_rotations(params): #TODO old version
+
+#     params = params.view(3)
+#     qi, qj, qk = params
+
+#     s = qi ** 2 + qj ** 2 + qk ** 2
+
+#     theta = torch.eye(4, device=params.device)
+
+
+#     theta[0, 0] = 1 - 2 * s * (qj ** 2 + qk ** 2)
+#     theta[1, 1] = 1 - 2 * s * (qi ** 2 + qk ** 2)
+#     theta[2, 2] = 1 - 2 * s * (qi ** 2 + qj ** 2)
+
+#     theta[0, 1] = 2 * s * qi * qj
+#     theta[0, 2] = 2 * s * qi * qk
+
+#     theta[1, 0] = 2 * s * qi * qj
+#     theta[1, 2] = 2 * s * qj * qk
+
+#     theta[2, 0] = 2 * s * qi * qk
+#     theta[2, 1] = 2 * s * qj * qk
+
+#     return theta
+
+
 def stn_quaternion_rotations(params):
+    params = params.view(4)
+    qr, qi, qj, qk = params
 
-    params = params.view(3)
-    qi, qj, qk = params
-
-    s = qi ** 2 + qj ** 2 + qk ** 2
+    s = 1 / (math.sqrt(qr ** 2 + qi ** 2 + qj ** 2 + qk ** 2) ** 2)
 
     theta = torch.eye(4, device=params.device)
 
@@ -46,14 +73,14 @@ def stn_quaternion_rotations(params):
     theta[1, 1] = 1 - 2 * s * (qi ** 2 + qk ** 2)
     theta[2, 2] = 1 - 2 * s * (qi ** 2 + qj ** 2)
 
-    theta[0, 1] = 2 * s * qi * qj
-    theta[0, 2] = 2 * s * qi * qk
+    theta[0, 1] = 2 * s * (qi * qj - qk * qr)
+    theta[0, 2] = 2 * s * (qi * qk + qj * qr)
 
-    theta[1, 0] = 2 * s * qi * qj
-    theta[1, 2] = 2 * s * qj * qk
+    theta[1, 0] = 2 * s * (qi * qj + qk * qr)
+    theta[1, 2] = 2 * s * (qj * qk - qi * qr)
 
-    theta[2, 0] = 2 * s * qi * qk
-    theta[2, 1] = 2 * s * qj * qk
+    theta[2, 0] = 2 * s * (qi * qk - qj * qr)
+    theta[2, 1] = 2 * s * (qj * qk + qi * qr)
 
     return theta
 
@@ -62,8 +89,8 @@ def stn_batch_quaternion_rotations(params, inverse=False):
     thetas = []
     for param in params:
         theta = stn_quaternion_rotations(param)
-        # if inverse:
-        #     theta = theta.inverse()
+        if inverse:  # TODO check that inversion
+            theta = theta.inverse()
         thetas.append(theta)
 
     thetas = torch.cat(thetas, dim=0)
@@ -119,7 +146,9 @@ def transform(theta, x, y=None, w=None, w2=None):
     theta = theta[0:3, :].view(-1, 3, 4)
     grid = affine_3d_grid_generator.affine_grid(
         # TODO new, before without this param
-        theta, x[None].shape, align_corners=True
+        theta,
+        x[None].shape,
+        align_corners=True,
     )
     if x.device.type == "cuda":
         grid = grid.cuda()
@@ -149,3 +178,20 @@ def transform(theta, x, y=None, w=None, w2=None):
         return x, y
     # if w2 is not None:
     # w2 = F.grid_sample(w2[None, None].float(), grid, mode='nearest', padding_mode='zeros').long()[0, 0]
+
+
+def quaternion_to_euler(q):
+    # roll (x-axis rotation)
+    sinr_cosp = 2 * (q[0] * q[1] + q[2] * q[3])
+    cosr_cosp = 1 - 2 * (q[1] * q[1] + q[2] * q[2])
+    roll = math.atan2(sinr_cosp, cosr_cosp)
+
+    # pitch (y-axis rotation)
+    sinp = 2 * (q[0] * q[2] - q[3] * q[1])
+    pitch = math.copysign(math.pi / 2, sinp) if abs(sinp) >= 1 else math.asin(sinp)
+    # yaw (z-axis rotation)
+    siny_cosp = 2 * (q[0] * q[3] + q[1] * q[2])
+    cosy_cosp = 1 - 2 * (q[2] * q[2] + q[3] * q[3])
+    yaw = math.atan2(siny_cosp, cosy_cosp)
+
+    return roll, pitch, yaw

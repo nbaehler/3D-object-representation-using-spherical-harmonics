@@ -24,15 +24,13 @@ logger = logging.getLogger(__name__)
 def init(cfg):
 
     save_path = (
-        cfg.save_path + cfg.save_dir_prefix +
-        str(cfg.experiment_idx).zfill(3) + "/"
+        cfg.save_path + cfg.save_dir_prefix + str(cfg.experiment_idx).zfill(3) + "/"
     )
 
     mkdir(save_path)
 
     if cfg.trial_id is None:
-        cfg.trial_id = len(
-            [dir for dir in os.listdir(save_path) if "trial" in dir]) + 1
+        cfg.trial_id = len([dir for dir in os.listdir(save_path) if "trial" in dir]) + 1
 
     trial_id = cfg.trial_id
     trial_str = "trial_" + str(trial_id)
@@ -74,6 +72,7 @@ def main():
     # TODO: choose model and network
     # from data.chaos import Chaos
     from data.chaos_spharm import Chaos
+
     # from data.chaos_spharm_up import Chaos
 
     # from models.unet import UNet as network
@@ -109,8 +108,7 @@ def main():
 
         if cfg.mode != "evaluate":
             wandb.init(
-                name="Experiment_{}/trial_{}".format(
-                    cfg.experiment_idx, trial_id),
+                name="Experiment_{}/trial_{}".format(cfg.experiment_idx, trial_id),
                 project="spharm",
                 dir=cfg.save_path,
             )
@@ -133,8 +131,7 @@ def main():
         print("Trainset length: {}".format(loader.__len__()))
 
         print("Initialize evaluator")
-        evaluator = Evaluator(classifier, optimizer, data,
-                              trial_path, cfg, data_obj)
+        evaluator = Evaluator(classifier, optimizer, data, trial_path, cfg, data_obj)
 
         if cfg.mode == "evaluate":
             evaluator.do_complete_evaluations(data_obj, cfg)

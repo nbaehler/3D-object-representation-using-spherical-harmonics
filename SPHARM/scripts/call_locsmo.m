@@ -16,6 +16,8 @@ function verts = call_locsmo(param_vs, obj_vs, faces, extents, reso);
     % remove remeshout
     if exist('outfile')
         !del outfile
+        % !rm outfile %TODO switch for linux
+
     end
 
     !spa infile outfile 4

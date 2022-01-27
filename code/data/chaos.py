@@ -113,15 +113,9 @@ class Chaos:
                 "rb",
             ) as handle:
                 samples = pickle.load(handle)
-                new_samples = self.sample_to_sample_plus(
-                    samples, cfg, datamode)
+                new_samples = self.sample_to_sample_plus(samples, cfg, datamode)
                 data[datamode] = ChaosDataset(new_samples, cfg, datamode)
-        data[DataModes.TRAINING_EXTENDED] = ChaosDataset(
-            data[DataModes.TRAINING].data, cfg, DataModes.TRAINING_EXTENDED
-        )
-        # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< switch to testing
-        data[DataModes.VALIDATION] = data[DataModes.TESTING]
-        return data
+        return self._extracted_from_load_data_17(data, cfg)
 
     def load_data(self, cfg, trial_id):
         """
@@ -139,15 +133,18 @@ class Chaos:
             if "pickle" not in sample:
                 print(sample)
                 x = []
-                images_path = sorted([
-                    dir
-                    for dir in os.listdir("{}/{}/DICOM_anon".format(data_root, sample))
-                    if "dcm" in dir
-                ])
+                images_path = sorted(
+                    [
+                        dir
+                        for dir in os.listdir(
+                            "{}/{}/DICOM_anon".format(data_root, sample)
+                        )
+                        if "dcm" in dir
+                    ]
+                )
                 for image_path in images_path:
                     file = pydicom.dcmread(
-                        "{}/{}/DICOM_anon/{}".format(data_root,
-                                                     sample, image_path)
+                        "{}/{}/DICOM_anon/{}".format(data_root, sample, image_path)
                     )
                     x += [file.pixel_array]
 
@@ -174,8 +171,7 @@ class Chaos:
                 W = int(W * w_resolution)
                 # we resample such that 1 pixel is 1 mm in x,y and z directions
                 base_grid = torch.zeros((1, D, H, W, 3))
-                w_points = torch.linspace(-1, 1,
-                                          W) if W > 1 else torch.Tensor([-1])
+                w_points = torch.linspace(-1, 1, W) if W > 1 else torch.Tensor([-1])
                 h_points = (
                     torch.linspace(-1, 1, H) if H > 1 else torch.Tensor([-1])
                 ).unsqueeze(-1)
@@ -219,11 +215,13 @@ class Chaos:
                 # ----
 
                 y = []
-                images_path = sorted([
-                    dir
-                    for dir in os.listdir("{}/{}/Ground".format(data_root, sample))
-                    if "png" in dir
-                ])
+                images_path = sorted(
+                    [
+                        dir
+                        for dir in os.listdir("{}/{}/Ground".format(data_root, sample))
+                        if "png" in dir
+                    ]
+                )
                 for image_path in images_path:
                     file = io.imread(
                         "{}/{}/Ground/{}".format(data_root, sample, image_path)
@@ -253,7 +251,7 @@ class Chaos:
         np.random.seed(0)
         perm = np.random.permutation(len(inputs))
         tr_length = cfg.training_set_size
-        counts = [perm[:tr_length], perm[len(inputs) // 2:]]
+        counts = [perm[:tr_length], perm[len(inputs) // 2 :]]
         # counts = [perm[:tr_length], perm[16:]]
 
         data = {}
@@ -295,19 +293,22 @@ class Chaos:
 
             data[datamode] = ChaosDataset(samples, cfg, datamode)
         print("-end-")
+        return self._extracted_from_load_data_17(data, cfg)
+
+    # TODO Rename this here and in `quick_load_data` and `load_data`
+    def _extracted_from_load_data_17(self, data, cfg):
         data[DataModes.TRAINING_EXTENDED] = ChaosDataset(
             data[DataModes.TRAINING].data, cfg, DataModes.TRAINING_EXTENDED
         )
+
         data[DataModes.VALIDATION] = data[DataModes.TESTING]
-        # raise Exception()
         return data
 
     def evaluate(self, target, pred, cfg):
         results = {}
 
         if target.voxel is not None:
-            val_jaccard = jaccard_index(
-                target.voxel, pred.voxel, cfg.num_classes)
+            val_jaccard = jaccard_index(target.voxel, pred.voxel, cfg.num_classes)
             results["jaccard"] = val_jaccard
 
         if target.mesh is not None:
