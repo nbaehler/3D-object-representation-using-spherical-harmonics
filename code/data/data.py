@@ -113,7 +113,8 @@ def get_item(item, mode, config):
             faces_mc_all += [faces_mc]
 
     meshes = Meshes(vertices_mc_all, faces_mc_all)
-    surface_points_all = [sample_points_from_meshes(meshes, config.samples_for_chamfer)]
+    surface_points_all = [sample_points_from_meshes(
+        meshes, config.samples_for_chamfer)]
 
     return {
         "name": name,

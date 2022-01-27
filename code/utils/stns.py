@@ -118,7 +118,8 @@ def shift(axes):
 def transform(theta, x, y=None, w=None, w2=None):
     theta = theta[0:3, :].view(-1, 3, 4)
     grid = affine_3d_grid_generator.affine_grid(
-        theta, x[None].shape, align_corners=True  # TODO new, before without this param
+        # TODO new, before without this param
+        theta, x[None].shape, align_corners=True
     )
     if x.device.type == "cuda":
         grid = grid.cuda()

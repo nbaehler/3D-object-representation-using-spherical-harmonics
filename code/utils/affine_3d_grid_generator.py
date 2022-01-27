@@ -46,7 +46,8 @@ class AffineGridGenerator(Function):
         base_grid[:, :, :, :, 2] = d_points
         base_grid[:, :, :, :, 3] = 1
         ctx.base_grid = base_grid
-        grid = torch.bmm(base_grid.view(N, D * H * W, 4), theta.transpose(1, 2))
+        grid = torch.bmm(base_grid.view(N, D * H * W, 4),
+                         theta.transpose(1, 2))
         grid = grid.view(N, D, H, W, 3)
         return grid
 
