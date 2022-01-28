@@ -18,11 +18,11 @@ def load_config(exp_id):
 
     # Setup
     # cfg.mode = 'load'  # TODO DON'T USE THIS LOCALLY! Needs more than 32 GiB of RAM
-    cfg.mode = "prepare"  # TODO DON'T USE THIS LOCALLY! Needs more than 32 GiB of RAM
+    # cfg.mode = "prepare"  # TODO DON'T USE THIS LOCALLY! Needs more than 32 GiB of RAM
     # cfg.mode = 'import_params'
 
     # Training
-    # cfg.mode = 'train'
+    cfg.mode = 'train'
     # cfg.mode = 'pretrained'
 
     # Evaluate results

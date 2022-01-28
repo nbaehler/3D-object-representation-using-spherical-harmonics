@@ -310,7 +310,6 @@ class Chaos:
         perm = np.random.permutation(len(working_samples))
         tr_length = cfg.training_set_size
         counts = [perm[:tr_length], perm[tr_length:]]
-        # counts = [perm[:tr_length], perm[16:]]
 
         # down_sample_shape = cfg.patch_shape #TODO Down sample up
         # input_shape = working_samples[0].x.shape
@@ -326,14 +325,12 @@ class Chaos:
                 sample = working_samples[j]
                 print(sample.name)
 
-                # sample.x = F.interpolate( #TODO Down sample up
-                #     sample.x[None, None], scale_factor=scale_factor, mode="trilinear"
-                # )[0, 0]
+                # sample.x = F.interpolate(  # TODO Down sample up
+                #     sample.x[None, None], scale_factor=scale_factor, mode="trilinear", align_corners=True, recompute_scale_factor=True
+                # )[0, 0]  # TODO keep old behavior with param
                 # sample.y = F.interpolate(
-                #     sample.y[None, None].float(),
-                #     scale_factor=scale_factor,
-                #     mode="nearest",
-                # )[0, 0].long()
+                #     sample.y[None, None].float(), scale_factor=scale_factor, mode="nearest", recompute_scale_factor=True
+                # )[0, 0].long()  # TODO keep old behavior with param
 
                 new_samples.append(sample)
 
@@ -535,11 +532,11 @@ class Chaos:
                 print(name)
 
                 x = F.interpolate(  # TODO Down sample down
-                    x[None, None], scale_factor=scale_factor, mode="trilinear"
-                )[0, 0]
+                    x[None, None], scale_factor=scale_factor, mode="trilinear", align_corners=True, recompute_scale_factor=True
+                )[0, 0]  # TODO keep old behavior with param
                 y = F.interpolate(
-                    y[None, None].float(), scale_factor=scale_factor, mode="nearest"
-                )[0, 0].long()
+                    y[None, None].float(), scale_factor=scale_factor, mode="nearest", recompute_scale_factor=True
+                )[0, 0].long()  # TODO keep old behavior with param
 
                 params_path = (
                     cfg.runs_path
