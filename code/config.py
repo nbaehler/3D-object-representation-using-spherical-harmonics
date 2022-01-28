@@ -17,7 +17,7 @@ def load_config(exp_id):
     cfg.trial_id = 1
 
     # Setup
-    # cfg.mode = 'load' #TODO DON'T USE THIS LOCALLY! Needs more than 32 GiB of RAM
+    # cfg.mode = 'load'  # TODO DON'T USE THIS LOCALLY! Needs more than 32 GiB of RAM
     cfg.mode = "prepare"  # TODO DON'T USE THIS LOCALLY! Needs more than 32 GiB of RAM
     # cfg.mode = 'import_params'
 
@@ -32,7 +32,7 @@ def load_config(exp_id):
     cfg.root_path = (
         "/home/nbaehler/workspace/3D-object-representation-using-spherical-harmonics/"
     )
-    # cfg.root_path = '/home/nicolas/workspace/own/spharm-project/' TODO Path
+    # cfg.root_path = '/home/nicolas/workspace/own/spharm-project/' #TODO Path
     cfg.save_path = cfg.root_path + "experiments/"
     cfg.save_dir_prefix = "Experiment_"
     cfg.data_root = cfg.root_path + "data/Train_Sets/CT"
@@ -43,30 +43,29 @@ def load_config(exp_id):
     # [1,10,14,16,18,19,2,21,22,23,24,25,26,27,28,29,30,5,6,8] <- 20 in total
 
     # sample down down
-    # degree 10, 10
-    # cfg.known_to_work = {3:[16], 7:[23], 9:[14], 12:[1], 13:[10], 14:[19], 15:[2], 17:[18], 18:[8, 30]}
-    # degree 8, 14
+    # min degree 8, 3-20 step size => 16 samples
     cfg.known_to_work = {
-        3: [8, 16, 25],
-        4: [19, 24],
-        5: [14],
-        7: [23],
-        8: [10],
-        10: [22],
-        12: [1],
-        13: [18],
-        14: [28],
-        15: [2],
-        18: [30],
+        1: 6,
+        2: 15,
+        5: 0,
+        6: 3,
+        8: 3,
+        10: 5,
+        14: 9,
+        16: 3,
+        18: 11,
+        19: 4,
+        21: 0,
+        22: 10,
+        23: 16,
+        24: 4,
+        25: 3,
+        26: 11,
+        27: 0,
+        28: 14,
+        29: 0,
+        30: 12
     }
-
-    # sample down up
-    # degree 9, 4
-    # cfg.known_to_work = {2:[1, 25], 3:[8, 30]}
-    # degree 6, 10
-    # cfg.known_to_work = {2:[1, 25], 3:[8, 30], 4:[6, 16, 18, 21, 24, 28]}
-    # degree 4, 18
-    # cfg.known_to_work = {2:[1, 25], 3:[8, 30], 4:[6, 16, 18, 21, 24, 28], 5:[2, 10, 14, 22, 23], 6:[19, 27, 29]}
 
     cfg.samples_for_chamfer = 10000
 
@@ -74,7 +73,7 @@ def load_config(exp_id):
     cfg.name = "spharmnet"
 
     """ Dataset """
-    cfg.training_set_size = 11
+    cfg.training_set_size = 12
     cfg.pad_shape = (384, 384, 384)
     cfg.patch_shape = (64, 64, 64)
     cfg.ndims = 3

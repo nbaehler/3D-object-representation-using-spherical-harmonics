@@ -139,7 +139,7 @@ class Chaos:
         data_root = cfg.data_root
         samples = list(os.listdir(data_root))
 
-        prepare_samples = []
+        prepare_samples = {}
 
         for sample in samples:
             if "pickle" not in sample:
@@ -270,7 +270,7 @@ class Chaos:
 
                 y = torch.from_numpy(y / 255)
 
-                prepare_samples.append(PrepareSample(x, y, sample))
+                prepare_samples[sample] = (PrepareSample(x, y, sample))
 
         if not os.path.exists(cfg.data_root):
             os.makedirs(cfg.data_root)
@@ -291,23 +291,30 @@ class Chaos:
         # for step_size in range(3, 21):  # TODO: for check
         #     for s in samples:
         #         working_samples.append(PrepareSample(
-        #             s.x, s.y, s.name + '_step_size_' + str(step_size), step_size))
+        #             s.x, s.y, s.name + '_step_size_' + str(step_size),
+        #             step_size))
 
-        for step_size in cfg.known_to_work.keys():
-            for s in samples:
-                if int(s.name) in cfg.known_to_work[step_size]:
-                    working_samples.append(
-                        PrepareSample(
-                            s.x, s.y, s.name + "_step_size_" +
-                            str(step_size), step_size
-                        )
+        for sample in cfg.known_to_work.keys():
+            step_size = cfg.known_to_work[sample]
+            if step_size:
+                s = samples[str(sample)]
+
+                working_samples.append(
+                    PrepareSample(
+                        s.x, s.y, s.name + "_step_size_" +
+                        str(step_size), step_size
                     )
+                )
 
         np.random.seed(cfg.trial_id)
         perm = np.random.permutation(len(working_samples))
         tr_length = cfg.training_set_size
         counts = [perm[:tr_length], perm[tr_length:]]
         # counts = [perm[:tr_length], perm[16:]]
+
+        # down_sample_shape = cfg.patch_shape #TODO Down sample up
+        # input_shape = working_samples[0].x.shape
+        # scale_factor = np.max(down_sample_shape) / np.max(input_shape)
 
         for i, datamode in enumerate([DataModes.TRAINING, DataModes.TESTING]):
             print(datamode)
@@ -318,10 +325,25 @@ class Chaos:
             for j in counts[i]:
                 sample = working_samples[j]
                 print(sample.name)
+
+                # sample.x = F.interpolate( #TODO Down sample up
+                #     sample.x[None, None], scale_factor=scale_factor, mode="trilinear"
+                # )[0, 0]
+                # sample.y = F.interpolate(
+                #     sample.y[None, None].float(),
+                #     scale_factor=scale_factor,
+                #     mode="nearest",
+                # )[0, 0].long()
+
                 new_samples.append(sample)
 
             with open(
                 cfg.runs_path + "prepared_data_" + datamode + ".pickle", "wb"
+                # cfg.runs_path #TODO Down sample up
+                # + "prepared_data_{}_{}.pickle".format(
+                #     datamode, "_".join(map(str, down_sample_shape))
+                # ),
+                # "wb"
             ) as handle:
                 pickle.dump(new_samples, handle,
                             protocol=pickle.HIGHEST_PROTOCOL)
@@ -353,7 +375,7 @@ class Chaos:
                     sample.y.shape)[None].float()
             )
 
-            vertices = self.center(vertices)
+            vertices = self.center(vertices)  # TODO Down sample down
 
             # Save to obj file for meshlab
             # Points = V x 3
@@ -394,10 +416,10 @@ class Chaos:
             print("There are " + str(len(files)) +
                   " files to convert for " + folder)
             for i in range(len(files)):
-                print("Convert file " + str(i))
                 baseName = os.path.splitext(os.path.basename(files[i]))[0]
-                inputFileName = subDir + "/" + files[i]
+                print("Convert file " + baseName)
 
+                inputFileName = subDir + "/" + files[i]
                 with open(inputFileName, "r") as input:
                     outputContent = "surface = struct('vertices', ["
 
@@ -488,7 +510,8 @@ class Chaos:
                 )
 
         data = {}
-        down_sample_shape = cfg.patch_shape
+
+        down_sample_shape = cfg.patch_shape  # TODO Down sample down
         input_shape = cfg.pad_shape
         scale_factor = np.max(down_sample_shape) / np.max(input_shape)
 
@@ -511,7 +534,7 @@ class Chaos:
 
                 print(name)
 
-                x = F.interpolate(
+                x = F.interpolate(  # TODO Down sample down
                     x[None, None], scale_factor=scale_factor, mode="trilinear"
                 )[0, 0]
                 y = F.interpolate(
@@ -538,7 +561,8 @@ class Chaos:
                 + "extended_data_{}_{}.pickle".format(
                     datamode, "_".join(map(str, down_sample_shape))
                 ),
-                "wb",
+                "wb"
+                # cfg.runs_path + "extended_data.pickle", "wb" # TODO Down sample up
             ) as handle:
                 pickle.dump(samples, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
