@@ -16,12 +16,15 @@ class Layer(nn.Module):
         conv_op = nn.Conv2d if ndims == 2 else nn.Conv3d
         batch_nrom_op = nn.BatchNorm2d if ndims == 2 else nn.BatchNorm3d
 
-        conv1 = conv_op(num_channels_in, num_channels_out, kernel_size=3, padding=1)
-        conv2 = conv_op(num_channels_out, num_channels_out, kernel_size=3, padding=1)
+        conv1 = conv_op(num_channels_in, num_channels_out,
+                        kernel_size=3, padding=1)
+        conv2 = conv_op(num_channels_out, num_channels_out,
+                        kernel_size=3, padding=1)
 
         bn1 = batch_nrom_op(num_channels_out)
         bn2 = batch_nrom_op(num_channels_out)
-        self.unet_layer = nn.Sequential(conv1, bn1, nn.ReLU(), conv2, bn2, nn.ReLU())
+        self.unet_layer = nn.Sequential(
+            conv1, bn1, nn.ReLU(), conv2, bn2, nn.ReLU())
 
     def forward(self, x):
         return self.unet_layer(x)
@@ -42,7 +45,8 @@ class SPHarmNet(nn.Module):
         out_shape = np.array(config.patch_shape)
         """  Down layers """
         down_layers = [
-            Layer(config.num_input_channels, config.first_layer_channels, config.ndims)
+            Layer(config.num_input_channels,
+                  config.first_layer_channels, config.ndims)
         ]
         for i in range(1, config.steps + 1):
             down_layers.append(max_pool)
@@ -55,21 +59,24 @@ class SPHarmNet(nn.Module):
             down_layers.append(lyr)
             out_shape = out_shape // 2
 
-        feature_count = np.prod(out_shape) * config.first_layer_channels * 2 ** i
+        feature_count = np.prod(out_shape) * \
+            config.first_layer_channels * 2 ** i
 
-        fc_layers = [nn.Linear(feature_count, feature_count // 8)]
-        fc_layers.append(nn.Linear(feature_count // 8, feature_count // 64))
-        fc_layers.append(nn.Linear(feature_count // 64, feature_count // 256))
-        fc_layers.append(
-            nn.Linear(feature_count // 256, config.spharm_coefficient_count)
-        )
+        # fc_layers = [nn.Linear(feature_count, feature_count // 8)]
+        # fc_layers.append(nn.Linear(feature_count // 8, feature_count // 64))
+        # fc_layers.append(nn.Linear(feature_count // 64, feature_count // 256))
+        # fc_layers.append(
+        #     nn.Linear(feature_count // 256, config.spharm_coefficient_count)
+        # )
 
-        # fc_layers.append(nn.Linear(feature_count, feature_count//4)) #TODO Bigger NN
-        # fc_layers.append(nn.Linear(feature_count//4, feature_count//16))
-        # fc_layers.append(nn.Linear(feature_count//16, feature_count//64))
-        # fc_layers.append(nn.Linear(feature_count//64, feature_count//128))
-        # fc_layers.append(nn.Linear(feature_count//128, feature_count//256))
-        # fc_layers.append(nn.Linear(feature_count//256, config.spharm_coefficient_count))
+        # TODO Bigger NN
+        fc_layers = [nn.Linear(feature_count, feature_count//4)]
+        fc_layers.append(nn.Linear(feature_count//4, feature_count//16))
+        fc_layers.append(nn.Linear(feature_count//16, feature_count//64))
+        fc_layers.append(nn.Linear(feature_count//64, feature_count//128))
+        fc_layers.append(nn.Linear(feature_count//128, feature_count//256))
+        fc_layers.append(nn.Linear(feature_count//256,
+                                   config.spharm_coefficient_count))
 
         self.conv_encoder = nn.Sequential(*down_layers)
         self.fc_layers = nn.Sequential(*fc_layers)

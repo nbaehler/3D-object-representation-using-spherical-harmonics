@@ -4,8 +4,6 @@ from utils import stns
 import torch
 import torch.nn.functional as F
 
-# from utils import stns
-# from utils.utils_mesh import voxel2mesh, clean_border_pixels
 import numpy as np
 from IPython import embed
 
@@ -37,34 +35,34 @@ class SamplePlus:
         self.shape = shape
 
 
-class DatasetAndSupport(object):
-    def quick_load_data(self, patch_shape):
-        raise NotImplementedError
+# class DatasetAndSupport(object):
+#     def quick_load_data(self, patch_shape):
+#         raise NotImplementedError
 
-    def load_data(self, patch_shape):
-        raise NotImplementedError
+#     def load_data(self, patch_shape):
+#         raise NotImplementedError
 
-    def evaluate(self, target, pred, cfg):
-        raise NotImplementedError
+#     def evaluate(self, target, pred, cfg):
+#         raise NotImplementedError
 
-    def save_results(self, target, pred, cfg):
-        raise NotImplementedError
+#     def save_results(self, target, pred, cfg):
+#         raise NotImplementedError
 
-    def update_checkpoint(self, best_so_far, new_value):
-        raise NotImplementedError
+#     def update_checkpoint(self, best_so_far, new_value):
+#         raise NotImplementedError
 
 
 def get_item(item, mode, config):
 
     # for the first set of experiments item.y.... TODO switch to x
-    x = item.y.float().cuda()[None]
+    x = item.x.float().cuda()[None]
     y = item.y.cuda()
     name = item.name
     spharm_coeffs = item.spharm_coeffs
 
     # augmentation done only during training TODO comment -> training loss will reduce
     if mode == DataModes.TRAINING_EXTENDED:  # if training do augmentation
-        # if torch.rand(1)[0] > 0.5: #TODO changes the coefficients ?!!??!
+        # if torch.rand(1)[0] > 0.5:  # TODO changes the coefficients ?!!??!
         #     x = x.permute([0, 1, 3, 2])
         #     y = y.permute([0, 2, 1])
 
@@ -80,14 +78,16 @@ def get_item(item, mode, config):
         #     x = torch.flip(x, dims=[3])
         #     y = torch.flip(y, dims=[2])
 
-        # orientation = torch.tensor([0, -1, 0]).float() #TODO only 3 quaternions
+        # # TODO only 3 quaternions
+        # orientation = torch.tensor([0, -1, 0]).float()
         # new_orientation = (torch.rand(3) - 0.5) * 2 * np.pi
-        # new_orientation[2] = new_orientation[2] * 0 # no rotation outside x-y plane
+        # new_orientation[2] = new_orientation[2] * \
+        #     0  # no rotation outside x-y plane
         # new_orientation = F.normalize(new_orientation, dim=0)
         # q = orientation + new_orientation
         # q = F.normalize(q, dim=0)
 
-        # Scaling
+        # # Scaling
         # f = 0.1
         # scale = 1.0 - 2 * f * (torch.rand(1) - 0.5)
 
@@ -105,7 +105,7 @@ def get_item(item, mode, config):
         # spharm_coeffs[2] += shift[1]*sqrt(4*pi)
         # spharm_coeffs[4] += shift[2]*sqrt(4*pi)
 
-        # Rotation
+        # # Rotation
         # orientation = torch.tensor([0, -1, 0, 0]).float()
         # new_orientation = (torch.rand(4) - 0.5) * 2 * np.pi
         # new_orientation = F.normalize(new_orientation, dim=0)
@@ -118,7 +118,7 @@ def get_item(item, mode, config):
         # new_spharm_coeffs = []
 
         # first = 0
-        # for l in range(0, config.spharm_degree+1):
+        # for l in range(config.spharm_degree+1):
         #     for m in range(-l, l+1):
         #         index = first
 
@@ -128,86 +128,90 @@ def get_item(item, mode, config):
         #             d = 0
 
         #             for t in range(max(0, n-m), min(l+n, l-m)+1):
-        #                 denominator = fact(l+n-t)*fact(l-m-t)+fact(t+m-n)*fact(t)
-        #                 d += ((-1)**t)/denominator*((cos(pitch)/2)**(2*l+n-m-2*t))
+        #                 denominator = fact(l+n-t)*fact(l-m-t) + \
+        #                     fact(t+m-n)*fact(t)
+        #                 d += ((-1)**t)/denominator * \
+        #                     ((cos(pitch)/2)**(2*l+n-m-2*t))
 
         #             numerator = sqrt(fact(l+n)*fact(l-n)*fact(l+m)*fact(l-m))
         #             factor = (sin(pitch)/2)**(2*l+m-n)
         #             d *= numerator*factor
 
         #             D = cmath.exp((-1j)*yaw*n)*d*cmath.exp((-1j)*roll*m)
-        #             for dim in range(0, len(new_coeffs)):
-        #                 new_coeffs[dim] += D*complex(spharm_coeffs[index], spharm_coeffs[index+1])
+        #             for dim in range(len(new_coeffs)):
+        #                 new_coeffs[dim] += D * \
+        #                     complex(spharm_coeffs[index],
+        #                             spharm_coeffs[index+1])
         #                 index += 2
 
-        #         for dim in range(0, len(new_coeffs)):
+        #         for dim in range(len(new_coeffs)):
         #             new_spharm_coeffs.append(new_coeffs[dim].real)
         #             new_spharm_coeffs.append(new_coeffs[dim].imag)
 
         #     first = index
 
         # theta = theta_rotate @ theta_shift @ theta_scale
-        # theta = theta_shift @ theta_scale
-        # theta = theta_scale
-        # theta = theta_shift
+        # # theta = theta_shift @ theta_scale
+        # # theta = theta_scale
+        # # theta = theta_shift
 
-        # ----------------------------------------------------------
+        # # ----------------------------------------------------------
 
-        # import os
-        # import pickle
+        # # import os #TODO Testing
+        # # import pickle
 
-        # save_path = config.data_path+'testing/'
+        # # save_path = config.data_path+'testing/'
 
-        # # Create folders for the output
-        # if not os.path.exists(save_path):
-        #     os.makedirs(save_path)
+        # # # Create folders for the output
+        # # if not os.path.exists(save_path):
+        # #     os.makedirs(save_path)
 
-        # with open(save_path + 'y_before.pickle', 'wb') as handle:
-        #     pickle.dump(y, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        # # with open(save_path + 'y_before.pickle', 'wb') as handle:
+        # #     pickle.dump(y, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-        # ----------------------------------------------------------
+        # # ----------------------------------------------------------
 
         # x, y = stns.transform(theta, x, y)
         # spharm_coeffs = torch.Tensor(new_spharm_coeffs)
 
-        # ----------------------------------------------------------
+        # # ----------------------------------------------------------
 
-        # f = open(save_path+'coeffs.txt', 'w')
+        # # f = open(save_path+'coeffs.txt', 'w') #TODO Testing
 
-        # params = spharm_coeffs
+        # # params = spharm_coeffs
 
-        # for j in range(len(params)):
-        #     delimiter = '\n' if j % 6 == 5 else ' '
-        #     f.write(str(params[j].item())+delimiter)
-        # f.close()
+        # # for j in range(len(params)):
+        # #     delimiter = '\n' if j % 6 == 5 else ' '
+        # #     f.write(str(params[j].item())+delimiter)
+        # # f.close()
 
-        # with open(save_path + 'x.pickle', 'wb') as handle:
-        #     pickle.dump(x, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        # # with open(save_path + 'x.pickle', 'wb') as handle:
+        # #     pickle.dump(x, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-        # with open(save_path + 'y_after.pickle', 'wb') as handle:
-        #     pickle.dump(y, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        # # with open(save_path + 'y_after.pickle', 'wb') as handle:
+        # #     pickle.dump(y, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-        # import sys
-        # sys.exit()
+        # # import sys
+        # # sys.exit()
 
-        # ----------------------------------------------------------
+        # # ----------------------------------------------------------
 
         return {"name": name, "x": x, "y_voxels": y, "y_spharm_coeffs": spharm_coeffs}
 
     vertices_mc_all = []
     faces_mc_all = []
+    step_size = 1
     for i in range(1, config.num_classes):
         shape = torch.tensor(y.shape)[None].float()
-        if mode != DataModes.TRAINING_EXTENDED:
-            step_size = 1
-            y_ = clean_border_pixels((y == i).long(), step_size=step_size)
-            vertices_mc, faces_mc = voxel2mesh(y_, step_size, shape)
+        y_ = clean_border_pixels((y == i).long(), step_size=step_size)
+        vertices_mc, faces_mc = voxel2mesh(y_, step_size, shape)
 
-            vertices_mc_all += [vertices_mc]
-            faces_mc_all += [faces_mc]
+        vertices_mc_all += [vertices_mc]
+        faces_mc_all += [faces_mc]
 
     meshes = Meshes(vertices_mc_all, faces_mc_all)
-    surface_points_all = [sample_points_from_meshes(meshes, config.samples_for_chamfer)]
+    surface_points_all = [sample_points_from_meshes(
+        meshes, config.samples_for_chamfer)]
 
     return {
         "name": name,

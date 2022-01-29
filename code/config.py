@@ -14,7 +14,7 @@ def load_config(exp_id):
     cfg.experiment_idx = exp_id
 
     # cfg.trial_id = None  # Use None for generating a new id
-    cfg.trial_id = 1
+    cfg.trial_id = 2
 
     # Setup
     # cfg.mode = 'load'  # TODO DON'T USE THIS LOCALLY! Needs more than 32 GiB of RAM
@@ -22,11 +22,11 @@ def load_config(exp_id):
     # cfg.mode = 'import_params'
 
     # Training
-    # cfg.mode = 'train'
+    cfg.mode = 'train'
     # cfg.mode = 'pretrained'
 
     # Evaluate results
-    cfg.mode = 'evaluate'
+    # cfg.mode = 'evaluate'
 
     """ Save at """
     cfg.root_path = (
@@ -95,7 +95,7 @@ def load_config(exp_id):
     cfg.learning_rate = 1e-4
 
     """ Training """
-    cfg.numb_of_itrs = 10000
-    cfg.eval_every = 1000
+    cfg.numb_of_itrs = 20000
+    cfg.eval_every = 2000
 
     return cfg

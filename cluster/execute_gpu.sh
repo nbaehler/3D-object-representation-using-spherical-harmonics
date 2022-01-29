@@ -7,7 +7,7 @@
 #SBATCH --cpus-per-task=20
 #SBATCH --partition=gpu
 #SBATCH --qos=gpu_free
-#SBATCH --gres=gpu:2
+#SBATCH --gres=gpu:1
 
 # https://www.epfl.ch/research/facilities/scitas/hardware/izar/
 

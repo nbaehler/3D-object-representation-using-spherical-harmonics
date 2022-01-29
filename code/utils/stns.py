@@ -146,7 +146,6 @@ def transform(theta, x, y=None, w=None, w2=None):
     grid = affine_3d_grid_generator.affine_grid(
         theta,
         x[None].shape,
-        align_corners=True  # TODO new, before without this param
     )
     if x.device.type == "cuda":
         grid = grid.cuda()

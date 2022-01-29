@@ -610,6 +610,6 @@ class Chaos:
         best_so_far = best_so_far[DataModes.TESTING][key]
         return np.mean(new_value) > np.mean(best_so_far)
 
-    def center(self, vertices):  # TODO needed when using down sample only
+    def center(self, vertices):
         center_of_gravity = torch.mean(vertices, dim=0)
         return vertices - center_of_gravity
