@@ -351,14 +351,12 @@ class Chaos:
     def create_obj_files(self, cfg, samples, datamode):
         save_path = cfg.runs_path + "label_meshes/" + datamode + "/"
 
-        # Create folders for the output
-        if not os.path.exists(save_path):
-            os.makedirs(save_path)
-        # Clear content if it already exists
-        else:
-            files = os.listdir(save_path)
-            for file in files:
-                os.remove(save_path + file)
+        # Delete output folder if it already exists
+        if os.path.exists(save_path):
+            shutil.rmtree(save_path, ignore_errors=True)
+
+        # Create the folder
+        os.makedirs(save_path)
 
         # Export to other formats
         print("There are " + str(len(samples)) + " files to process")
@@ -391,8 +389,13 @@ class Chaos:
             )
 
         recDir = cfg.runs_path + "reconstructions/"
-        if not os.path.exists(recDir):
-            os.makedirs(recDir)
+
+        # Delete reconstructions folder if it already exists
+        if os.path.exists(recDir):
+            shutil.rmtree(recDir, ignore_errors=True)
+
+        # Create the folder
+        os.makedirs(recDir)
 
         directory = cfg.runs_path + "label_meshes"
         folders = os.listdir(directory)
@@ -402,13 +405,12 @@ class Chaos:
                 filter(lambda x: x.endswith(".obj"), os.listdir(subDir)))
             saveDir = cfg.runs_path + "matlab_meshes/" + folder
 
-            if not os.path.exists(saveDir):
-                os.makedirs(saveDir)
-            # Clear content if it already exists
-            else:
-                subFolders = os.listdir(saveDir)
-                for subFolder in subFolders:
-                    shutil.rmtree(saveDir + "/" + subFolder)
+            # Delete output folder if it already exists
+            if os.path.exists(saveDir):
+                shutil.rmtree(saveDir, ignore_errors=True)
+
+            # Create the folder
+            os.makedirs(saveDir)
 
             print("There are " + str(len(files)) +
                   " files to convert for " + folder)

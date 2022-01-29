@@ -221,6 +221,15 @@ class Evaluator(object):
         # Create the folder
         os.makedirs(save_path)
 
+        save_path = self.config.runs_path + "results/"
+
+        # Delete results folder if it already exists
+        if os.path.exists(save_path):
+            shutil.rmtree(save_path, ignore_errors=True)
+
+        # Create the folder
+        os.makedirs(save_path)
+
         for eval in self.evaluations:
             save_path = (
                 self.config.runs_path + eval_str +
@@ -242,7 +251,7 @@ class Evaluator(object):
         with open(self.config.runs_path + "evaluations.pickle", "rb") as handle:
             evaluations = pickle.load(handle)
 
-        save_path = self.config.runs_path + "evaluations/"
+        save_path = self.config.runs_path + "results/"
 
         chamfer = open(save_path + "chamfer_distance.dat", "w")
         with open(save_path + "intersection_over_union.dat", "w") as IoU:
