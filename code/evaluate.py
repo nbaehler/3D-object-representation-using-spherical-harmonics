@@ -25,7 +25,7 @@ import wandb
 
 import re
 
-# from pymesh import load_mesh, save_mesh, form_mesh #TODO fail to install
+from pymesh import load_mesh, save_mesh, form_mesh
 
 from pytorch3d.ops import sample_points_from_meshes
 from pytorch3d.structures import Meshes

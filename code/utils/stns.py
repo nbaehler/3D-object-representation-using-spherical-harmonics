@@ -44,7 +44,6 @@ def stn_all_rotations(params, inverse=False):
 
 #     theta = torch.eye(4, device=params.device)
 
-
 #     theta[0, 0] = 1 - 2 * s * (qj ** 2 + qk ** 2)
 #     theta[1, 1] = 1 - 2 * s * (qi ** 2 + qk ** 2)
 #     theta[2, 2] = 1 - 2 * s * (qi ** 2 + qj ** 2)

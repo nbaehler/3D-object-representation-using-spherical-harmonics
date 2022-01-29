@@ -288,7 +288,7 @@ class Chaos:
 
         working_samples = []
 
-        # for step_size in range(3, 21):  # TODO: for check
+        # for step_size in range(3, 21):  # TODO for check
         #     for s in samples:
         #         working_samples.append(PrepareSample(
         #             s.x, s.y, s.name + '_step_size_' + str(step_size),
