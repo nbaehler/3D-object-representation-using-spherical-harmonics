@@ -85,7 +85,7 @@ function [currentDir] = MLDifferencesAmongModels(currentDir, referenceModelSelec
             referenceFaces = spharmFaces;
             numModelVertices = size(referenceVertices, 1);
             numModelFaces = size(referenceFaces, 1);
-            centroid = mean(referenceVertices); %TODO really? was commented in some versions
+            % centroid = mean(referenceVertices); %TODO really? was commented in some versions
         case 'average' % calculate average model to use as comparison
             % first calculate average fvec model
             for i = 1:n
