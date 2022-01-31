@@ -1,4 +1,4 @@
-function [currentDir, translation] = AUTOMLCombineAndResize(currentDir, x, y, z, inputFile)
+function [currentDir, centroid] = AUTOMLCombineAndResize(currentDir, x, y, z, inputFile)
     % Combine vertices, faces and landmarks in one file and resize object.
     % The user is prompted to select >=1 triangular mesh files from the disk as
     % input.  Each file must also have an associated file of landmarks with the
@@ -112,8 +112,7 @@ function [currentDir, translation] = AUTOMLCombineAndResize(currentDir, x, y, z,
 
         % calculate centroid
         centroid = mean(vertices);
-        translation = sqrt(4 * pi) * centroid;
-        % Move objects and landmarks to origin %TODO needed? 2O from before!
+        % Move objects and landmarks to origin %TODO Not needed, do not center
         % [nverts, a] = size(vertices);
         % [nlandmarks, a] = size(landmarks);
         % holdCent = centroid;

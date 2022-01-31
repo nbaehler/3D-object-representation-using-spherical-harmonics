@@ -26,10 +26,13 @@ for t = 1:length(type)
         % x=0, No Size Rescaling; x=1, Centroid Size; x=2, Distance Size
         % y, Landmark distances for resizing Pairs: [1 2; 2 3] for example
         % z, Output Sizes to File (bool)
-        [~, translation] = AUTOMLCombineAndResize(crtDir, 0, '[]', 0, inputFile);
+        [~, centroid] = AUTOMLCombineAndResize(crtDir, 0, '[]', 0, inputFile);
+
+        disp(centroid); %Does it match the one from evaluation, of gt? If not ... problem
+
+        translation = sqrt(4 * pi) * centroid;
 
         ext = '.mat';
-        % baseName = strcat(char(folders(f)), '_OL_2O'); %TODO To origin, remove?
         baseName = strcat(char(folders(f)), '_OL');
         inputFile = strcat(baseName, ext);
 

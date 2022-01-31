@@ -59,7 +59,6 @@ function [currentDir] = MLPCACoeffs(currentDir, x, y, z)
     %       Do PCA
     %--------------------
     fvecs = fvecs.';
-    % [eigenvecs, scores, eigenvals] = princomp(fvecs);
     [eigenvecs, scores, eigenvals] = pca(fvecs);
     perc_variance_explained = eigenvals / sum(eigenvals);
 

@@ -18,7 +18,6 @@ function [pca_ps, pca_b, var_amt, latent] = do_pca(points, pca_dim)
     % [points pointsavg] = zeromean(points);
 
     pca_dim = min(pca_dim, size(points, 2));
-    % [pca_b, score, latent, tsquare] = princomp(points);
     [pca_b, score, latent, tsquare] = pca(points);
     pca_b = pca_b(:, 1:pca_dim);
     pca_ps = points * pca_b;

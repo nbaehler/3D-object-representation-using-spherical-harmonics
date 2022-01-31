@@ -98,7 +98,7 @@ for i = 1:n
         averageFvec = fvec;
         averageVertices = spharmVertices;
         %        averageFaces = spharmFaces;
-        %         averageLandmarks = landmarks;
+        %         averageLandmarks = landmarks;  %TODO Where is this file even used?
         [numModelVertices, fake] = size(spharmVertices);
         [numModelFaces, fake] = size(spharmFaces);
     else

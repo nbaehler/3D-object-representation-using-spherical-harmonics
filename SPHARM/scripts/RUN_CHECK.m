@@ -24,7 +24,6 @@ for f = 3:length(folders)
     AUTOMLCombineAndResize(crtDir, 0, '[]', 0, inputFile);
 
     ext = '.mat';
-    % baseName = strcat(baseName, '_OL_2O'); %TODO To origin, remove?
     baseName = strcat(baseName, '_OL');
     inputFile = strcat(baseName, ext);
 
