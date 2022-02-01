@@ -69,7 +69,7 @@ class SPHarmNet(nn.Module):
         #     nn.Linear(feature_count // 256, config.spharm_coefficient_count)
         # )
 
-        # TODO Bigger NN
+        # Bigger NN
         fc_layers = [nn.Linear(feature_count, feature_count//4)]
         fc_layers.append(nn.Linear(feature_count//4, feature_count//16))
         fc_layers.append(nn.Linear(feature_count//16, feature_count//64))

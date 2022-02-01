@@ -206,7 +206,6 @@ def voxel2mesh(volume, step_size, shape):
     :param shape:
     :return:
     """
-    # vertices_mc, faces_mc, _, _ = measure.marching_cubes_lewiner( #TODO old version
     vertices_mc, faces_mc, _, _ = measure.marching_cubes(
         volume.cpu().data.numpy(), 0, step_size=step_size, allow_degenerate=False
     )

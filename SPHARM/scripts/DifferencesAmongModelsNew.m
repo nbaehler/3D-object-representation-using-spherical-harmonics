@@ -40,6 +40,8 @@ numModelFaces = 0;
 minDistDiff = 0;
 maxDistDiff = 0;
 
+disp("AAAAAAAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"); %TODO Where is this file even used?
+
 % get models for comparison from the disk
 [names, currentDir] = uigetfile({'*.mat', 'Matlab .mat files'; ...
                             '*_reg.mat', 'Matlab registered _reg.mat files'; ...
@@ -98,7 +100,7 @@ for i = 1:n
         averageFvec = fvec;
         averageVertices = spharmVertices;
         %        averageFaces = spharmFaces;
-        %         averageLandmarks = landmarks;  %TODO Where is this file even used?
+        %         averageLandmarks = landmarks;
         [numModelVertices, fake] = size(spharmVertices);
         [numModelFaces, fake] = size(spharmFaces);
     else

@@ -195,7 +195,7 @@ class Chaos:
                     grid,
                     mode="bilinear",
                     padding_mode="border",
-                    align_corners=True,  # TODO new, before without this param
+                    align_corners=True,
                 )[0, 0]
                 x = x.data.cpu().numpy()
                 # ----
@@ -240,7 +240,7 @@ class Chaos:
                     grid,
                     mode="nearest",
                     padding_mode="border",
-                    align_corners=True,  # TODO new, before without this param
+                    align_corners=True,
                 )[0, 0]
                 y = y.data.cpu().numpy()
 

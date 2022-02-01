@@ -112,7 +112,7 @@ function [currentDir, centroid] = AUTOMLCombineAndResize(currentDir, x, y, z, in
 
         % calculate centroid
         centroid = mean(vertices);
-        % Move objects and landmarks to origin %TODO Not needed, do not center
+        % Move objects and landmarks to origin -> Not needed, do not center
         % [nverts, a] = size(vertices);
         % [nlandmarks, a] = size(landmarks);
         % holdCent = centroid;

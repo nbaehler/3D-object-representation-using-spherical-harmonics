@@ -228,10 +228,10 @@ function [currentDir] = AUTOMLMakeModels(currentDir, x, y, z, inputFile, smoothF
         %---------------------------------------------
         % if model is to be written to disk as text, here's where
 
-        disp("=================");
+        disp("===================================================");
         disp(fvec(1, 1)); %TODO needed, to put translation here?
         disp(translation(1));
-        disp("=================");
+        disp("===================================================");
 
         if (toFile)
             fvec(1, 1) = translation(1) + i * 0.0;

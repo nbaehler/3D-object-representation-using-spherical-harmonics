@@ -211,7 +211,7 @@ class Chaos:
                     grid,
                     mode="bilinear",
                     padding_mode="border",
-                    align_corners=True,  # TODO new, before without this param
+                    align_corners=True,
                 )[0, 0]
                 x = x.data.cpu().numpy()
                 # ----
@@ -258,7 +258,7 @@ class Chaos:
                     grid,
                     mode="nearest",
                     padding_mode="border",
-                    align_corners=True,  # TODO new, before without this param
+                    align_corners=True,
                 )[0, 0]
                 y = y.data.cpu().numpy()
 
@@ -327,10 +327,10 @@ class Chaos:
 
                 # sample.x = F.interpolate(  # TODO Down sample up
                 #     sample.x[None, None], scale_factor=scale_factor, mode="trilinear", align_corners=True, recompute_scale_factor=True
-                # )[0, 0]  # TODO keep old behavior with param
+                # )[0, 0]
                 # sample.y = F.interpolate(
                 #     sample.y[None, None].float(), scale_factor=scale_factor, mode="nearest", recompute_scale_factor=True
-                # )[0, 0].long()  # TODO keep old behavior with param
+                # )[0, 0].long()
 
                 new_samples.append(sample)
 
@@ -370,7 +370,7 @@ class Chaos:
                     sample.y.shape)[None].float()
             )
 
-            vertices = self.center(vertices)  # TODO Down sample down
+            # vertices = self.center(vertices)  # TODO Why should we do that???
 
             # Save to obj file for meshlab
             # Points = V x 3
@@ -535,10 +535,10 @@ class Chaos:
 
                 x = F.interpolate(  # TODO Down sample down
                     x[None, None], scale_factor=scale_factor, mode="trilinear", align_corners=True, recompute_scale_factor=True
-                )[0, 0]  # TODO keep old behavior with param
+                )[0, 0]
                 y = F.interpolate(
                     y[None, None].float(), scale_factor=scale_factor, mode="nearest", recompute_scale_factor=True
-                )[0, 0].long()  # TODO keep old behavior with param
+                )[0, 0].long()
 
                 params_path = (
                     cfg.runs_path
@@ -585,7 +585,7 @@ class Chaos:
             # inter, union = inter_and_union(target.voxel, pred.voxel)
             # results['jaccard'] = inter/union
 
-        # if target.mesh is not None: TODO
+        # if target.mesh is not None:
         #     target_points = target.points
         #     pred_points = pred.mesh
         #     val_chamfer_weighted_symmetric = np.zeros(len(target_points))
@@ -612,6 +612,6 @@ class Chaos:
         best_so_far = best_so_far[DataModes.TESTING][key]
         return np.mean(new_value) > np.mean(best_so_far)
 
-    def center(self, vertices):
+    def center(self, vertices):  # TODO remove?!
         center_of_gravity = torch.mean(vertices, dim=0)
         return vertices - center_of_gravity
