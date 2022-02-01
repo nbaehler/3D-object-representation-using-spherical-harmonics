@@ -28,7 +28,7 @@ for t = 1:length(type)
         % z, Output Sizes to File (bool)
         [~, centroid] = AUTOMLCombineAndResize(crtDir, 0, '[]', 0, inputFile);
 
-        disp(centroid); %Does it match the one from evaluation, of gt? If not ... problem
+        % disp(centroid); % TODO Does it match the one from evaluation, of gt? If not ... problem
 
         translation = sqrt(4 * pi) * centroid;
 
