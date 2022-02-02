@@ -51,7 +51,7 @@ for f = 3:length(folders)
             if contains(file, '_0_des.mat')
                 deg = erase(file, baseName);
                 deg = erase(deg, '_0_des.mat');
-                degree = str2num(deg);
+                degree = str2double(deg);
                 delete(strcat(crtDir, sep, file));
             elseif isempty(regexp(file, '\w+.m$', 'once'))
                 delete(strcat(crtDir, sep, file));

@@ -49,7 +49,7 @@ function [currentDir] = AUTOMLMakeTemplate(currentDir, x, y, inputFile, smoothFi
     fullFileName = fullfile(currentDir, name);
     disp(name);
     disp(fullFileName);
-    [currentDir, name, ext] = fileparts(fullFileName);
+    [currentDir, name, ~] = fileparts(fullFileName);
     load(fullFileName);
     % faces = surface.faces(:,:);
     % vertices = surface.vertices(:,:);
@@ -69,7 +69,7 @@ function [currentDir] = AUTOMLMakeTemplate(currentDir, x, y, inputFile, smoothFi
         name = ['template_' name];
         new_name = [name '_smo.mat'];
         % dateline, mesh_landmarks, metric just used for debugging by Li
-        [sph_verts, vertices, faces, dateline, mesh_landmarks, metric] = ...
+        [sph_verts, vertices, faces, dateline, ~, metric] = ...
         smooth_surface(maxfn, switchcc, vertices, faces, name);
         save(fullfile(currentDir, new_name), 'sph_verts', 'vertices', 'faces', 'dateline', 'landmarks', 'metric');
     else

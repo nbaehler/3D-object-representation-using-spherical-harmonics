@@ -59,9 +59,9 @@ function [currentDir] = AUTOMLMakeModels(currentDir, x, y, z, inputFile, smoothF
     templateFileName = fullfile(currentDir, name);
 
     % get file list from disk and smooth if necessary
-    if (smooth == 1);
+    if (smooth == 1)
         [names, currentDir] = uigetfile({'*.mat', 'Matlab .mat files'}, 'Select Files to Make SPHARM models', currentDir, 'MultiSelect', 'on');
-        [fake, n] = size(names);
+        [~, n] = size(names);
         moreThanOneFile = iscell(names);
 
         if (isnumeric(names))
@@ -85,7 +85,7 @@ function [currentDir] = AUTOMLMakeModels(currentDir, x, y, z, inputFile, smoothF
 
     else
         names = smoothFile;
-        [fake, n] = size(names);
+        [~, n] = size(names);
         moreThanOneFile = iscell(names);
 
         if (isnumeric(names))
@@ -125,7 +125,7 @@ function [currentDir] = AUTOMLMakeModels(currentDir, x, y, z, inputFile, smoothF
     end
 
     % do processing of each file
-    for i = 1:n;
+    for i = 1:n
 
         if (moreThanOneFile)
             file = fullfile(currentDir, names{i});
@@ -148,7 +148,7 @@ function [currentDir] = AUTOMLMakeModels(currentDir, x, y, z, inputFile, smoothF
         if (smooth == 1)
             new_name = [name '_smo.mat'];
             % dateline, mesh_landmarks, metric just used for debugging by Li
-            [sph_verts, vertices, faces, dateline, mesh_landmarks, metric] = ...
+            [sph_verts, vertices, faces, dateline, ~, metric] = ...
             smooth_surface(maxfn, switchcc, vertices, faces, name);
             % if statement to set centroidSize to -1 for legacy files that do
             % not contain the centroidSize
@@ -234,7 +234,7 @@ function [currentDir] = AUTOMLMakeModels(currentDir, x, y, z, inputFile, smoothF
             fvec(1, 3) = translation(3) + i * 0.0;
 
             fprintf(fid, new_name);
-            [rows cols] = size(fvec);
+            [rows , ~] = size(fvec);
 
             for k = 1:rows
 

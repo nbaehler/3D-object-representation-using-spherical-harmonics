@@ -19,7 +19,7 @@ function [currentDir] = AUTOMLMakeSurfacesFromSPHARMModels(currentDir, x, y, inp
     disp('INSIDE MLMakeSurfacesFromSPHARMModels.');
 
     names = inputFile;
-    [fake, n] = size(names);
+    [~, n] = size(names);
     moreThanOneFile = iscell(names);
 
     if (isnumeric(names))
@@ -41,7 +41,7 @@ function [currentDir] = AUTOMLMakeSurfacesFromSPHARMModels(currentDir, x, y, inp
 
     end
 
-    for i = 1:n;
+    for i = 1:n
 
         if (moreThanOneFile)
             file = fullfile(currentDir, names{i});
@@ -50,7 +50,7 @@ function [currentDir] = AUTOMLMakeSurfacesFromSPHARMModels(currentDir, x, y, inp
         end
 
         file = deblank(file);
-        [currentDir, name, ext] = fileparts(file);
+        [currentDir, name, ~] = fileparts(file);
         load(file);
 
         % if meshsize == 0 reconstruct original.  Otherwise, build model based on sampling resolution

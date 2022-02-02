@@ -18,7 +18,7 @@ function [currentDir] = AUTOMLMakeSurfacesFromSPHARMModelsFromParameters(current
     outputFormat = y;
     disp('INSIDE AUTOMLMakeSurfacesFromSPHARMModelsFromParameters.');
 
-    [filepath, name, ext] = fileparts(inputFile);
+    [~, name, ~] = fileparts(inputFile);
 
     % if meshsize == 0 reconstruct original.  Otherwise, build model based on sampling resolution
     % specified by input meshsize.

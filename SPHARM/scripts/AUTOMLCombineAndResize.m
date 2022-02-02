@@ -27,9 +27,9 @@ function [currentDir, centroid] = AUTOMLCombineAndResize(currentDir, x, y, z, in
     resize = x;
     landmarksForDistances = y;
     sizesToFile = z;
-    [numLandmarkDists a] = size(landmarksForDistances);
+    [numLandmarkDists , ~] = size(landmarksForDistances);
     names = inputFile;
-    [fake, n] = size(names);
+    [~, n] = size(names);
     moreThanOneFile = iscell(names);
 
     if (isnumeric(names))
@@ -74,7 +74,7 @@ function [currentDir, centroid] = AUTOMLCombineAndResize(currentDir, x, y, z, in
     end
 
     % Process files
-    for i = 1:n;
+    for i = 1:n
 
         if (moreThanOneFile)
             file = fullfile(currentDir, names{i});
@@ -389,8 +389,8 @@ function [vertices, faces, landmarks] = readObjectStructureFromSTLFile(filename)
     if strncmpi(fword, 'facet', 5)
         report_num = report_num + 1; % Report a counter, so long files show status
 
-        if report_num > 2499;
-            disp(sprintf('Reading facet num: %d.', size(faces, 1)));
+        if report_num > 2499
+            fprintf('Reading facet num: %d.\n', size(faces, 1));
             report_num = 0;
         end
 
