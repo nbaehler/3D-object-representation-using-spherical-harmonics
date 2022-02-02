@@ -1,7 +1,3 @@
-import numpy as np
-import torch
-
-
 class Config:
     def __init__(self):
         super(Config, self).__init__()
@@ -13,16 +9,16 @@ def load_config(exp_id):
     """ Experiment """
     cfg.experiment_idx = exp_id
 
-    # cfg.trial_id = None  # Use None for generating a new id
-    cfg.trial_id = 3
+    cfg.trial_id = None  # Use None for generating a new id
+    cfg.trial_id = 4
 
     # Setup
     # cfg.mode = 'load'  # TODO DON'T USE THIS LOCALLY! Needs more than 32 GiB of RAM
     # cfg.mode = "prepare"  # TODO DON'T USE THIS LOCALLY! Needs more than 32 GiB of RAM
-    # cfg.mode = 'import_params'
+    cfg.mode = 'import_params'
 
     # Training
-    cfg.mode = 'train'
+    # cfg.mode = 'train'
     # cfg.mode = 'pretrained'
 
     # Evaluate results
@@ -40,7 +36,7 @@ def load_config(exp_id):
     cfg.loaded_data_path = cfg.root_path + "data/loaded_data.pickle"
 
     # sample names
-    # [1,10,14,16,18,19,2,21,22,23,24,25,26,27,28,29,30,5,6,8] <- 20 in total
+    # [1,2,5,6,8,10,14,16,18,19,21,22,23,24,25,26,27,28,29,30] <- 20 in total
 
     # sample down down
     # min degree 8, 3-20 step size => 16 samples

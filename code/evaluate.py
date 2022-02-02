@@ -35,19 +35,14 @@ import shutil
 import matplotlib.pyplot as plt
 import numpy as np
 
+# TODO: choose model
+from data.chaos_spharm import Sample
+
 
 class Evaluation:
     def __init__(self, iteration, data):
         self.iteration = iteration
         self.data = data
-
-
-class DataSample:
-    def __init__(self, x, y, name, y_hat_spharm_coeffs):
-        self.x = x
-        self.y = y
-        self.name = name
-        self.y_hat_spharm_coeffs = y_hat_spharm_coeffs
 
 
 class Structure(object):
@@ -116,9 +111,9 @@ class Evaluator(object):
             dataloader = DataLoader(
                 self.data[split], batch_size=1, shuffle=False)
             # performances[split], predictions[split] = self.evaluate_set(dataloader)
-            dataSamples = self.evaluate_set(dataloader)
+            samples = self.evaluate_set(dataloader)
             self.evaluations.append(Evaluation(
-                iteration=epoch, data=dataSamples))
+                iteration=epoch, data=samples))
 
             # write_to_wandb(writer, epoch, split, performances, self.config.num_classes)
 
@@ -177,13 +172,13 @@ class Evaluator(object):
         # performance = {}
         # predictions = []
 
-        dataSamples = []
+        samples = []
 
         for data in dataloader:
 
             x, y, y_hat_spharm_coeffs = self.predict(data, self.config)
-            dataSamples.append(
-                DataSample(
+            samples.append(
+                Sample(
                     x=x,
                     y=y,
                     name=data["name"][0],
@@ -203,7 +198,7 @@ class Evaluator(object):
         # for key, value in performance.items():
         #     performance[key] = np.array(performance[key])
         # return performance, predictions
-        return dataSamples
+        return samples
 
     def save_incomplete_evaluations(self):
         eval_str = "evaluations"
