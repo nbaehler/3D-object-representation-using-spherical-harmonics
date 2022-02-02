@@ -182,7 +182,7 @@ class Evaluator(object):
                     x=x,
                     y=y,
                     name=data["name"][0],
-                    y_hat_spharm_coeffs=y_hat_spharm_coeffs,
+                    spharm_coeffs=y_hat_spharm_coeffs,
                 )
             )
 
@@ -236,7 +236,7 @@ class Evaluator(object):
 
             for data in eval.data:
                 with open(save_path + data.name + ".txt", "w") as f:
-                    params = data.y_hat_spharm_coeffs[0]
+                    params = data.spharm_coeffs[0]
 
                     for j in range(len(params)):
                         delimiter = "\n" if j % 6 == 5 else " "
@@ -469,9 +469,12 @@ class Evaluator(object):
             if y_hat.voxel is not None:
                 ys_voxels.append(y.voxel[0])
                 y_hats_voxels.append(y_hat.voxel[0])
-                # io.imsave(save_path + '/voxels/x_'+str(i)+'.tif', np.uint8(255*x[0,0].data.cpu().numpy()))
-                # io.imsave(save_path + '/voxels/y_'+str(i)+'.tif', np.uint8(y.voxel[0].data.cpu().numpy()))
-                # io.imsave(save_path + '/voxels/y_hat_'+str(i)+'.tif', np.uint8(y_hat.voxel[0].data.cpu().numpy()))
+                io.imsave(save_path + '/voxels/x_'+str(i)+'.tif',
+                          np.uint8(255*x[0, 0].data.cpu().numpy()))
+                io.imsave(save_path + '/voxels/y_'+str(i)+'.tif',
+                          np.uint8(y.voxel[0].data.cpu().numpy()))
+                io.imsave(save_path + '/voxels/y_hat_'+str(i)+'.tif',
+                          np.uint8(y_hat.voxel[0].data.cpu().numpy()))
 
         if performance is not None:
             for key, _ in performance.items():

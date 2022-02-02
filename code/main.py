@@ -26,6 +26,8 @@ from models.spharmnet import SPHarmNet as network
 
 logger = logging.getLogger(__name__)
 
+# TODO do not learn 3 first imaginary parts -> 0
+
 
 def init(cfg):
 
