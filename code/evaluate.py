@@ -115,18 +115,20 @@ class Evaluator(object):
             self.evaluations.append(Evaluation(
                 iteration=epoch, data=samples))
 
-            # write_to_wandb(writer, epoch, split, performances, self.config.num_classes)
+        #     write_to_wandb(writer, epoch, split, performances,
+        #                    self.config.num_classes)
 
         # if self.support.update_checkpoint(best_so_far=self.current_best, new_value=performances):
 
-        #     mkdir(self.save_path)
-        #     mkdir(self.save_path + '/points')
-        #     mkdir(self.save_path + '/mesh')
-        #     mkdir(self.save_path + '/voxels')
+            mkdir(self.save_path)
+            # mkdir(self.save_path + '/points')
+            # mkdir(self.save_path + '/mesh')
+            # mkdir(self.save_path + '/voxels')
 
-        #     self.save_model(epoch)
-        #     self.save_results(predictions[DataModes.TESTING], epoch, performances[DataModes.TESTING], self.save_path, '/testing_')
-        #     self.current_best = performances
+            self.save_model(epoch)
+            # self.save_results(predictions[DataModes.TESTING], epoch,
+            #                   performances[DataModes.TESTING], self.save_path, '/testing_')
+            # self.current_best = performances
 
         print("iteration " + str(epoch) + ", state saved for evaluation")
 

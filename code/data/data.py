@@ -114,24 +114,32 @@ def get_item(item, mode, config):
 
             first = index
 
-        theta = theta_rotate @ theta_shift @ theta_scale
+        # theta = theta_rotate @ theta_shift @ theta_scale
         # theta = theta_shift @ theta_scale
         # theta = theta_scale
-        # theta = theta_shift
+        theta = theta_shift
 
         # ----------------------------------------------------------
 
-        # import os #TODO Testing
-        # import pickle
+        import os  # TODO Testing
+        import pickle
 
-        # save_path = config.data_path+'testing/'
+        save_path = config.root_path+'testing/'
 
-        # # Create folders for the output
-        # if not os.path.exists(save_path):
-        #     os.makedirs(save_path)
+        # Create folders for the output
+        if not os.path.exists(save_path):
+            os.makedirs(save_path)
 
-        # with open(save_path + 'y_before.pickle', 'wb') as handle:
-        #     pickle.dump(y, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        print(x.dtype)
+        print(x)
+        
+        print(y.dtype)
+        print(y)
+
+        x_before_vertices = x.mesh[0]["vertices"]
+        x_before_faces = x.mesh[0]["faces"]
+        y_before_vertices = y.mesh[0]["vertices"]
+        y_before_faces = y.mesh[0]["faces"]
 
         # ----------------------------------------------------------
 
@@ -140,23 +148,20 @@ def get_item(item, mode, config):
 
         # ----------------------------------------------------------
 
-        # f = open(save_path+'coeffs.txt', 'w') #TODO Testing
+        with open(save_path+'coeffs.txt', 'w') as f:  # TODO Testing
+            params = spharm_coeffs
 
-        # params = spharm_coeffs
+            for j in range(len(params)):
+                delimiter = '\n' if j % 6 == 5 else ' '
+                f.write(str(params[j].item())+delimiter)
 
-        # for j in range(len(params)):
-        #     delimiter = '\n' if j % 6 == 5 else ' '
-        #     f.write(str(params[j].item())+delimiter)
-        # f.close()
+        x_after_vertices = x.mesh[0]["vertices"]
+        x_after_faces = x.mesh[0]["faces"]
+        y_after_vertices = y.mesh[0]["vertices"]
+        y_after_faces = y.mesh[0]["faces"]
 
-        # with open(save_path + 'x.pickle', 'wb') as handle:
-        #     pickle.dump(x, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-        # with open(save_path + 'y_after.pickle', 'wb') as handle:
-        #     pickle.dump(y, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-        # import sys
-        # sys.exit()
+        import sys
+        sys.exit()
 
         # ----------------------------------------------------------
 

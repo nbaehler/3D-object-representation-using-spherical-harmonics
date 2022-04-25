@@ -370,8 +370,6 @@ class Chaos:
                     sample.y.shape)[None].float()
             )
 
-            # vertices = self.center(vertices)  # TODO Why should we do that???
-
             # Save to obj file for meshlab
             # Points = V x 3
             # Points = 1 x V x 3
@@ -611,7 +609,3 @@ class Chaos:
             return True
         best_so_far = best_so_far[DataModes.TESTING][key]
         return np.mean(new_value) > np.mean(best_so_far)
-
-    def center(self, vertices):  # TODO remove?!
-        center_of_gravity = torch.mean(vertices, dim=0)
-        return vertices - center_of_gravity

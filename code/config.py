@@ -10,7 +10,7 @@ def load_config(exp_id):
     cfg.experiment_idx = exp_id
 
     cfg.trial_id = None  # Use None for generating a new id
-    cfg.trial_id = 4
+    cfg.trial_id = 5
 
     # Setup
     # cfg.mode = 'load'  # TODO DON'T USE THIS LOCALLY! Needs more than 32 GiB of RAM
@@ -91,7 +91,7 @@ def load_config(exp_id):
     cfg.learning_rate = 1e-4
 
     """ Training """
-    cfg.numb_of_itrs = 30000
-    cfg.eval_every = 1000
+    cfg.numb_of_itrs = 100
+    cfg.eval_every = 10
 
     return cfg
